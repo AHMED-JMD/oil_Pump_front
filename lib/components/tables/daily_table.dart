@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:oil_pump_system/models/daily_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
@@ -13,7 +15,10 @@ class DailyTable extends StatefulWidget {
 class _DailyTableState extends State<DailyTable> {
   var rowsPerPage = 5;
   final source = ExampleSource();
+  var sortIndex = 0;
+  var sortAsc = true;
   final _searchController = TextEditingController();
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   @override
   void initState() {
@@ -26,19 +31,101 @@ class _DailyTableState extends State<DailyTable> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Modal Title'),
-          content: Column(
-            children: [
-              Text('This is the modal content.'),
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: SimpleDialog(
+            title: Text("قراءة جديدة"),
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: FormBuilder(
+                  // Define the form key to identify the form
+                  key: _formKey,
+                  // Define the form fields
+                  child: Column(
+                    children: [
+                      // Add a dropdown field
+                      FormBuilderDropdown(
+                        name: 'machine',
+                        decoration: InputDecoration(labelText: 'المكنة'),
+                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                        // onChanged: (val) {
+                        //   print(val); // Print the text value write into TextField
+                        // },
+                        items: ['بنزين', 'جاز','جاز دوشكا']
+                            .map((gender) => DropdownMenuItem(
+                          value: gender,
+                          child: Text('$gender'),
+                        ))
+                            .toList(),
+                      ),
+                      // Add a text field
+                      FormBuilderTextField(
+                        name: 'old_read',
+                        decoration: InputDecoration(labelText: 'القراءة 1'),
+                        // onChanged: (val) {
+                        //   print(val); // Print the text value write into TextField
+                        // },
+                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                      ),
+                      // Add another text field
+                      FormBuilderTextField(
+                        name: 'nw_read',
+                        decoration: InputDecoration(labelText: 'القراءة 2'),
+                        // onChanged: (val) {
+                        //   print(val); // Print the text value write into TextField
+                        // },
+                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                      ),
+                      FormBuilderTextField(
+                        name: 'value',
+                        decoration: InputDecoration(labelText: 'القيمة'),
+                        // onChanged: (val) {
+                        //   print(val); // Print the text value write into TextField
+                        // },
+                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                      ),
+                      FormBuilderTextField(
+                        name: 'amount',
+                        decoration: InputDecoration(labelText: 'المبلغ'),
+                        // onChanged: (val) {
+                        //   print(val); // Print the text value write into TextField
+                        // },
+                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                      ),
+                      SizedBox(height: 40,),
+                      // Add a submit button
+                      SizedBox(
+                        width: 100,
+                        height: 40,
+                        child: ElevatedButton(
+                          child: Text('ارسال'),
+                          style: ElevatedButton.styleFrom(
+                              textStyle: TextStyle(fontSize: 18)
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState!.saveAndValidate()) {
+                              print(_formKey.currentState!.value);
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  TextButton.icon(
+                    icon: Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                    label: Text('الغاء'),
+                  ),
+                ],
+              ),
             ],
           ),
-          actions: [
-            TextButton(
-              child: Text('Close'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
         );
       },
     );
@@ -59,7 +146,7 @@ class _DailyTableState extends State<DailyTable> {
                     Container(
                       width: 400,
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 10),
+                        padding: const EdgeInsets.only(right: 10),
                         child: TextField(
                           controller: _searchController,
                           decoration: const InputDecoration(
@@ -125,21 +212,27 @@ class _DailyTableState extends State<DailyTable> {
                 DataColumn(
                   label: const Text('ID'),
                   numeric: true,
+                    onSort: setSort
                 ),
                 DataColumn(
                   label: const Text('الاسم'),
+                    onSort: setSort
                 ),
                 DataColumn(
                   label: const Text('المبلغ'),
+                    onSort: setSort
                 ),
                 DataColumn(
                   label: const Text('الحالة'),
+                    onSort: setSort
                 ),
                 DataColumn(
                   label: const Text('التعليق'),
+                    onSort: setSort
                 ),
                 DataColumn(
                   label: const Text('التاريخ'),
+                    onSort: setSort
                 ),
               ],
             ),
@@ -148,22 +241,29 @@ class _DailyTableState extends State<DailyTable> {
       ),
     );
   }
+
+  //sorting function
+  void setSort(int i, bool asc) => setState(() {
+    sortIndex = i;
+    sortAsc = asc;
+  });
 }
 
 class ExampleSource extends AdvancedDataTableSource<Daily> {
   String lastSearchTerm = '';
-  bool isSelected = false;
-
+  //selected list here
+  List<Daily> selectedData = [];
+  //original data
   final data = List<Daily>.generate(
-      13, (index) => Daily(ID: "ID", name: "شركة نبتة للبترول", amount: "1798500", status: "دائن", comment: "لصالح شركة نبتة", date: "7-5-2023"));
+      13, (index) => Daily(ID: "$index ", name: "شركة نبتة للبترول$index", amount: "1798500", status: "دائن", comment: "لصالح شركة نبتة", date: "7-5-2023"));
 
   @override
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-        selected: isSelected,
-        onSelectChanged: (value) {
-          print(value);
+        selected: selectedData.contains(data),
+        onSelectChanged: (selected) {
+          print(selected);
         },
         cells: [
       DataCell(
@@ -190,6 +290,10 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
   @override
   int get selectedRowCount => 0;
 
+  //-------implementation for selection problem
+
+  //-----------ends here -----------------------------------
+
   void filterServerSide(String filterQuery) {
     lastSearchTerm = filterQuery.toLowerCase().trim();
     setNextView();
@@ -198,13 +302,13 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
   @override
   Future<RemoteDataSourceDetails<Daily>> getNextPage(
       NextPageRequest pageRequest) async {
+    await Future.delayed(Duration(seconds: 1));
     return RemoteDataSourceDetails(
       data.length,
       data
           .skip(pageRequest.offset)
           .take(pageRequest.pageSize)
-          .toList(), //again in a real world example you would only get the right amount of rows
+          .toList(),
     );
   }
 }
-

@@ -55,7 +55,7 @@ class _IncomeTableState extends State<IncomeTable> {
                     Container(
                       width: 400,
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 10),
+                        padding: const EdgeInsets.only(right: 10),
                         child: TextField(
                           controller: _searchController,
                           decoration: const InputDecoration(
