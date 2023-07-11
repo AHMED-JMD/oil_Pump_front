@@ -141,27 +141,40 @@ typedef SelectedCallBack = Function(String id, bool newSelectState);
 
 class ExampleSource extends AdvancedDataTableSource<Company> {
   String lastSearchTerm = '';
-  List<String> selectedIds = [];
+  bool isSelected = false;
 
   final data = List<Company>.generate(
       13, (index) => Company(ID: '$index', company: "company", fname: "fname", lname: "lname", phone: "phone"));
 
-
   @override
-  DataRow? getRow(int index) =>
-      lastDetails!.rows[index].getRow(selectedRow, selectedIds);
-
-  @override
-  int get selectedRowCount => selectedIds.length;
-
-  void selectedRow(String id, bool newSelectState) {
-    if (selectedIds.contains(id)) {
-      selectedIds.remove(id);
-    } else {
-      selectedIds.add(id);
-    }
-    notifyListeners();
+  DataRow? getRow(int index) {
+    final currentRowData = lastDetails!.rows[index];
+    return DataRow(
+        selected: isSelected,
+        onSelectChanged: (value) {
+          print(value);
+        },
+        cells: [
+      DataCell(
+        Text(currentRowData.ID.toString()),
+      ),
+      DataCell(
+        Text(currentRowData.company),
+      ),
+      DataCell(
+        Text(currentRowData.fname),
+      ),
+      DataCell(
+        Text(currentRowData.lname),
+      ),
+      DataCell(
+        Text(currentRowData.phone),
+      ),
+    ]);
   }
+
+  @override
+  int get selectedRowCount => 0;
 
   void filterServerSide(String filterQuery) {
     lastSearchTerm = filterQuery.toLowerCase().trim();
