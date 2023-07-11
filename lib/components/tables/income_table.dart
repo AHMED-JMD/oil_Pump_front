@@ -144,7 +144,7 @@ class _IncomeTableState extends State<IncomeTable> {
 
 class ExampleSource extends AdvancedDataTableSource<Company> {
   String lastSearchTerm = '';
-  bool isSelected = false;
+  List<String> selectedIds = [];
 
   final data = List<Company>.generate(
       13, (index) => Company(ID: '$index', company: "محمد بنزين", fname: "خ5 13266", lname: "بنزين", phone: "71500"));
@@ -153,9 +153,11 @@ class ExampleSource extends AdvancedDataTableSource<Company> {
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-        selected: isSelected,
-        onSelectChanged: (value) {
-          print(value);
+        selected: selectedIds.contains(currentRowData.ID),
+        onSelectChanged: (selected) {
+          if(selected != null){
+            selectedRow(currentRowData.ID, selected);
+          }
         },
         cells: [
       DataCell(
@@ -177,7 +179,16 @@ class ExampleSource extends AdvancedDataTableSource<Company> {
   }
 
   @override
-  int get selectedRowCount => 0;
+  int get selectedRowCount => selectedIds.length;
+
+  void selectedRow(String id, bool newSelectState) {
+    if (selectedIds.contains(id)) {
+      selectedIds.remove(id);
+    } else {
+      selectedIds.add(id);
+    }
+    notifyListeners();
+  }
 
   void filterServerSide(String filterQuery) {
     lastSearchTerm = filterQuery.toLowerCase().trim();

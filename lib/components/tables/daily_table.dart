@@ -252,7 +252,7 @@ class _DailyTableState extends State<DailyTable> {
 class ExampleSource extends AdvancedDataTableSource<Daily> {
   String lastSearchTerm = '';
   //selected list here
-  List<Daily> selectedData = [];
+  List<String> selectedIds = [];
   //original data
   final data = List<Daily>.generate(
       13, (index) => Daily(ID: "$index ", name: "شركة نبتة للبترول$index", amount: "1798500", status: "دائن", comment: "لصالح شركة نبتة", date: "7-5-2023"));
@@ -261,9 +261,11 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-        selected: selectedData.contains(data),
+        selected: selectedIds.contains(currentRowData.ID),
         onSelectChanged: (selected) {
-          print(selected);
+          if(selected != null){
+            selectedRow(currentRowData.ID, selected);
+          }
         },
         cells: [
       DataCell(
@@ -288,11 +290,16 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
   }
 
   @override
-  int get selectedRowCount => 0;
+  int get selectedRowCount => selectedIds.length;
 
-  //-------implementation for selection problem
-
-  //-----------ends here -----------------------------------
+  void selectedRow(String id, bool newSelectState) {
+    if (selectedIds.contains(id)) {
+      selectedIds.remove(id);
+    } else {
+      selectedIds.add(id);
+    }
+    notifyListeners();
+  }
 
   void filterServerSide(String filterQuery) {
     lastSearchTerm = filterQuery.toLowerCase().trim();

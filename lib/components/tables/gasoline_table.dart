@@ -124,7 +124,7 @@ class _GasolineTableState extends State<GasolineTable> {
 
 class ExampleSource extends AdvancedDataTableSource<Gas> {
   String lastSearchTerm = '';
-  bool isSelected = false;
+  List<String> selectedIds = [];
 
   final data = List<Gas>.generate(
       13, (index) =>  Gas(ID: "ID", type: "جاز", d_gas: "5230 لبر", trans_gas: "15000 لتر", total: "22370 لتر",comment: "تعليق جديد", date: "5-7-2023"));
@@ -133,9 +133,11 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-        selected: isSelected,
-        onSelectChanged: (value) {
-            print(value);
+        selected: selectedIds.contains(currentRowData.ID),
+        onSelectChanged: (selected) {
+          if(selected != null){
+            selectedRow(currentRowData.ID, selected);
+          }
         },
         cells: [
       DataCell(
@@ -163,7 +165,16 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
   }
 
   @override
-  int get selectedRowCount => 0;
+  int get selectedRowCount => selectedIds.length;
+
+  void selectedRow(String id, bool newSelectState) {
+    if (selectedIds.contains(id)) {
+      selectedIds.remove(id);
+    } else {
+      selectedIds.add(id);
+    }
+    notifyListeners();
+  }
 
   void filterServerSide(String filterQuery) {
     lastSearchTerm = filterQuery.toLowerCase().trim();
