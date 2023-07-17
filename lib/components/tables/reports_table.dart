@@ -195,6 +195,7 @@ class ExampleSource extends AdvancedDataTableSource<Company> {
   @override
   Future<RemoteDataSourceDetails<Company>> getNextPage(
       NextPageRequest pageRequest) async {
+    await Future.delayed(Duration(seconds: 1));
     return RemoteDataSourceDetails(
       data.length,
       data

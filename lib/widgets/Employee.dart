@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:oil_pump_system/components/appBar.dart';
 import 'package:oil_pump_system/components/side_bar.dart';
 import 'package:oil_pump_system/components/tables/EmployeeTable.dart';
+import 'package:sidebarx/sidebarx.dart';
 
 class Employees extends StatefulWidget {
   const Employees({super.key});
@@ -11,23 +12,30 @@ class Employees extends StatefulWidget {
 }
 
 class _EmployeesState extends State<Employees> {
+  SidebarXController controller = SidebarXController(selectedIndex: 2, extended: true);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: APPBAR(),
+      appBar: APPBAR(context),
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: Row(
           children: [
             Row(
               children: [
-                Navbar(),
+                Navbar(controller: controller,),
               ],
             ),
             Expanded(
-                child: Container(
-                    color: Colors.grey.shade100,
-                    child: EmployeeTable()
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                        color: Colors.grey.shade100,
+                        child: EmployeeTable()
+                    ),
+                  ],
                 )
             )
           ],

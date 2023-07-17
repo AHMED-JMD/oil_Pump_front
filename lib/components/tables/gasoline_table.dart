@@ -127,7 +127,7 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
   List<String> selectedIds = [];
 
   final data = List<Gas>.generate(
-      13, (index) =>  Gas(ID: "ID", type: "جاز", d_gas: "5230 لبر", trans_gas: "15000 لتر", total: "22370 لتر",comment: "تعليق جديد", date: "5-7-2023"));
+      13, (index) =>  Gas(ID: "$index", type: "جاز", d_gas: "5230 لبر", trans_gas: "15000 لتر", total: "22370 لتر",comment: "تعليق جديد", date: "5-7-2023"));
 
   @override
   DataRow? getRow(int index) {
@@ -184,6 +184,7 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
   @override
   Future<RemoteDataSourceDetails<Gas>> getNextPage(
       NextPageRequest pageRequest) async {
+    await Future.delayed(Duration(seconds: 1));
     return RemoteDataSourceDetails(
       data.length,
       data

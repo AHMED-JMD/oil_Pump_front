@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:oil_pump_system/API/daily.dart';
 import 'package:oil_pump_system/models/daily_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
 
 class DailyTable extends StatefulWidget {
   DailyTable({Key? key}) : super(key: key);
@@ -18,12 +21,54 @@ class _DailyTableState extends State<DailyTable> {
   var sortIndex = 0;
   var sortAsc = true;
   final _searchController = TextEditingController();
+  bool isLoading = false;
+
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   @override
   void initState() {
     super.initState();
     _searchController.text = '';
+  }
+
+  //server side delete Function
+  Future deleteDaily() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    //send to server
+    if(selectedIds.length != 0){
+      API_Daily.Delete_Daily(selectedIds).then((response){
+        setState(() {
+          isLoading = false;
+        });
+        print(response);
+        if(response == true){
+          print(response);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('تم الحذف بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }else{
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      });
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('الرجاء اختيار يومية من الجدول', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   //modal open
@@ -52,6 +97,7 @@ class _DailyTableState extends State<DailyTable> {
                         // onChanged: (val) {
                         //   print(val); // Print the text value write into TextField
                         // },
+                        initialValue: 'جاز',
                         items: ['بنزين', 'جاز','جاز دوشكا']
                             .map((gender) => DropdownMenuItem(
                           value: gender,
@@ -62,16 +108,17 @@ class _DailyTableState extends State<DailyTable> {
                       // Add a text field
                       FormBuilderTextField(
                         name: 'old_read',
-                        decoration: InputDecoration(labelText: 'القراءة 1'),
+                        decoration: InputDecoration(labelText: 'القراءة'),
                         // onChanged: (val) {
                         //   print(val); // Print the text value write into TextField
                         // },
+                        initialValue: selectedIds.length != 0 ? '2950713' : '',
                         validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                       ),
                       // Add another text field
                       FormBuilderTextField(
                         name: 'nw_read',
-                        decoration: InputDecoration(labelText: 'القراءة 2'),
+                        decoration: InputDecoration(labelText: 'القراءة الجديدة'),
                         // onChanged: (val) {
                         //   print(val); // Print the text value write into TextField
                         // },
@@ -130,6 +177,43 @@ class _DailyTableState extends State<DailyTable> {
       },
     );
   }
+  //delete modal
+  void _deleteModal(BuildContext context){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            title: Text('حذف اليومية'),
+            content: Text('هل انت متأكد برغبتك في جذف اليومية'),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Center(
+                  child: SizedBox(
+                    height: 30,
+                    child: TextButton(
+                      child: Text('حذف'),
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        primary: Colors.white
+                      ),
+                      onPressed: (){
+                        deleteDaily();
+                        Navigator.of(context).pop();
+                      }
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -176,6 +260,16 @@ class _DailyTableState extends State<DailyTable> {
                 ),
                 Row(
                   children: [
+                    TextButton.icon(
+                      onPressed: (){
+                        _deleteModal(context);
+                      } ,
+                      icon: Icon(
+                        Icons.delete,
+                        ),
+                      label: Text(''),
+                    ),
+                    SizedBox(width: 3,),
                     ElevatedButton(
                         onPressed: (){
                           _openModal(context);
@@ -210,12 +304,11 @@ class _DailyTableState extends State<DailyTable> {
               },
               columns: [
                 DataColumn(
-                  label: const Text('ID'),
-                  numeric: true,
+                  label: const Text('الاسم'),
                     onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('الاسم'),
+                    label: const Text('البيان'),
                     onSort: setSort
                 ),
                 DataColumn(
@@ -227,12 +320,11 @@ class _DailyTableState extends State<DailyTable> {
                     onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('التعليق'),
+                  label: const Text('التاريخ'),
                     onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('التاريخ'),
-                    onSort: setSort
+                  label: const Text('عرض/ تعديل'),
                 ),
               ],
             ),
@@ -251,41 +343,41 @@ class _DailyTableState extends State<DailyTable> {
 
 class ExampleSource extends AdvancedDataTableSource<Daily> {
   String lastSearchTerm = '';
-  //selected list here
-  List<String> selectedIds = [];
-  //original data
-  final data = List<Daily>.generate(
-      13, (index) => Daily(ID: "$index ", name: "شركة نبتة للبترول$index", amount: "1798500", status: "دائن", comment: "لصالح شركة نبتة", date: "7-5-2023"));
 
   @override
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-        selected: selectedIds.contains(currentRowData.ID),
+        selected: selectedIds.contains(currentRowData.tranId),
         onSelectChanged: (selected) {
           if(selected != null){
-            selectedRow(currentRowData.ID, selected);
+            selectedRow(currentRowData.tranId, selected);
           }
         },
         cells: [
       DataCell(
-        Text(currentRowData.ID.toString()),
-      ),
-      DataCell(
         Text(currentRowData.name),
-      ),
-      DataCell(
-        Text(currentRowData.amount),
-      ),
-      DataCell(
-        Text(currentRowData.status),
       ),
       DataCell(
         Text(currentRowData.comment),
       ),
       DataCell(
+        Text(currentRowData.amount.toString()),
+      ),
+      DataCell(
+        Text(currentRowData.type),
+      ),
+      DataCell(
         Text(currentRowData.date),
       ),
+          DataCell(
+            Center(
+              child: InkWell(
+                  onTap: (){},
+                  child: Icon(Icons.remove_red_eye, color: Colors.grey[500],)
+              ),
+            ),
+          ),
     ]);
   }
 
@@ -309,13 +401,35 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
   @override
   Future<RemoteDataSourceDetails<Daily>> getNextPage(
       NextPageRequest pageRequest) async {
-    await Future.delayed(Duration(seconds: 1));
-    return RemoteDataSourceDetails(
-      data.length,
-      data
-          .skip(pageRequest.offset)
-          .take(pageRequest.pageSize)
-          .toList(),
-    );
+    //--------------get request to server -----------
+    final url = Uri.parse('http://localhost:5000/transaction/');
+    Map<String,String> requestHeaders = {
+      'Content-Type' : 'application/json',
+      'x-auth-token' : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNGQ2ZTMwLTE5NzAtMTFlZS05MTczLWZiMjA5ZjI2YWQyMyIsImlhdCI6MTY4ODM2ODMxNH0.FuZln5gldCx3LWd_ylaxHDyiwt0oSId_98MvrKfCvOA'
+    };
+
+    Response response = await get(url, headers: requestHeaders);
+    if(response.statusCode == 200){
+      final data = jsonDecode(response.body);
+
+      await Future.delayed(Duration(seconds: 1));
+      return RemoteDataSourceDetails(
+        data.length,
+        (data as List<dynamic>)
+            .map((json) => Daily.fromJson(json))
+            .skip(pageRequest.offset)
+            .take(pageRequest.pageSize)
+            .toList(),
+        filteredRows: lastSearchTerm.isNotEmpty
+            ? (data as List<dynamic>).length
+            : null,
+      );
+    }else{
+      throw Exception('Unable to query remote server');
+    }
+
   }
 }
+
+//selected list here
+List<String> selectedIds = [];

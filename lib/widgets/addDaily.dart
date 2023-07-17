@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:oil_pump_system/API/daily.dart';
 import 'package:oil_pump_system/components/appBar.dart';
 import 'package:oil_pump_system/components/side_bar.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:sidebarx/sidebarx.dart';
 
 class AddDaily extends StatefulWidget {
   const AddDaily({Key? key}) : super(key: key);
@@ -11,33 +13,38 @@ class AddDaily extends StatefulWidget {
   State<AddDaily> createState() => _AddDailyState();
 }
 
-class _AddDailyState extends State<AddDaily> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+class _AddDailyState extends State<AddDaily> {
+  SidebarXController controller = SidebarXController(selectedIndex: 0, extended: true);
+
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+  bool isLoading = false;
+  DateTime? nw_date;
+  String? name;
+  String? type;
+  String? amount;
+  String? comment;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: APPBAR(),
+        appBar: APPBAR(context),
         body: Directionality(
           textDirection: TextDirection.rtl,
           child: Row(
             children: [
               Row(
                 children: [
-                  Navbar()
+                  Navbar(controller: controller,)
                 ],
               ),
               Expanded(
@@ -60,49 +67,52 @@ class _AddDailyState extends State<AddDaily> with SingleTickerProviderStateMixin
                                     FormBuilderTextField(
                                       name: 'name',
                                       decoration: InputDecoration(labelText: 'الاسم'),
-                                      // onChanged: (val) {
-                                      //   print(val); // Print the text value write into TextField
-                                      // },
+                                      onChanged: (val) {
+                                        name = val; // Print the text value write into TextField
+                                      },
                                       validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                    ),
+                                    FormBuilderDropdown(
+                                      name: 'type',
+                                      decoration: InputDecoration(labelText: 'الحالة'),
+                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                      onChanged: (val) {
+                                        type = val; // Print the text value write into TextField
+                                      },
+                                      items: ['مدين', 'دائن',]
+                                          .map((type) => DropdownMenuItem(
+                                        value: type,
+                                        child: Text('$type'),
+                                      ))
+                                          .toList(),
                                     ),
                                     // Add another text field
                                     FormBuilderTextField(
                                       name: 'amount',
                                       decoration: InputDecoration(labelText: 'المبلغ'),
-                                      // onChanged: (val) {
-                                      //   print(val); // Print the text value write into TextField
-                                      // },
+                                      onChanged: (val) {
+                                        amount = val; // Print the text value write into TextField
+                                      },
                                       validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                    ),
-                                    FormBuilderDropdown(
-                                      name: 'status',
-                                      decoration: InputDecoration(labelText: 'الحالة'),
-                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                      // onChanged: (val) {
-                                      //   print(val); // Print the text value write into TextField
-                                      // },
-                                      items: ['مدين', 'دائن',]
-                                          .map((status) => DropdownMenuItem(
-                                        value: status,
-                                        child: Text('$status'),
-                                      ))
-                                          .toList(),
                                     ),
                                     FormBuilderDateTimePicker(
                                       name: 'date',
                                       decoration: InputDecoration(
                                         labelText: 'التاريخ',
                                       ),
+                                      onChanged: (value){
+                                        nw_date = value;
+                                      },
                                       validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                       initialDate: DateTime.now(),
                                       inputType: InputType.date,
                                     ),
                                     FormBuilderTextField(
                                       name: 'comment',
-                                      decoration: InputDecoration(labelText: 'التعليق'),
-                                      // onChanged: (val) {
-                                      //   print(val); // Print the text value write into TextField
-                                      // },
+                                      decoration: InputDecoration(labelText: 'البيان'),
+                                      onChanged: (val) {
+                                        comment = val; // Print the text value write into TextField
+                                      },
                                       validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                     ),
                                     SizedBox(height: 40,),
@@ -117,7 +127,39 @@ class _AddDailyState extends State<AddDaily> with SingleTickerProviderStateMixin
                                         ),
                                         onPressed: () {
                                           if (_formKey.currentState!.saveAndValidate()) {
-                                            print(_formKey.currentState!.value);
+                                            setState(() {
+                                              isLoading = true;
+                                            });
+
+                                            //call to backend
+                                            Map data = {};
+                                            data['name'] = name;
+                                            data['type'] = type;
+                                            data['amount'] = amount;
+                                            data['date'] = nw_date!.toIso8601String();
+                                            data['comment'] = comment;
+
+                                            API_Daily.Add_Daily(data).then((response){
+                                              setState(() {
+                                                isLoading = false;
+                                              });
+
+                                              if(response == true){
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text('تم اضافة اليومية بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+                                                    backgroundColor: Colors.green,
+                                                  ),
+                                                );
+                                              }else{
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+                                                    backgroundColor: Colors.red,
+                                                  ),
+                                                );
+                                              }
+                                            });
                                           }
                                         },
                                       ),

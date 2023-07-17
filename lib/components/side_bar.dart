@@ -2,17 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class Navbar extends StatefulWidget {
+  SidebarXController controller;
+  Navbar({super.key, required this.controller});
+
   @override
-  State<Navbar> createState() => _NavbarState();
+  State<Navbar> createState() => _NavbarState(controller: controller);
 }
 
 class _NavbarState extends State<Navbar> {
-  final _controller = SidebarXController(selectedIndex: 0, extended: true);
+  SidebarXController controller;
+  _NavbarState({required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return SidebarX(
-      controller: _controller,
+      controller: controller,
       theme: SidebarXTheme(
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(

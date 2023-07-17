@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/models/company.dart';
+import 'package:oil_pump_system/API/reciept.dart';
+import 'package:oil_pump_system/models/income_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
 
 class IncomeTable extends StatefulWidget {
   IncomeTable({Key? key}) : super(key: key);
@@ -12,6 +15,8 @@ class IncomeTable extends StatefulWidget {
 
 class _IncomeTableState extends State<IncomeTable> {
   var rowsPerPage = 5;
+  bool isLoading = false;
+
   final source = ExampleSource();
   final _searchController = TextEditingController();
 
@@ -26,19 +31,72 @@ class _IncomeTableState extends State<IncomeTable> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Modal Title'),
-          content: Text('This is the modal content.'),
-          actions: [
-            TextButton(
-              child: Text('Close'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            title: Text('حذف الايصال'),
+            content: Text('هل انت متأكد برغبتك في حذف الايصال.'),
+            actions: [
+              Center(
+                child: SizedBox(
+                  height: 30,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: Colors.white,
+                      backgroundColor: Colors.red
+                    ),
+                    child: Text('حذف'),
+                    onPressed: (){
+                      deleteReciept();
+                      Navigator.of(context).pop();
+                    }
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
   }
+
+  //function to delete from server
+  Future deleteReciept ()async {
+    setState(() {
+      isLoading = true;
+    });
+    if(selectedIds.length != 0){
+      //call server
+      API_Reciept.Delete_Reciept(selectedIds).then((response){
+        setState(() {
+          isLoading = false;
+        });
+        if(response == true){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('تم الحذف بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }else{
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      });
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('الرجاء اختيار ايصال من الجدول', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +152,9 @@ class _IncomeTableState extends State<IncomeTable> {
                     ),
                     SizedBox(width: 5,),
                     ElevatedButton(
-                        onPressed: (){} ,
+                        onPressed: (){
+                          Navigator.pushReplacementNamed(context, '/add_reciept');
+                        } ,
                         child: Text('+ ايصال جديد')
                     ),
                     SizedBox(width: 5,),
@@ -118,10 +178,6 @@ class _IncomeTableState extends State<IncomeTable> {
               },
               columns: [
                 DataColumn(
-                  label: const Text('ID'),
-                  numeric: true,
-                ),
-                DataColumn(
                   label: const Text('اسم السائق'),
                 ),
                 DataColumn(
@@ -133,6 +189,13 @@ class _IncomeTableState extends State<IncomeTable> {
                 DataColumn(
                   label: const Text('الكمية'),
                 ),
+                DataColumn(
+                  label: const Text('التاريخ'),
+                ),
+                DataColumn(
+                  label: const Text('عرض/ تعديل'),
+                ),
+
               ],
             ),
           ],
@@ -142,39 +205,43 @@ class _IncomeTableState extends State<IncomeTable> {
   }
 }
 
-class ExampleSource extends AdvancedDataTableSource<Company> {
+class ExampleSource extends AdvancedDataTableSource<Receipt> {
   String lastSearchTerm = '';
-  List<String> selectedIds = [];
-
-  final data = List<Company>.generate(
-      13, (index) => Company(ID: '$index', company: "محمد بنزين", fname: "خ5 13266", lname: "بنزين", phone: "71500"));
 
   @override
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-        selected: selectedIds.contains(currentRowData.ID),
+        selected: selectedIds.contains(currentRowData.recieptId),
         onSelectChanged: (selected) {
           if(selected != null){
-            selectedRow(currentRowData.ID, selected);
+            selectedRow(currentRowData.recieptId, selected);
           }
         },
         cells: [
       DataCell(
-        Text(currentRowData.ID.toString()),
+        Text(currentRowData.driver),
       ),
       DataCell(
-        Text(currentRowData.company),
+        Text(currentRowData.carPlate),
       ),
       DataCell(
-        Text(currentRowData.fname),
+        Text(currentRowData.fuelType),
       ),
       DataCell(
-        Text(currentRowData.lname),
+        Text(currentRowData.amount.toString()),
       ),
       DataCell(
-        Text(currentRowData.phone),
+        Text(currentRowData.date),
       ),
+          DataCell(
+            Center(
+              child: InkWell(
+                  onTap: (){},
+                  child: Icon(Icons.remove_red_eye, color: Colors.grey[500],)
+              ),
+            ),
+          ),
     ]);
   }
 
@@ -196,15 +263,34 @@ class ExampleSource extends AdvancedDataTableSource<Company> {
   }
 
   @override
-  Future<RemoteDataSourceDetails<Company>> getNextPage(
+  Future<RemoteDataSourceDetails<Receipt>> getNextPage(
       NextPageRequest pageRequest) async {
-    return RemoteDataSourceDetails(
-      data.length,
-      data
-          .skip(pageRequest.offset)
-          .take(pageRequest.pageSize)
-          .toList(), //again in a real world example you would only get the right amount of rows
-    );
+    //--------------get request to server -----------
+    final url = Uri.parse('http://localhost:5000/reciept/');
+    Map<String,String> requestHeaders = {
+      'Content-Type' : 'application/json',
+      'x-auth-token' : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNGQ2ZTMwLTE5NzAtMTFlZS05MTczLWZiMjA5ZjI2YWQyMyIsImlhdCI6MTY4ODM2ODMxNH0.FuZln5gldCx3LWd_ylaxHDyiwt0oSId_98MvrKfCvOA'
+    };
+
+    Response response = await get(url, headers:  requestHeaders);
+    if(response.statusCode == 200){
+      final data = jsonDecode(response.body);
+      await Future.delayed(Duration(seconds: 1));
+      return RemoteDataSourceDetails(
+        data.length,
+        (data as List<dynamic>)
+            .map((json) => Receipt.fromJson(json))
+            .skip(pageRequest.offset)
+            .take(pageRequest.pageSize)
+            .toList(),
+        filteredRows: lastSearchTerm.isNotEmpty
+            ? (data as List<dynamic>).length
+            : null, //again in a real world example you would only get the right amount of rows
+      );
+    }else{
+      throw Exception('Unable to query remote server');
+    }
   }
 }
-
+//selected ids
+List<String> selectedIds = [];
