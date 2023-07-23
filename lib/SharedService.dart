@@ -11,6 +11,20 @@ class SharedServices {
     return isKeyExist;
   }
 
+  //get login details
+  //get key
+  static Future<Login> LoginDetails() async {
+    var isKeyExist = await APICacheManager().isAPICacheKeyExist('loginDetails');
+
+    if(isKeyExist){
+      var cachedData = await APICacheManager().getCacheData('loginDetails');
+
+      return loginResponseJson(cachedData.syncData);
+    }else{
+      return loginResponseJson('');
+    }
+  }
+
   //set login details
   static Future SetLoginDetails(Login model) async{
     APICacheDBModel CachedDb = APICacheDBModel(

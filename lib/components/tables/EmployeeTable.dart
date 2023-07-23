@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:oil_pump_system/API/employee.dart';
-import 'package:oil_pump_system/models/employee_data.dart';
+import 'package:oil_pump_system/SharedService.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
+import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:oil_pump_system/models/employee_data.dart';
+
 
 class EmployeeTable extends StatefulWidget {
   // late void Function(int) setPage;
@@ -19,6 +23,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
   var rowsPerPage = 5;
   final source = ExampleSource();
   final _searchController = TextEditingController();
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   @override
   void initState() {
@@ -26,7 +31,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
     _searchController.text = '';
   }
 
-  //function to delete employee
+  //server ---- function to delete employee
   Future<void> deleteEmploye() async{
     setState(() {
       isLoading = true;
@@ -34,9 +39,8 @@ class _EmployeeTableState extends State<EmployeeTable> {
 
 
     if(selectedIds.length != 0) {
-      // Set<List<String>> emp_id = {selectedIds};
-
-      API_Emp.Delete_Emp(selectedIds).then((response){
+      final auth = await SharedServices.LoginDetails();
+      API_Emp.Delete_Emp(selectedIds, auth.token).then((response){
         setState(() {
           isLoading = false;
         });
@@ -67,8 +71,8 @@ class _EmployeeTableState extends State<EmployeeTable> {
     }
   }
 
-  //modal open
-  void _openModal(BuildContext context) {
+  //delete open
+  void deleteModal(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -103,6 +107,67 @@ class _EmployeeTableState extends State<EmployeeTable> {
       },
     );
   }
+  //open modal
+  void _openModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: SimpleDialog(
+            title: Text('خصم الراتب'),
+            children:[
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: FormBuilder(
+                 key: _formKey,
+                 child: Column(
+                  children: [
+                    FormBuilderDropdown(
+                        name: 'employee',
+                        decoration: InputDecoration(labelText: 'اختر الموظف'),
+                        validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                        items: ['items', 'item2', 'item3']
+                        .map((value) =>
+                            DropdownMenuItem(
+                              value: value,
+                              child: Text(value),
+                            )).toList()
+                        ),
+                    FormBuilderTextField(
+                        name: 'amount',
+                        decoration: InputDecoration(labelText: 'المبلغ'),
+                        validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                    )
+                  ],
+                ),
+            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Center(
+                  child: SizedBox(
+                    height: 30,
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        primary: Colors.white,
+                      ),
+                      child: Text('خصم'),
+                      onPressed: (){
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
+                ),
+              ),
+          ],
+          ),
+        );
+      },
+    );
+  }
+
 
   //refresher for refreshing page
   Future _refresher () async {
@@ -162,25 +227,30 @@ class _EmployeeTableState extends State<EmployeeTable> {
                         SizedBox(width: 5,),
                         TextButton.icon(
                             onPressed: (){
-                              _openModal(context);
+                              deleteModal(context);
                             } ,
                             icon: Icon(Icons.delete),
                             label: Text(''),
                         ),
                         ElevatedButton(
                             onPressed: (){
+                              _openModal(context);
+                            },
+                            child: Text('خصم حساب')
+                        ),
+                        SizedBox(width: 5,),
+                        ElevatedButton(
+                            onPressed: (){
                               Navigator.pushNamed(context, '/add_employee');
                             } ,
-                            child: Text('+ اضافة موظف')
+                            child: Text('+ اضافة عميل')
                         ),
                       ],
                     )
 
                   ],
                 ),
-                RefreshIndicator(
-                  onRefresh: deleteEmploye,
-                    child: AdvancedPaginatedDataTable(
+                AdvancedPaginatedDataTable(
                     addEmptyRows: false,
                     source: source,
                     showFirstLastButtons: true,
@@ -198,9 +268,6 @@ class _EmployeeTableState extends State<EmployeeTable> {
                         label: const Text('الاسم'),
                       ),
                       DataColumn(
-                        label: const Text('الرقم الوطني'),
-                      ),
-                      DataColumn(
                         label: const Text('رقم الهاتق'),
                         numeric: true,
                       ),
@@ -208,17 +275,16 @@ class _EmployeeTableState extends State<EmployeeTable> {
                         label: const Text('السكن'),
                       ),
                       DataColumn(
-                        label: const Text('الراتب'),
+                        label: const Text('تعليق'),
                       ),
                       DataColumn(
-                        label: const Text('تعليق'),
+                        label: const Text('الحساب'),
                       ),
                       DataColumn(
                         label: const Text('عرض/ تعديل'),
                       ),
                     ],
                   ),
-                ),
               ],
             ),
           ),
@@ -227,7 +293,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
   }
 }
 
-class ExampleSource extends AdvancedDataTableSource<Employee> {
+class ExampleSource extends AdvancedDataTableSource<Clients> {
   String lastSearchTerm = '';
 
   @override
@@ -245,19 +311,16 @@ class ExampleSource extends AdvancedDataTableSource<Employee> {
         Text(currentRowData.name),
       ),
       DataCell(
-        Text(currentRowData.Ssn),
-      ),
-      DataCell(
         Text(currentRowData.phoneNum.toString()),
       ),
       DataCell(
         Text(currentRowData.address),
       ),
       DataCell(
-        Text(currentRowData.salary),
+        Text(currentRowData.comment.toString()),
       ),
           DataCell(
-            Text(currentRowData.comment),
+            Text(currentRowData.account.toString()),
           ),
           DataCell(
             Center(
@@ -288,23 +351,24 @@ class ExampleSource extends AdvancedDataTableSource<Employee> {
   }
 
   @override
-  Future<RemoteDataSourceDetails<Employee>> getNextPage(
+  Future<RemoteDataSourceDetails<Clients>> getNextPage(
       NextPageRequest pageRequest) async {
     //--------------get request to server -----------
-    final url = Uri.parse('http://localhost:5000/employees/');
+    final url = Uri.parse('http://localhost:5000/clients/');
+    final auth = await SharedServices.LoginDetails();
     Map<String,String> requestHeaders = {
       'Content-Type' : 'application/json',
-      'x-auth-token' : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNGQ2ZTMwLTE5NzAtMTFlZS05MTczLWZiMjA5ZjI2YWQyMyIsImlhdCI6MTY4ODM2ODMxNH0.FuZln5gldCx3LWd_ylaxHDyiwt0oSId_98MvrKfCvOA'
+      'x-auth-token' : '${auth.token}'
     };
     Response response = await get(url, headers: requestHeaders);
     if(response.statusCode == 200){
       final _data = jsonDecode(response.body);
 
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(Duration(milliseconds: 700));
       return RemoteDataSourceDetails(
         _data.length,
         (_data as List<dynamic>)
-            .map((json) => Employee.fromJson(json))
+            .map((json) => Clients.fromJson(json))
             .skip(pageRequest.offset)
             .take(pageRequest.pageSize)
             .toList(),

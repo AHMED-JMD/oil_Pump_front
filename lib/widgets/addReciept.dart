@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:oil_pump_system/API/reciept.dart';
+import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/components/appBar.dart';
 import 'package:oil_pump_system/components/side_bar.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -24,6 +25,35 @@ class _AddRecieptState extends State<AddReciept> {
   String? amount;
   DateTime? date;
 
+  Future _OnSubmit(data) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    //call backend
+    final auth = await SharedServices.LoginDetails();
+
+    API_Reciept.Add_Reciept(data, auth.token).then((response){
+      setState(() {
+        isLoading = false;
+      });
+      if(response == true){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('تم اضافة الايصال بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,10 +140,6 @@ class _AddRecieptState extends State<AddReciept> {
                             child: ElevatedButton(
                               onPressed: (){
                                 if(_formKey.currentState!.saveAndValidate()){
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-
                                   //call to server
                                   final data = {};
                                   data['driver'] = driver;
@@ -122,26 +148,7 @@ class _AddRecieptState extends State<AddReciept> {
                                   data['amount'] = amount;
                                   data['date'] = date!.toIso8601String();
 
-                                  API_Reciept.Add_Reciept(data).then((response){
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    if(response == true){
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('تم اضافة الايصال بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
-                                          backgroundColor: Colors.green,
-                                        ),
-                                      );
-                                    }else{
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                    }
-                                  });
+                                  _OnSubmit(data);
                                 }
                               },
                               child: Text('ارسال'),

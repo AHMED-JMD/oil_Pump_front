@@ -113,20 +113,14 @@ class _ReportsTableState extends State<ReportsTable> {
               },
               columns: [
                 DataColumn(
-                  label: const Text('ID'),
+                  label: const Text('المبلغ'),
                   numeric: true,
                 ),
                 DataColumn(
-                  label: const Text('Company'),
+                  label: const Text('البيان'),
                 ),
                 DataColumn(
-                  label: const Text('First name'),
-                ),
-                DataColumn(
-                  label: const Text('Last name'),
-                ),
-                DataColumn(
-                  label: const Text('Phone'),
+                  label: const Text('التاريخ'),
                 ),
               ],
             ),
@@ -165,12 +159,6 @@ class ExampleSource extends AdvancedDataTableSource<Company> {
       ),
       DataCell(
         Text(currentRowData.fname),
-      ),
-      DataCell(
-        Text(currentRowData.lname),
-      ),
-      DataCell(
-        Text(currentRowData.phone),
       ),
     ]);
   }

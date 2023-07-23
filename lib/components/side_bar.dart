@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class Navbar extends StatefulWidget {
-  SidebarXController controller;
+  final SidebarXController controller;
   Navbar({super.key, required this.controller});
 
   @override
@@ -80,14 +80,14 @@ class _NavbarState extends State<Navbar> {
         ),
         SidebarXItem(
             icon: Icons.person_4,
-            label: 'الموظفين',
+            label: 'العملاء',
             onTap: (){
               Navigator.pushReplacementNamed(context, '/employees');
             }
         ),
         SidebarXItem(
             icon: Icons.monetization_on,
-            label: 'ايصال وارد',
+            label: 'الشحن و التفريغ',
             onTap: (){
               Navigator.pushReplacementNamed(context, '/incomes');
             }

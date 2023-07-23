@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oil_pump_system/API/daily.dart';
+import 'package:oil_pump_system/SharedService.dart';
+import 'package:oil_pump_system/API/employee.dart';
 import 'package:oil_pump_system/components/appBar.dart';
 import 'package:oil_pump_system/components/side_bar.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -19,20 +21,67 @@ class _AddDailyState extends State<AddDaily> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
   DateTime? nw_date;
-  String? name;
+  String? emp_id;
   String? type;
   String? amount;
   String? comment;
+  List clients = [];
 
   @override
   void initState() {
     super.initState();
+    GetClients();
   }
 
   @override
   void dispose() {
     super.dispose();
   }
+//server side functions
+  //on submit form
+  Future _OnSubmit(data) async{
+    setState(() {
+      isLoading = true;
+    });
+
+    final auth = await SharedServices.LoginDetails();
+
+    API_Daily.Add_Daily(data, auth.token).then((response){
+      setState(() {
+        isLoading = false;
+      });
+      if(response == true){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('تم اضافة اليومية بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    });
+  }
+  //get clients data
+  Future GetClients() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    //get data
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Emp.getClients(auth.token);
+
+      setState(() {
+        clients = response;
+      });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -64,12 +113,17 @@ class _AddDailyState extends State<AddDaily> {
                                       backgroundColor: Colors.grey.shade300,
                                     ),
                                     // Add a text field
-                                    FormBuilderTextField(
+                                    FormBuilderDropdown(
                                       name: 'name',
-                                      decoration: InputDecoration(labelText: 'الاسم'),
+                                      decoration: InputDecoration(labelText: 'اختر العميل'),
                                       onChanged: (val) {
-                                        name = val; // Print the text value write into TextField
+                                        emp_id = val; // Print the text value write into TextField
                                       },
+                                      items: clients
+                                       .map((client) => DropdownMenuItem(
+                                          value: client['emp_id'].toString(),
+                                          child: Text('${client['name']}')
+                                      )).toList(),
                                       validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                     ),
                                     FormBuilderDropdown(
@@ -79,7 +133,7 @@ class _AddDailyState extends State<AddDaily> {
                                       onChanged: (val) {
                                         type = val; // Print the text value write into TextField
                                       },
-                                      items: ['مدين', 'دائن',]
+                                      items: ['له', 'عليه',]
                                           .map((type) => DropdownMenuItem(
                                         value: type,
                                         child: Text('$type'),
@@ -127,39 +181,16 @@ class _AddDailyState extends State<AddDaily> {
                                         ),
                                         onPressed: () {
                                           if (_formKey.currentState!.saveAndValidate()) {
-                                            setState(() {
-                                              isLoading = true;
-                                            });
-
                                             //call to backend
                                             Map data = {};
-                                            data['name'] = name;
+                                            data['emp_id'] = emp_id;
                                             data['type'] = type;
                                             data['amount'] = amount;
                                             data['date'] = nw_date!.toIso8601String();
                                             data['comment'] = comment;
 
-                                            API_Daily.Add_Daily(data).then((response){
-                                              setState(() {
-                                                isLoading = false;
-                                              });
-
-                                              if(response == true){
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text('تم اضافة اليومية بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
-                                                    backgroundColor: Colors.green,
-                                                  ),
-                                                );
-                                              }else{
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
-                                                    backgroundColor: Colors.red,
-                                                  ),
-                                                );
-                                              }
-                                            });
+                                            //------
+                                             _OnSubmit(data);
                                           }
                                         },
                                       ),

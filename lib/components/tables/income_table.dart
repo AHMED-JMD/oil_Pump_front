@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:oil_pump_system/API/reciept.dart';
+import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/models/income_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
@@ -67,7 +68,8 @@ class _IncomeTableState extends State<IncomeTable> {
     });
     if(selectedIds.length != 0){
       //call server
-      API_Reciept.Delete_Reciept(selectedIds).then((response){
+      final auth = await SharedServices.LoginDetails();
+      API_Reciept.Delete_Reciept(selectedIds, auth.token).then((response){
         setState(() {
           isLoading = false;
         });
@@ -267,9 +269,11 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
       NextPageRequest pageRequest) async {
     //--------------get request to server -----------
     final url = Uri.parse('http://localhost:5000/reciept/');
+    final auth = await SharedServices.LoginDetails();
+
     Map<String,String> requestHeaders = {
       'Content-Type' : 'application/json',
-      'x-auth-token' : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNGQ2ZTMwLTE5NzAtMTFlZS05MTczLWZiMjA5ZjI2YWQyMyIsImlhdCI6MTY4ODM2ODMxNH0.FuZln5gldCx3LWd_ylaxHDyiwt0oSId_98MvrKfCvOA'
+      'x-auth-token' : '${auth.token}'
     };
 
     Response response = await get(url, headers:  requestHeaders);

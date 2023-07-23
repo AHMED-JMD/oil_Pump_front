@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:oil_pump_system/API/employee.dart';
+import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/components/appBar.dart';
 import 'package:oil_pump_system/components/side_bar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -15,19 +16,42 @@ class AddEmployee extends StatefulWidget {
 }
 
 class _AddEmployeeState extends State<AddEmployee> {
-  SidebarXController controller = SidebarXController(selectedIndex: 0, extended: true);
 
+  SidebarXController controller = SidebarXController(selectedIndex: 0, extended: true);
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
   //state of widget
   bool isLoading = false;
-  bool isAdded = false;
-  bool isErr = false;
-  String? name;
-  String? address;
-  String? Ssn;
-  String? phoneNum;
-  String? salary;
-  String? comment;
+
+  Future _OnSubmit(data) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    //call backend
+    final auth = await SharedServices.LoginDetails();
+    API_Emp.AddEmp(data, auth.token).then((response){
+      setState(() {
+        isLoading = false;
+      });
+      if(response == true){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('تمت اضافة الموظف بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -90,16 +114,8 @@ class _AddEmployeeState extends State<AddEmployee> {
                                           validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                         ),
                                         FormBuilderTextField(
-                                          name: 'Ssn',
-                                          decoration: InputDecoration(labelText: 'الرقم الوطني'),
-                                          // onChanged: (val) {
-                                          //   print(val); // Print the text value write into TextField
-                                          // },
-                                          validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                        ),
-                                        FormBuilderTextField(
-                                          name: 'salary',
-                                          decoration: InputDecoration(labelText: 'الراتب'),
+                                          name: 'account',
+                                          decoration: InputDecoration(labelText: 'الحساب'),
                                           // onChanged: (val) {
                                           //   print(val); // Print the text value write into TextField
                                           // },
@@ -131,34 +147,8 @@ class _AddEmployeeState extends State<AddEmployee> {
                                             ),
                                             onPressed: () {
                                               if (_formKey.currentState!.saveAndValidate()) {
-                                                  setState(() {
-                                                    isLoading = true;
-                                                  });
                                                   final data = _formKey.currentState!.value;
-
-                                                  API_Emp.AddEmp(data).then((response){
-                                                    setState(() {
-                                                      isLoading = false;
-                                                    });
-                                                    if(response == true){
-                                                      setState(() {
-                                                        isAdded = true;
-                                                      });
-                                                      ScaffoldMessenger.of(context).showSnackBar(
-                                                        SnackBar(
-                                                          content: Text('تمت اضافة الموظف بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
-                                                          backgroundColor: Colors.green,
-                                                        ),
-                                                      );
-                                                    }else{
-                                                      ScaffoldMessenger.of(context).showSnackBar(
-                                                        SnackBar(
-                                                          content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
-                                                          backgroundColor: Colors.red,
-                                                        ),
-                                                      );
-                                                    }
-                                                  });
+                                                  _OnSubmit(data);
                                                 }
                                               }
                                           ),

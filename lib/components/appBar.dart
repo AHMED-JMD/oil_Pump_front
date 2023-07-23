@@ -17,7 +17,7 @@ const canvasColor = Color(0xFF2E2E48);
                    primary: Colors.white
                  ),
                  icon: Icon(Icons.logout),
-                 label: Text('تسجيل الخروج')
+                 label: Text('تسجيل الخروج',style: TextStyle(fontSize: 18),)
              )
          ),
          Align(

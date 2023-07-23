@@ -2,11 +2,11 @@ import 'package:http/http.dart';
 import 'dart:convert';
 
 class API_Reciept {
-  static Future Add_Reciept (data) async{
+  static Future Add_Reciept (data, token) async{
     try{
       Map<String,String> requestHeaders = {
         'Content-Type' : 'application/json',
-        'x-auth-token' : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNGQ2ZTMwLTE5NzAtMTFlZS05MTczLWZiMjA5ZjI2YWQyMyIsImlhdCI6MTY4ODM2ODMxNH0.FuZln5gldCx3LWd_ylaxHDyiwt0oSId_98MvrKfCvOA'
+        'x-auth-token' : '$token'
       };
 
       final url = Uri.parse('http://localhost:5000/reciept');
@@ -23,11 +23,11 @@ class API_Reciept {
   }
 
   //delete reciept
-  static Future Delete_Reciept (data) async{
+  static Future Delete_Reciept (data, token) async{
     try{
       Map<String,String> requestHeaders = {
         'Content-Type' : 'application/json',
-        'x-auth-token' : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNGQ2ZTMwLTE5NzAtMTFlZS05MTczLWZiMjA5ZjI2YWQyMyIsImlhdCI6MTY4ODM2ODMxNH0.FuZln5gldCx3LWd_ylaxHDyiwt0oSId_98MvrKfCvOA'
+        'x-auth-token' : '$token'
       };
 
       final url = Uri.parse('http://localhost:5000/reciept/delete');

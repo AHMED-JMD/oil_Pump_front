@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'package:http/http.dart';
 
 class API_Daily {
-  static Future Add_Daily (data) async {
+
+  static Future Add_Daily (data, token) async {
     try{
       Map<String,String> requestHeaders = {
         'Content-Type' : 'application/json',
-        'x-auth-token' : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNGQ2ZTMwLTE5NzAtMTFlZS05MTczLWZiMjA5ZjI2YWQyMyIsImlhdCI6MTY4ODM2ODMxNH0.FuZln5gldCx3LWd_ylaxHDyiwt0oSId_98MvrKfCvOA'
+        'x-auth-token' : '$token'
       };
 
       final url = Uri.parse('http://localhost:5000/transaction/');
@@ -23,11 +24,11 @@ class API_Daily {
 }
 
 //delete daily from server
-  static Future Delete_Daily (data) async {
+  static Future Delete_Daily (data, token) async {
     try{
       Map<String,String> requestHeaders = {
         'Content-Type' : 'application/json',
-        'x-auth-token' : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNGQ2ZTMwLTE5NzAtMTFlZS05MTczLWZiMjA5ZjI2YWQyMyIsImlhdCI6MTY4ODM2ODMxNH0.FuZln5gldCx3LWd_ylaxHDyiwt0oSId_98MvrKfCvOA'
+        'x-auth-token' : '$token'
       };
 
       final url = Uri.parse('http://localhost:5000/transaction/delete');

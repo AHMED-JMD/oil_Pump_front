@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:oil_pump_system/API/daily.dart';
+import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/models/daily_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
@@ -16,14 +15,16 @@ class DailyTable extends StatefulWidget {
 }
 
 class _DailyTableState extends State<DailyTable> {
+  //selected list here
+  List<String> selectedIds = [];
+
   var rowsPerPage = 5;
   final source = ExampleSource();
   var sortIndex = 0;
   var sortAsc = true;
   final _searchController = TextEditingController();
   bool isLoading = false;
-
-  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+  List data = [];
 
   @override
   void initState() {
@@ -31,21 +32,22 @@ class _DailyTableState extends State<DailyTable> {
     _searchController.text = '';
   }
 
-  //server side delete Function
+  //server side Functions ------------------
+  //------delete--
   Future deleteDaily() async {
     setState(() {
       isLoading = true;
     });
 
     //send to server
+    print(selectedIds);
     if(selectedIds.length != 0){
-      API_Daily.Delete_Daily(selectedIds).then((response){
+      final auth = await SharedServices.LoginDetails();
+      API_Daily.Delete_Daily(selectedIds, auth.token).then((response){
         setState(() {
           isLoading = false;
         });
-        print(response);
         if(response == true){
-          print(response);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('تم الحذف بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
@@ -70,113 +72,8 @@ class _DailyTableState extends State<DailyTable> {
       );
     }
   }
+//-------------------------------------------
 
-  //modal open
-  void _openModal(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: SimpleDialog(
-            title: Text("قراءة جديدة"),
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: FormBuilder(
-                  // Define the form key to identify the form
-                  key: _formKey,
-                  // Define the form fields
-                  child: Column(
-                    children: [
-                      // Add a dropdown field
-                      FormBuilderDropdown(
-                        name: 'machine',
-                        decoration: InputDecoration(labelText: 'المكنة'),
-                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                        // onChanged: (val) {
-                        //   print(val); // Print the text value write into TextField
-                        // },
-                        initialValue: 'جاز',
-                        items: ['بنزين', 'جاز','جاز دوشكا']
-                            .map((gender) => DropdownMenuItem(
-                          value: gender,
-                          child: Text('$gender'),
-                        ))
-                            .toList(),
-                      ),
-                      // Add a text field
-                      FormBuilderTextField(
-                        name: 'old_read',
-                        decoration: InputDecoration(labelText: 'القراءة'),
-                        // onChanged: (val) {
-                        //   print(val); // Print the text value write into TextField
-                        // },
-                        initialValue: selectedIds.length != 0 ? '2950713' : '',
-                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                      ),
-                      // Add another text field
-                      FormBuilderTextField(
-                        name: 'nw_read',
-                        decoration: InputDecoration(labelText: 'القراءة الجديدة'),
-                        // onChanged: (val) {
-                        //   print(val); // Print the text value write into TextField
-                        // },
-                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                      ),
-                      FormBuilderTextField(
-                        name: 'value',
-                        decoration: InputDecoration(labelText: 'القيمة'),
-                        // onChanged: (val) {
-                        //   print(val); // Print the text value write into TextField
-                        // },
-                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                      ),
-                      FormBuilderTextField(
-                        name: 'amount',
-                        decoration: InputDecoration(labelText: 'المبلغ'),
-                        // onChanged: (val) {
-                        //   print(val); // Print the text value write into TextField
-                        // },
-                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                      ),
-                      SizedBox(height: 40,),
-                      // Add a submit button
-                      SizedBox(
-                        width: 100,
-                        height: 40,
-                        child: ElevatedButton(
-                          child: Text('ارسال'),
-                          style: ElevatedButton.styleFrom(
-                              textStyle: TextStyle(fontSize: 18)
-                          ),
-                          onPressed: () {
-                            if (_formKey.currentState!.saveAndValidate()) {
-                              print(_formKey.currentState!.value);
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  TextButton.icon(
-                    icon: Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                    label: Text('الغاء'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
   //delete modal
   void _deleteModal(BuildContext context){
     showDialog(
@@ -272,9 +169,9 @@ class _DailyTableState extends State<DailyTable> {
                     SizedBox(width: 3,),
                     ElevatedButton(
                         onPressed: (){
-                          _openModal(context);
+                          Navigator.pushReplacementNamed(context, '/reports');
                         } ,
-                        child: Text('قراءة عداد')
+                        child: Text('المنصرفات')
                     ),
                     SizedBox(width: 5,),
                     ElevatedButton(
@@ -341,6 +238,7 @@ class _DailyTableState extends State<DailyTable> {
   });
 }
 
+//class of data models and Rows
 class ExampleSource extends AdvancedDataTableSource<Daily> {
   String lastSearchTerm = '';
 
@@ -348,7 +246,7 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-        selected: selectedIds.contains(currentRowData.tranId),
+        selected: select.selectedIds.contains(currentRowData.tranId),
         onSelectChanged: (selected) {
           if(selected != null){
             selectedRow(currentRowData.tranId, selected);
@@ -382,13 +280,13 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
   }
 
   @override
-  int get selectedRowCount => selectedIds.length;
+  int get selectedRowCount => select.selectedIds.length;
 
   void selectedRow(String id, bool newSelectState) {
-    if (selectedIds.contains(id)) {
-      selectedIds.remove(id);
+    if (select.selectedIds.contains(id)) {
+      select.selectedIds.remove(id);
     } else {
-      selectedIds.add(id);
+      select.selectedIds.add(id);
     }
     notifyListeners();
   }
@@ -403,16 +301,18 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
       NextPageRequest pageRequest) async {
     //--------------get request to server -----------
     final url = Uri.parse('http://localhost:5000/transaction/');
+    final auth = await SharedServices.LoginDetails();
+
     Map<String,String> requestHeaders = {
       'Content-Type' : 'application/json',
-      'x-auth-token' : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMyNGQ2ZTMwLTE5NzAtMTFlZS05MTczLWZiMjA5ZjI2YWQyMyIsImlhdCI6MTY4ODM2ODMxNH0.FuZln5gldCx3LWd_ylaxHDyiwt0oSId_98MvrKfCvOA'
+      'x-auth-token' : '${auth.token}'
     };
 
     Response response = await get(url, headers: requestHeaders);
     if(response.statusCode == 200){
       final data = jsonDecode(response.body);
 
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(Duration(milliseconds: 700));
       return RemoteDataSourceDetails(
         data.length,
         (data as List<dynamic>)
@@ -430,6 +330,4 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
 
   }
 }
-
-//selected list here
-List<String> selectedIds = [];
+_DailyTableState select = _DailyTableState();
