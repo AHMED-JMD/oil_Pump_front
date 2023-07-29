@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:oil_pump_system/API/employee.dart';
+import 'package:oil_pump_system/API/client.dart';
 import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/components/appBar.dart';
 import 'package:oil_pump_system/components/side_bar.dart';
@@ -17,7 +17,7 @@ class AddEmployee extends StatefulWidget {
 
 class _AddEmployeeState extends State<AddEmployee> {
 
-  SidebarXController controller = SidebarXController(selectedIndex: 0, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 2, extended: true);
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   //state of widget
@@ -30,7 +30,7 @@ class _AddEmployeeState extends State<AddEmployee> {
 
     //call backend
     final auth = await SharedServices.LoginDetails();
-    API_Emp.AddEmp(data, auth.token).then((response){
+    API_Emp.AddClient(data, auth.token).then((response){
       setState(() {
         isLoading = false;
       });
@@ -89,36 +89,36 @@ class _AddEmployeeState extends State<AddEmployee> {
                                         // Add a text field
                                         FormBuilderTextField(
                                           name: 'name',
-                                          decoration: InputDecoration(labelText: 'الاسم'),
-                                          // onChanged: (val) {
-                                          //   print(val); // Print the text value write into TextField
-                                          // },
+                                          decoration: InputDecoration(
+                                              labelText: 'الاسم',
+                                              suffixIcon: Icon(Icons.person, color: Colors.blueAccent,)
+                                          ),
                                           validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                         ),
                                         // Add another text field
                                         FormBuilderTextField(
                                           name: 'address',
-                                          decoration: InputDecoration(labelText: 'السكن'),
-                                          // onChanged: (val) {
-                                          //   print(val); // Print the text value write into TextField
-                                          // },
+                                          decoration: InputDecoration(
+                                              labelText: 'السكن',
+                                              suffixIcon: Icon(Icons.location_city_outlined, color: Colors.blueAccent,)
+                                          ),
                                           validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                         ),
                                         // Add another text field
                                         FormBuilderTextField(
                                           name: 'phoneNum',
-                                          decoration: InputDecoration(labelText: 'رقم الهاتف'),
-                                          // onChanged: (val) {
-                                          //   print(val); // Print the text value write into TextField
-                                          // },
+                                          decoration: InputDecoration(
+                                              labelText: 'رقم الهاتف',
+                                              suffixIcon: Icon(Icons.phone_android, color: Colors.blueAccent,)
+                                          ),
                                           validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                         ),
                                         FormBuilderTextField(
                                           name: 'account',
-                                          decoration: InputDecoration(labelText: 'الحساب'),
-                                          // onChanged: (val) {
-                                          //   print(val); // Print the text value write into TextField
-                                          // },
+                                          decoration: InputDecoration(
+                                              labelText: 'الحساب',
+                                              suffixIcon: Icon(Icons.wallet, color: Colors.blueAccent,)
+                                          ),
                                           validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                         ),
                                         SizedBox(height: 10,),
@@ -127,6 +127,7 @@ class _AddEmployeeState extends State<AddEmployee> {
                                           decoration: InputDecoration(
                                               labelText: 'التعليق',
                                               contentPadding: EdgeInsets.symmetric(vertical: 40),
+                                              suffixIcon: Icon(Icons.comment, color: Colors.blueAccent,)
                                           ),
                                           maxLines: 5,
                                           minLines: 1,

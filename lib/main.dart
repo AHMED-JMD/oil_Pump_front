@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/widgets/Daily.dart';
-import 'package:oil_pump_system/widgets/Employee.dart';
+import 'package:oil_pump_system/widgets/Clients.dart';
 import 'package:oil_pump_system/widgets/Gasoline.dart';
 import 'package:oil_pump_system/widgets/Income.dart';
 import 'package:oil_pump_system/widgets/Report.dart';
 import 'package:oil_pump_system/widgets/addDaily.dart';
-import 'package:oil_pump_system/widgets/addEmployee.dart';
+import 'package:oil_pump_system/widgets/addClient.dart';
 import 'package:oil_pump_system/widgets/addReciept.dart';
 import 'package:oil_pump_system/widgets/home.dart';
+import 'package:oil_pump_system/widgets/oldDailys.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -23,7 +24,7 @@ void main() async{
 
   bool _isLoggedIn = await SharedServices.isLoggedIn();
   if(_isLoggedIn){
-    _defaultHome = Dailys();
+    _defaultHome = OldDailys();
   }
 
   runApp(const MyApp());
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         '/login' : (context) => HomePage(),
         '/dailys': (context) => Dailys(),
         '/add_daily' : (context) => AddDaily(),
+        '/old_daily' : (context) => OldDailys(),
         '/employees' : (context) => Employees(),
         '/add_employee' : (context) => AddEmployee(),
         '/gasolines' : (context) => Gasolines(),

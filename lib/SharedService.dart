@@ -12,7 +12,6 @@ class SharedServices {
   }
 
   //get login details
-  //get key
   static Future<Login> LoginDetails() async {
     var isKeyExist = await APICacheManager().isAPICacheKeyExist('loginDetails');
 

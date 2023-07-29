@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/API/employee.dart';
+import 'package:oil_pump_system/API/client.dart';
 import 'package:oil_pump_system/SharedService.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:oil_pump_system/models/employee_data.dart';
+import 'package:oil_pump_system/widgets/ClientsDetails.dart';
 
 
 class EmployeeTable extends StatefulWidget {
@@ -21,7 +22,6 @@ class EmployeeTable extends StatefulWidget {
 class _EmployeeTableState extends State<EmployeeTable> {
   bool isLoading = false;
   var rowsPerPage = 5;
-  final source = ExampleSource();
   final _searchController = TextEditingController();
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
@@ -37,10 +37,10 @@ class _EmployeeTableState extends State<EmployeeTable> {
       isLoading = true;
     });
 
-
+    //send response to server
     if(selectedIds.length != 0) {
       final auth = await SharedServices.LoginDetails();
-      API_Emp.Delete_Emp(selectedIds, auth.token).then((response){
+      API_Emp.Delete_Client(selectedIds, auth.token).then((response){
         setState(() {
           isLoading = false;
         });
@@ -51,6 +51,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
               backgroundColor: Colors.red,
             ),
           );
+          selectedIds = [];
         }else{
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -58,6 +59,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
               backgroundColor: Colors.red,
             ),
           );
+          selectedIds = [];
         }
         return ;
       });
@@ -201,7 +203,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
                                 labelText: 'ابحث',
                               ),
                               onSubmitted: (vlaue) {
-                                source.filterServerSide(_searchController.text);
+                                ExampleSource(context: context).filterServerSide(_searchController.text);
                               },
                             ),
                           ),
@@ -211,13 +213,13 @@ class _EmployeeTableState extends State<EmployeeTable> {
                             setState(() {
                               _searchController.text = '';
                             });
-                            source.filterServerSide(_searchController.text);
+                            ExampleSource(context: context).filterServerSide(_searchController.text);
                           },
                           icon: const Icon(Icons.clear),
                         ),
                         IconButton(
                           onPressed: () =>
-                              source.filterServerSide(_searchController.text),
+                              ExampleSource(context: context).filterServerSide(_searchController.text),
                           icon: const Icon(Icons.search),
                         ),
                       ],
@@ -252,7 +254,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
                 ),
                 AdvancedPaginatedDataTable(
                     addEmptyRows: false,
-                    source: source,
+                    source: ExampleSource(context: context),
                     showFirstLastButtons: true,
                     rowsPerPage: rowsPerPage,
                     availableRowsPerPage: [ 5, 10, 25],
@@ -294,6 +296,9 @@ class _EmployeeTableState extends State<EmployeeTable> {
 }
 
 class ExampleSource extends AdvancedDataTableSource<Clients> {
+  final BuildContext context;
+  ExampleSource({required this.context});
+
   String lastSearchTerm = '';
 
   @override
@@ -325,8 +330,12 @@ class ExampleSource extends AdvancedDataTableSource<Clients> {
           DataCell(
             Center(
               child: InkWell(
-                  onTap: (){},
-                  child: Icon(Icons.remove_red_eye, color: Colors.grey[500],)
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => ClientDetails(emp_id: currentRowData.empId,))
+                    );
+                  },
+                  child: Icon(Icons.remove_red_eye, color: Colors.grey[500],size: 25,)
               ),
             ),
           ),

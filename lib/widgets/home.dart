@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
 
                                       if(response == true){
 
-                                        Navigator.pushReplacementNamed(context, '/dailys');
+                                        Navigator.pushReplacementNamed(context, '/old_daily');
                                       }
                                       else{
                                         ScaffoldMessenger.of(context).showSnackBar(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oil_pump_system/components/appBar.dart';
 import 'package:oil_pump_system/components/side_bar.dart';
-import 'package:oil_pump_system/components/tables/EmployeeTable.dart';
+import 'package:oil_pump_system/components/tables/ClientTable.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class Employees extends StatefulWidget {

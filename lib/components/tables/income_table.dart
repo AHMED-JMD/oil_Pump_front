@@ -80,6 +80,7 @@ class _IncomeTableState extends State<IncomeTable> {
               backgroundColor: Colors.red,
             ),
           );
+          selectedIds = [];
         }else{
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -87,6 +88,7 @@ class _IncomeTableState extends State<IncomeTable> {
               backgroundColor: Colors.red,
             ),
           );
+          selectedIds = [];
         }
       });
     }else{
@@ -212,6 +214,7 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
 
   @override
   DataRow? getRow(int index) {
+    print(lastDetails);
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
         selected: selectedIds.contains(currentRowData.recieptId),

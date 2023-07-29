@@ -15,7 +15,7 @@ class AddReciept extends StatefulWidget {
 }
 
 class _AddRecieptState extends State<AddReciept> {
-  SidebarXController controller = SidebarXController(selectedIndex: 0, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 3, extended: true);
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
@@ -54,6 +54,7 @@ class _AddRecieptState extends State<AddReciept> {
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,7 +81,8 @@ class _AddRecieptState extends State<AddReciept> {
                           FormBuilderTextField(
                             name: "driver",
                             decoration: InputDecoration(
-                              labelText: 'اسم السائق'
+                              labelText: 'اسم السائق',
+                                suffixIcon: Icon(Icons.person, color: Colors.blueAccent,)
                               ),
                             onChanged: (val){
                               driver = val;
@@ -90,7 +92,8 @@ class _AddRecieptState extends State<AddReciept> {
                           FormBuilderTextField(
                             name: "car_plate",
                             decoration: InputDecoration(
-                                labelText: 'رقم اللوحة'
+                                labelText: 'رقم اللوحة',
+                                suffixIcon: Icon(Icons.car_crash_outlined, color: Colors.blueAccent,)
                             ),
                             onChanged: (val){
                               car_plate = val;
@@ -115,7 +118,8 @@ class _AddRecieptState extends State<AddReciept> {
                           FormBuilderTextField(
                             name: "amount",
                             decoration: InputDecoration(
-                                labelText: 'كمية الوقود'
+                                labelText: 'كمية الوقود',
+                              suffixIcon: Icon(Icons.gas_meter_outlined, color: Colors.blueAccent,)
                             ),
                             onChanged: (val){
                               amount = val;
@@ -126,6 +130,7 @@ class _AddRecieptState extends State<AddReciept> {
                             name: 'date',
                             decoration: InputDecoration(
                               labelText: 'التاريخ',
+                              suffixIcon: Icon(Icons.calendar_month,  color: Colors.blueAccent)
                             ),
                             onChanged: (val){
                               date = val;

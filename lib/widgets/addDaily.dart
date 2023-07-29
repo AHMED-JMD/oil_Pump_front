@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oil_pump_system/API/daily.dart';
 import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/API/employee.dart';
+import 'package:oil_pump_system/API/client.dart';
 import 'package:oil_pump_system/components/appBar.dart';
 import 'package:oil_pump_system/components/side_bar.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -143,7 +143,10 @@ class _AddDailyState extends State<AddDaily> {
                                     // Add another text field
                                     FormBuilderTextField(
                                       name: 'amount',
-                                      decoration: InputDecoration(labelText: 'المبلغ'),
+                                      decoration: InputDecoration(
+                                          labelText: 'المبلغ',
+                                          suffixIcon: Icon(Icons.monetization_on, color: Colors.blueAccent,)
+                                      ),
                                       onChanged: (val) {
                                         amount = val; // Print the text value write into TextField
                                       },
@@ -153,17 +156,22 @@ class _AddDailyState extends State<AddDaily> {
                                       name: 'date',
                                       decoration: InputDecoration(
                                         labelText: 'التاريخ',
+                                          suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
                                       ),
                                       onChanged: (value){
                                         nw_date = value;
                                       },
                                       validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                       initialDate: DateTime.now(),
+                                      initialValue: DateTime.now(),
                                       inputType: InputType.date,
                                     ),
                                     FormBuilderTextField(
                                       name: 'comment',
-                                      decoration: InputDecoration(labelText: 'البيان'),
+                                      decoration: InputDecoration(
+                                        labelText: 'البيان',
+                                          suffixIcon: Icon(Icons.comment, color: Colors.blueAccent,)
+                                      ),
                                       onChanged: (val) {
                                         comment = val; // Print the text value write into TextField
                                       },
@@ -182,6 +190,7 @@ class _AddDailyState extends State<AddDaily> {
                                         onPressed: () {
                                           if (_formKey.currentState!.saveAndValidate()) {
                                             //call to backend
+                                            nw_date = _formKey.currentState!.value['date'];
                                             Map data = {};
                                             data['emp_id'] = emp_id;
                                             data['type'] = type;

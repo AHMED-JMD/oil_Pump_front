@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
 
+
 class Navbar extends StatefulWidget {
   final SidebarXController controller;
   Navbar({super.key, required this.controller});
@@ -12,6 +13,9 @@ class Navbar extends StatefulWidget {
 class _NavbarState extends State<Navbar> {
   SidebarXController controller;
   _NavbarState({required this.controller});
+
+  List<String> options = [ ' يومية جديدة', 'يوميات سابقة'];
+  String? selected;
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +69,28 @@ class _NavbarState extends State<Navbar> {
       footerDivider: divider,
       items:  [
         SidebarXItem(
-            icon: Icons.home_filled,
-            label: 'دفتر اليومية',
-            onTap: (){
-              Navigator.pushReplacementNamed(context, '/dailys');
-            }
+            iconWidget:
+            DropdownButton(
+                  value: selected,
+                  hint: Text(' اليوميات ', style: TextStyle(color: Colors.grey[300]),),
+                  onChanged: (value){
+                    setState(() {
+                      selected = value;
+                    });
+                    value == 'يوميات سابقة' ? Navigator.pushReplacementNamed(context, '/old_daily') : Navigator.pushReplacementNamed(context, '/dailys');
+                  },
+                  items: options.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  style: TextStyle(color: Colors.grey[300]),
+                  icon: Icon(Icons.arrow_drop_down_circle_sharp),
+                  iconEnabledColor: Colors.grey[300],
+                  dropdownColor: canvasColor,
+                  underline: SizedBox(),
+                ),
         ),
         SidebarXItem(
             icon: Icons.local_gas_station,
@@ -86,18 +107,26 @@ class _NavbarState extends State<Navbar> {
             }
         ),
         SidebarXItem(
-            icon: Icons.monetization_on,
-            label: 'الشحن و التفريغ',
+            icon: Icons.local_shipping,
+            label: ' الشحن و التفريغ ',
             onTap: (){
               Navigator.pushReplacementNamed(context, '/incomes');
             }
         ),
         SidebarXItem(
+            icon: Icons.home_work_rounded,
+            label: ' البنوك ',
+            onTap: (){}
+        ),
+        SidebarXItem(
+            icon: Icons.monetization_on,
+            label: ' الخزنة ',
+            onTap: (){}
+        ),
+        SidebarXItem(
             icon: Icons.account_balance_wallet,
-            label: 'تقرير',
-            onTap: (){
-              Navigator.pushReplacementNamed(context, '/reports');
-            }
+            label: ' السندات ',
+            onTap: (){}
         ),
       ],
     );

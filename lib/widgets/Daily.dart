@@ -19,6 +19,7 @@ class _DailysState extends State<Dailys> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   bool isLoading = false;
+  bool nw_daily = false;
   List data = [];
 
   //initial state function
@@ -46,10 +47,10 @@ class _DailysState extends State<Dailys> {
   Widget Pumps(BuildContext context, data){
          return
            Padding(
-              padding: const EdgeInsets.fromLTRB(5, 0, 20, 0),
+              padding: const EdgeInsets.fromLTRB(10, 20, 10, 40),
               child: Container(
-                height: 120,
-                width: 300,
+                height: 20,
+                width: 30,
                 decoration: BoxDecoration(
                     color: data['type'] == 'جاز' ? Colors.lightGreenAccent : Colors.lightBlueAccent,
                     borderRadius: BorderRadius.circular(12)
@@ -194,24 +195,21 @@ class _DailysState extends State<Dailys> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: ScrollPhysics(),
-                        itemCount: data.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3
-                        ),
-                        itemBuilder: (context, index) =>Row(
-                          children: [
-                            Pumps(context, data[index])
-                          ]
-                        ),
-                      ),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: ScrollPhysics(),
+                            itemCount: data.length,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 5
+                              ),
+                            itemBuilder: (context, index) =>
+                              Pumps(context, data[index])
+                          ),
                       Container(
                           color: Colors.grey.shade100,
                           child: DailyTable()
                       ),
-                      SizedBox(height: 50,)
+                      SizedBox(height: 90,)
                     ],
                   ),
                 )

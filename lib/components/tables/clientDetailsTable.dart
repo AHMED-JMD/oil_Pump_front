@@ -4,19 +4,20 @@ import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/models/daily_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:http/http.dart';
-import 'dart:convert';
 
-class DailyTable extends StatefulWidget {
-  DailyTable({Key? key}) : super(key: key);
+class ClientDetailsTable extends StatefulWidget {
+  final data;
+  ClientDetailsTable({Key? key, required this.data}) : super(key: key);
 
   @override
-  State<DailyTable> createState() => _DailyTableState();
+  State<ClientDetailsTable> createState() => _ClientDetailsTableState(trans: data);
 }
 
-class _DailyTableState extends State<DailyTable> {
+class _ClientDetailsTableState extends State<ClientDetailsTable> {
+  final trans;
+  _ClientDetailsTableState({required this.trans});
+
   var rowsPerPage = 5;
-  final source = ExampleSource();
   var sortIndex = 0;
   var sortAsc = true;
   final _searchController = TextEditingController();
@@ -89,15 +90,15 @@ class _DailyTableState extends State<DailyTable> {
                   child: SizedBox(
                     height: 30,
                     child: TextButton(
-                      child: Text('حذف'),
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        primary: Colors.white
-                      ),
-                      onPressed: (){
-                        deleteDaily();
-                        Navigator.of(context).pop();
-                      }
+                        child: Text('حذف'),
+                        style: TextButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            primary: Colors.white
+                        ),
+                        onPressed: (){
+                          deleteDaily();
+                          Navigator.of(context).pop();
+                        }
                     ),
                   ),
                 ),
@@ -112,7 +113,8 @@ class _DailyTableState extends State<DailyTable> {
 
   @override
   Widget build(BuildContext context) {
-    return  Padding(
+    return
+    Padding(
       padding: const EdgeInsets.all(15.0),
       child: SingleChildScrollView(
         child: Column(
@@ -132,7 +134,7 @@ class _DailyTableState extends State<DailyTable> {
                             labelText: 'ابحث',
                           ),
                           onSubmitted: (vlaue) {
-                            source.filterServerSide(_searchController.text);
+                            ExampleSource(data: trans).filterServerSide(_searchController.text);
                           },
                         ),
                       ),
@@ -142,13 +144,13 @@ class _DailyTableState extends State<DailyTable> {
                         setState(() {
                           _searchController.text = '';
                         });
-                        source.filterServerSide(_searchController.text);
+                        ExampleSource(data: trans).filterServerSide(_searchController.text);
                       },
                       icon: const Icon(Icons.clear),
                     ),
                     IconButton(
                       onPressed: () =>
-                          source.filterServerSide(_searchController.text),
+                          ExampleSource(data: trans).filterServerSide(_searchController.text),
                       icon: const Icon(Icons.search),
                     ),
                   ],
@@ -161,22 +163,15 @@ class _DailyTableState extends State<DailyTable> {
                       } ,
                       icon: Icon(
                         Icons.delete,
-                        ),
+                      ),
                       label: Text(''),
                     ),
                     SizedBox(width: 3,),
                     ElevatedButton(
                         onPressed: (){
-                          Navigator.pushReplacementNamed(context, '/reports');
-                        } ,
-                        child: Text('المنصرفات')
-                    ),
-                    SizedBox(width: 5,),
-                    ElevatedButton(
-                        onPressed: (){
                           Navigator.pushNamed(context, '/add_daily');
                         } ,
-                        child: Text('يومية جديدة')
+                        child: Text('معاملة جديدة')
                     ),
                     SizedBox(width: 5,),
                   ],
@@ -186,7 +181,7 @@ class _DailyTableState extends State<DailyTable> {
             ),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
-              source: source,
+              source: ExampleSource(data: trans),
               showFirstLastButtons: true,
               rowsPerPage: rowsPerPage,
               availableRowsPerPage: [ 5, 10, 25],
@@ -199,7 +194,7 @@ class _DailyTableState extends State<DailyTable> {
               },
               columns: [
                 DataColumn(
-                  label: const Text('الاسم'),
+                    label: const Text('الاسم'),
                     onSort: setSort
                 ),
                 DataColumn(
@@ -207,15 +202,15 @@ class _DailyTableState extends State<DailyTable> {
                     onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('المبلغ'),
+                    label: const Text('المبلغ'),
                     onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('الحالة'),
+                    label: const Text('الحالة'),
                     onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('التاريخ'),
+                    label: const Text('التاريخ'),
                     onSort: setSort
                 ),
                 DataColumn(
@@ -238,43 +233,51 @@ class _DailyTableState extends State<DailyTable> {
 
 //class of data models and Rows
 class ExampleSource extends AdvancedDataTableSource<Daily> {
+  final data;
+  ExampleSource({required this.data});
+
   String lastSearchTerm = '';
 
   @override
   DataRow? getRow(int index) {
-    final currentRowData = lastDetails!.rows[index];
-    return DataRow(
-        selected: selectedIds.contains(currentRowData.tranId),
-        onSelectChanged: (selected) {
-          if(selected != null){
-            selectedRow(currentRowData.tranId, selected);
-          }
-        },
-        cells: [
-      DataCell(
-        Text(currentRowData.name),
-      ),
-      DataCell(
-        Text(currentRowData.comment),
-      ),
-      DataCell(
-        Text(currentRowData.amount.toString()),
-      ),
-      DataCell(
-        Text(currentRowData.type),
-      ),
-      DataCell(
-        Text(currentRowData.date),
-      ),
-          DataCell(
-            Center(
-              child: InkWell(
-                  onTap: (){},
-                  child: Icon(Icons.remove_red_eye, color: Colors.grey[500],)
+    if(lastDetails != null){
+      final currentRowData = lastDetails!.rows[index];
+      return DataRow(
+          selected: selectedIds.contains(currentRowData.tranId),
+          onSelectChanged: (selected) {
+            if(selected != null){
+              selectedRow(currentRowData.tranId, selected);
+            }
+          },
+          cells: [
+            DataCell(
+              Text(currentRowData.name),
+            ),
+            DataCell(
+              Text(currentRowData.comment),
+            ),
+            DataCell(
+              Text(currentRowData.amount.toString()),
+            ),
+            DataCell(
+              Text(currentRowData.type),
+            ),
+            DataCell(
+              Text(currentRowData.date),
+            ),
+            DataCell(
+              Center(
+                child: InkWell(
+                    onTap: (){},
+                    child: Icon(Icons.remove_red_eye, color: Colors.grey[500],)
+                ),
               ),
             ),
-          ),
-    ]);
+          ]);
+    }else{
+      throw Exception('unable to get exact data');
+    }
+
   }
 
   @override
@@ -298,18 +301,8 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
   Future<RemoteDataSourceDetails<Daily>> getNextPage(
       NextPageRequest pageRequest) async {
     //--------------get request to server -----------
-    final url = Uri.parse('http://localhost:5000/transaction/');
-    final auth = await SharedServices.LoginDetails();
 
-    Map<String,String> requestHeaders = {
-      'Content-Type' : 'application/json',
-      'x-auth-token' : '${auth.token}'
-    };
-
-    Response response = await get(url, headers: requestHeaders);
-    if(response.statusCode == 200){
-      final data = jsonDecode(response.body);
-
+    if (data != null) {
       await Future.delayed(Duration(milliseconds: 700));
       return RemoteDataSourceDetails(
         data.length,
@@ -324,8 +317,7 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
       );
     }else{
       throw Exception('Unable to query remote server');
-    }
-
+      }
   }
 }
 //selected list here
