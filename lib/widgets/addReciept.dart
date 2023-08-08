@@ -23,7 +23,8 @@ class _AddRecieptState extends State<AddReciept> {
   String? car_plate;
   String? fuel_type;
   String? amount;
-  DateTime? date;
+  DateTime? ship_date;
+  DateTime? arrive_date;
 
   Future _OnSubmit(data) async {
     setState(() {
@@ -127,13 +128,26 @@ class _AddRecieptState extends State<AddReciept> {
                             validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                           ),
                           FormBuilderDateTimePicker(
-                            name: 'date',
+                            name: 'ship_date',
                             decoration: InputDecoration(
-                              labelText: 'التاريخ',
+                              labelText: 'تاريخ الشحن',
                               suffixIcon: Icon(Icons.calendar_month,  color: Colors.blueAccent)
                             ),
                             onChanged: (val){
-                              date = val;
+                              ship_date = val;
+                            },
+                            validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                            initialDate: DateTime.now(),
+                            inputType: InputType.date,
+                          ),
+                          FormBuilderDateTimePicker(
+                            name: 'arrive_date',
+                            decoration: InputDecoration(
+                                labelText: 'تاريخ الوصول',
+                                suffixIcon: Icon(Icons.calendar_month,  color: Colors.blueAccent)
+                            ),
+                            onChanged: (val){
+                              arrive_date = val;
                             },
                             validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                             initialDate: DateTime.now(),
@@ -151,7 +165,8 @@ class _AddRecieptState extends State<AddReciept> {
                                   data['car_plate'] = car_plate;
                                   data['fuel_type'] = fuel_type;
                                   data['amount'] = amount;
-                                  data['date'] = date!.toIso8601String();
+                                  data['ship_date'] = ship_date!.toIso8601String();
+                                  data['arrive_date'] = arrive_date!.toIso8601String();
 
                                   _OnSubmit(data);
                                 }

@@ -46,7 +46,7 @@ class _AddDailyState extends State<AddDaily> {
 
     final auth = await SharedServices.LoginDetails();
 
-    API_Daily.Add_Daily(data, auth.token).then((response){
+    API_Daily.Add_Trans(data, auth.token).then((response){
       setState(() {
         isLoading = false;
       });

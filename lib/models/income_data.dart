@@ -4,10 +4,11 @@ class Receipt {
   late final String carPlate;
   late final String fuelType;
   late final int amount;
-  late final String date;
+  late final String arrive_date;
+  late final String ship_date;
   late final String createdAt;
   late final String updatedAt;
-  late final Null gaGasId;
+  late final String gaGasId;
 
   Receipt({
         required this.recieptId,
@@ -15,7 +16,8 @@ class Receipt {
         required this.carPlate,
         required this.fuelType,
         required this.amount,
-        required this.date,
+        required this.arrive_date,
+        required this.ship_date,
         required this.createdAt,
         required this.updatedAt,
         required this.gaGasId});
@@ -26,7 +28,8 @@ class Receipt {
     carPlate = json['car_plate'];
     fuelType = json['fuel_type'];
     amount = json['amount'];
-    date = json['date'];
+    arrive_date = json['arrive_date'];
+    ship_date = json['ship_date'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     gaGasId = json['gaGasId'];
@@ -39,7 +42,8 @@ class Receipt {
     data['car_plate'] = this.carPlate;
     data['fuel_type'] = this.fuelType;
     data['amount'] = this.amount;
-    data['date'] = this.date;
+    data['arrive_date'] = this.arrive_date;
+    data['ship_date'] = this.ship_date;
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
     data['gaGasId'] = this.gaGasId;

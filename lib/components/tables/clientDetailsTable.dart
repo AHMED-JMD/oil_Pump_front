@@ -21,6 +21,7 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
   var sortIndex = 0;
   var sortAsc = true;
   final _searchController = TextEditingController();
+  late final source = ExampleSource(data: trans);
   bool isLoading = false;
   List data = [];
 
@@ -36,11 +37,10 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
     setState(() {
       isLoading = true;
     });
-
     //send to server
     if(selectedIds.length != 0){
       final auth = await SharedServices.LoginDetails();
-      API_Daily.Delete_Daily(selectedIds, auth.token).then((response){
+      API_Daily.Delete_Trans(selectedIds, auth.token).then((response){
         setState(() {
           isLoading = false;
         });
@@ -134,7 +134,7 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
                             labelText: 'ابحث',
                           ),
                           onSubmitted: (vlaue) {
-                            ExampleSource(data: trans).filterServerSide(_searchController.text);
+                            source.filterServerSide(_searchController.text);
                           },
                         ),
                       ),
@@ -144,13 +144,13 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
                         setState(() {
                           _searchController.text = '';
                         });
-                        ExampleSource(data: trans).filterServerSide(_searchController.text);
+                        source.filterServerSide(_searchController.text);
                       },
                       icon: const Icon(Icons.clear),
                     ),
                     IconButton(
                       onPressed: () =>
-                          ExampleSource(data: trans).filterServerSide(_searchController.text),
+                          source.filterServerSide(_searchController.text),
                       icon: const Icon(Icons.search),
                     ),
                   ],
@@ -181,7 +181,7 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
             ),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
-              source: ExampleSource(data: trans),
+              source: source,
               showFirstLastButtons: true,
               rowsPerPage: rowsPerPage,
               availableRowsPerPage: [ 5, 10, 25],

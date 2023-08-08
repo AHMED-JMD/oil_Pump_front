@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/models/gas_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
@@ -72,6 +76,13 @@ class _GasolineTableState extends State<GasolineTable> {
                       icon: Icon(Icons.delete),
                       label: Text(''),
                     ),
+                    SizedBox(width: 3,),
+                    ElevatedButton(
+                        onPressed: (){
+                          Navigator.pushReplacementNamed(context, '/add_machine');
+                        } ,
+                        child: Text('اضافة مكنة')
+                    ),
                   ],
                 )
 
@@ -92,23 +103,13 @@ class _GasolineTableState extends State<GasolineTable> {
               },
               columns: [
                 DataColumn(
-                  label: const Text('ID'),
-                  numeric: true,
-                ),
-                DataColumn(
                   label: const Text('النوع'),
                 ),
                 DataColumn(
-                  label: const Text('استهلاك المكنة'),
+                  label: const Text('الحالة'),
                 ),
                 DataColumn(
-                  label: const Text('استهلاك المعاملات'),
-                ),
-                DataColumn(
-                  label: const Text('الكمية المتوفرة'),
-                ),
-                DataColumn(
-                  label: const Text('تعليق'),
+                  label: const Text('الكمية'),
                 ),
                 DataColumn(
                   label: const Text('التاريخ'),
@@ -126,40 +127,43 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
   String lastSearchTerm = '';
   List<String> selectedIds = [];
 
-  final data = List<Gas>.generate(
-      13, (index) =>  Gas(ID: "$index", type: "جاز", d_gas: "5230 لبر", trans_gas: "15000 لتر", total: "22370 لتر",comment: "تعليق جديد", date: "5-7-2023"));
-
   @override
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-        selected: selectedIds.contains(currentRowData.ID),
+        selected: selectedIds.contains(currentRowData.gasId),
         onSelectChanged: (selected) {
           if(selected != null){
-            selectedRow(currentRowData.ID, selected);
+            selectedRow(currentRowData.gasId, selected);
           }
         },
         cells: [
       DataCell(
-        Text(currentRowData.ID.toString()),
+        Text(currentRowData.fuelType,
+          style: TextStyle(
+          color: currentRowData.status == 'داخل' ?Colors.green : Colors.red,
+        ),
+        )
       ),
       DataCell(
-        Text(currentRowData.type),
+        Text(currentRowData.status,
+          style: TextStyle(
+            color: currentRowData.status == 'داخل' ?Colors.green : Colors.red,
+          ),
+        ),
       ),
       DataCell(
-        Text(currentRowData.d_gas),
+        Text(currentRowData.total.toString(),
+          style: TextStyle(
+            color: currentRowData.status == 'داخل' ?Colors.green : Colors.red,
+          ),
+        ),
       ),
       DataCell(
-        Text(currentRowData.trans_gas),
-      ),
-      DataCell(
-        Text(currentRowData.total),
-      ),
-      DataCell(
-        Text(currentRowData.comment),
-      ),
-      DataCell(
-        Text(currentRowData.date),
+        Text(currentRowData.date,
+          style: TextStyle(
+            color: currentRowData.status == 'داخل' ?Colors.green : Colors.red,
+          ),),
       ),
     ]);
   }
@@ -184,14 +188,36 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
   @override
   Future<RemoteDataSourceDetails<Gas>> getNextPage(
       NextPageRequest pageRequest) async {
-    await Future.delayed(Duration(seconds: 1));
-    return RemoteDataSourceDetails(
-      data.length,
-      data
-          .skip(pageRequest.offset)
-          .take(pageRequest.pageSize)
-          .toList(), //again in a real world example you would only get the right amount of rows
-    );
+    //--------------get request to server -----------
+    final url = Uri.parse('http://localhost:5000/gas/');
+    final auth = await SharedServices.LoginDetails();
+
+    Map<String,String> requestHeaders = {
+      'Content-Type' : 'application/json',
+      'x-auth-token' : '${auth.token}'
+    };
+
+    Response response = await get(url, headers:  requestHeaders);
+
+    if(response.statusCode == 200){
+      final data = jsonDecode(response.body);
+
+      await Future.delayed(Duration(seconds: 1));
+      return RemoteDataSourceDetails(
+        data.length,
+        (data as List<dynamic>)
+            .map((json) => Gas.fromJson(json))
+            .skip(pageRequest.offset)
+            .take(pageRequest.pageSize)
+            .toList(),
+        filteredRows: lastSearchTerm.isNotEmpty
+            ? (data as List<dynamic>).length
+            : null, //again in a real world example you would only get the right amount of rows
+      );
+    }else{
+      throw Exception('Unable to query remote server');
+    }
+
   }
 }
 

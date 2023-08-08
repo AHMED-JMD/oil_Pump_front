@@ -8,20 +8,25 @@ import 'package:http/http.dart';
 import 'dart:convert';
 
 class DailyTable extends StatefulWidget {
-  DailyTable({Key? key}) : super(key: key);
+  int total;
+  List daily_data;
+  DailyTable({Key? key, required this.total, required this.daily_data}) : super(key: key);
 
   @override
-  State<DailyTable> createState() => _DailyTableState();
+  State<DailyTable> createState() => _DailyTableState(total: total, daily_data: daily_data);
 }
 
 class _DailyTableState extends State<DailyTable> {
+   int total;
+   List daily_data;
+  _DailyTableState({required this.total, required this.daily_data});
+
   var rowsPerPage = 5;
-  final source = ExampleSource();
   var sortIndex = 0;
   var sortAsc = true;
+  late final source = ExampleSource(daily_data: daily_data);
   final _searchController = TextEditingController();
   bool isLoading = false;
-  List data = [];
 
   @override
   void initState() {
@@ -35,11 +40,10 @@ class _DailyTableState extends State<DailyTable> {
     setState(() {
       isLoading = true;
     });
-
     //send to server
     if(selectedIds.length != 0){
       final auth = await SharedServices.LoginDetails();
-      API_Daily.Delete_Daily(selectedIds, auth.token).then((response){
+      API_Daily.Delete_Trans(selectedIds, auth.token).then((response){
         setState(() {
           isLoading = false;
         });
@@ -70,6 +74,7 @@ class _DailyTableState extends State<DailyTable> {
       );
     }
   }
+
 //-------------------------------------------
 
   //delete modal
@@ -158,30 +163,23 @@ class _DailyTableState extends State<DailyTable> {
                     TextButton.icon(
                       onPressed: (){
                         _deleteModal(context);
-                      } ,
+                      },
                       icon: Icon(
                         Icons.delete,
+                        color: Colors.blue,
                         ),
                       label: Text(''),
                     ),
                     SizedBox(width: 3,),
                     ElevatedButton(
                         onPressed: (){
-                          Navigator.pushReplacementNamed(context, '/reports');
-                        } ,
-                        child: Text('المنصرفات')
-                    ),
-                    SizedBox(width: 5,),
-                    ElevatedButton(
-                        onPressed: (){
                           Navigator.pushNamed(context, '/add_daily');
                         } ,
-                        child: Text('يومية جديدة')
+                        child: Text('معاملة جديدة')
                     ),
                     SizedBox(width: 5,),
                   ],
                 )
-
               ],
             ),
             AdvancedPaginatedDataTable(
@@ -223,6 +221,25 @@ class _DailyTableState extends State<DailyTable> {
                 ),
               ],
             ),
+            SizedBox(height: 12,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text('مجموع المعاملات و الديون',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 21
+                  ),
+                ),
+                Text('$total',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 21,
+                      color: Colors.red
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -238,6 +255,9 @@ class _DailyTableState extends State<DailyTable> {
 
 //class of data models and Rows
 class ExampleSource extends AdvancedDataTableSource<Daily> {
+  List daily_data;
+  ExampleSource({ required this.daily_data});
+
   String lastSearchTerm = '';
 
   @override
@@ -298,33 +318,19 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
   Future<RemoteDataSourceDetails<Daily>> getNextPage(
       NextPageRequest pageRequest) async {
     //--------------get request to server -----------
-    final url = Uri.parse('http://localhost:5000/transaction/');
-    final auth = await SharedServices.LoginDetails();
-
-    Map<String,String> requestHeaders = {
-      'Content-Type' : 'application/json',
-      'x-auth-token' : '${auth.token}'
-    };
-
-    Response response = await get(url, headers: requestHeaders);
-    if(response.statusCode == 200){
-      final data = jsonDecode(response.body);
-
       await Future.delayed(Duration(milliseconds: 700));
       return RemoteDataSourceDetails(
-        data.length,
-        (data as List<dynamic>)
+        daily_data.length,
+        (daily_data as List<dynamic>)
             .map((json) => Daily.fromJson(json))
             .skip(pageRequest.offset)
             .take(pageRequest.pageSize)
             .toList(),
         filteredRows: lastSearchTerm.isNotEmpty
-            ? (data as List<dynamic>).length
+            ? (daily_data as List<dynamic>).length
             : null,
       );
-    }else{
-      throw Exception('Unable to query remote server');
-    }
+
 
   }
 }

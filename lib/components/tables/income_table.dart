@@ -194,7 +194,10 @@ class _IncomeTableState extends State<IncomeTable> {
                   label: const Text('الكمية'),
                 ),
                 DataColumn(
-                  label: const Text('التاريخ'),
+                  label: const Text('تاريخ الشحن'),
+                ),
+                DataColumn(
+                  label: const Text('تاريخ الوصول'),
                 ),
                 DataColumn(
                   label: const Text('عرض/ تعديل'),
@@ -237,8 +240,11 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
         Text(currentRowData.amount.toString()),
       ),
       DataCell(
-        Text(currentRowData.date),
+        Text(currentRowData.ship_date),
       ),
+          DataCell(
+            Text(currentRowData.arrive_date),
+          ),
           DataCell(
             Center(
               child: InkWell(
@@ -280,8 +286,10 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
     };
 
     Response response = await get(url, headers:  requestHeaders);
+
     if(response.statusCode == 200){
       final data = jsonDecode(response.body);
+
       await Future.delayed(Duration(seconds: 1));
       return RemoteDataSourceDetails(
         data.length,
@@ -292,7 +300,7 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
             .toList(),
         filteredRows: lastSearchTerm.isNotEmpty
             ? (data as List<dynamic>).length
-            : null, //again in a real world example you would only get the right amount of rows
+            : null,
       );
     }else{
       throw Exception('Unable to query remote server');

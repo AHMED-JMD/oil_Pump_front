@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:oil_pump_system/API/daily.dart';
+import 'package:oil_pump_system/API/outgoing.dart';
 import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/components/appBar.dart';
+import 'package:oil_pump_system/components/outgoings.dart';
 import 'package:oil_pump_system/components/side_bar.dart';
-import 'package:oil_pump_system/components/tables/clientDetailsTable.dart';
+import 'package:oil_pump_system/components/tables/daily_table.dart';
+import 'package:oil_pump_system/widgets/dailyDetails.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class OldDailys extends StatefulWidget {
@@ -20,25 +23,61 @@ class _OldDailysState extends State<OldDailys> {
   GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   bool isLoading = false;
-  List data = [];
+  List dailys = [];
+  List trans_data = [];
+  List outg_data = [];
+  int total = 0;
+  int total_outgs = 0;
+  int total_dailys = 0;
+  DateTime? date = DateTime.now();
 
+  @override
+  void initState() {
+    GetAllDaily();
+    super.initState();
+  }
   //server side function
   Future GetDaily (date) async{
     setState(() {
       isLoading = true;
     });
+
     //post to server
     Map datas = {};
     datas['date'] = date.toIso8601String();
 
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Daily.get_Daily(datas, auth.token);
+    final response = await API_Daily.Get_One_Daily(datas, auth.token);
+
+    response.length != 0 ?
+        setState((){
+          dailys = response;
+          isLoading = false;
+        })
+        : ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('عفوا لا يوجد يومية في هذا اليوم', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+        backgroundColor: Colors.red,
+      ),
+    );
+
+  }
+
+  Future GetAllDaily () async{
+    setState(() {
+      isLoading = true;
+    });
+
+    //post to server
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Daily.Get_All_Daily(auth.token);
 
     setState(() {
       isLoading = false;
-      data = response;
+      dailys = response;
     });
   }
+  //-----------------------
 
   @override
   Widget build(BuildContext context) {
@@ -50,47 +89,125 @@ class _OldDailysState extends State<OldDailys> {
           children: [
             Navbar(controller: controller),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: FormBuilder(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 400,
-                          child: FormBuilderDateTimePicker(
-                              name: "date",
-                              decoration: InputDecoration(
-                                labelText: "اختر اليوم",
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.black,
-                                    width: 5,
+              child: ListView(
+                children:[Column(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 200,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/Curve_Line.png'),
+                            fit: BoxFit.cover,
+                            colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.difference),
+                          )
+                      ),
+                      child: Center(child: Text('اليوميات السابقة', style: TextStyle(fontSize: 26, color: Colors.white), textAlign: TextAlign.center,)),
+                    ),
+                    SizedBox(height: 70,),
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: FormBuilder(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 400,
+                                    child: FormBuilderDateTimePicker(
+                                        name: "date",
+                                        onChanged: (value){
+                                          setState(() {
+                                            date = value;
+                                          });
+                                        },
+                                        decoration: InputDecoration(
+                                          labelText: "اختر اليوم",
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.black,
+                                              width: 5,
+                                            ),
+                                            borderRadius: BorderRadius.circular(5.0),
+                                          ),
+                                          suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
+                                        ),
+                                        validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
+                                        initialDate: DateTime.now(),
+                                        inputType: InputType.date,
+                                    ),
                                   ),
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                                suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
+                                  SizedBox(width: 10,),
+                                  // Add a submit button
+                                  SizedBox(
+                                    width: 100,
+                                    height: 50,
+                                    child: ElevatedButton(
+                                      child: Text('ارسال'),
+                                      style: ElevatedButton.styleFrom(
+                                          primary: Colors.blueGrey,
+                                          textStyle: TextStyle(fontSize: 18)
+                                      ),
+                                      onPressed: () {
+                                        if (_formKey.currentState!.saveAndValidate()) {
+                                          //call to backend
+                                          GetDaily(date);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
-                              onChanged: (value){
-                                GetDaily(value);
-                              },
-                              validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
-                              initialDate: DateTime.now(),
-                              inputType: InputType.date,
+                                ],
+                              )
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 40,),
-                        data.length != 0 ?
-                            Container(
-                                color: Colors.grey[100],
-                                child: ClientDetailsTable(data: data)
-                            )
-                            : Center(
-                              child: Text('لا يوجد يومية في هذا اليوم', style: TextStyle(fontSize: 18),))
-                      ],
-                    )
+                    SizedBox(height: 40,),
+                    Container(
+                      height: 400,
+                      width: MediaQuery.of(context).size.width/1.3,
+                      child: ListView.builder(
+                        itemCount: dailys.length,
+                        itemBuilder: (context, index){
+                          return Padding(
+                              padding: EdgeInsets.all(4),
+                              child: Card(
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(2.0),
+                                      child: ListTile(
+                                        leading: Icon(Icons.view_agenda),
+                                        title: Text(' المبلغ :  ${dailys[index]['amount']} جنيه', style: TextStyle(fontSize: 18)),
+                                        subtitle: Text(' التاريخ : ${dailys[index]['date'].toString()}', style: TextStyle(fontWeight: FontWeight.bold),),
+                                        trailing: TextButton.icon(
+                                              onPressed: (){
+                                                Navigator.push(context, MaterialPageRoute(
+                                                  builder: (context) => DailyDetails(date: dailys[index]['date'])
+                                                ));
+                                              },
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.grey[200],
+                                                minimumSize: Size(60, 45)
+                                              ),
+                                              icon: Icon(Icons.mode_edit, color: Colors.blue),
+                                              label: Text('التفاصيل', style: TextStyle(color: Colors.black),),
+                                            )
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                          );
+                        },
+                      ),
+                    ),
+
+                  ],
                 ),
+                ]
               ),
             ),
           ],

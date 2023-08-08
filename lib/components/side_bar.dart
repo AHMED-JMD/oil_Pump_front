@@ -69,6 +69,7 @@ class _NavbarState extends State<Navbar> {
       footerDivider: divider,
       items:  [
         SidebarXItem(
+            // icon: Icons.home_work,
             iconWidget:
             DropdownButton(
                   value: selected,
@@ -93,8 +94,8 @@ class _NavbarState extends State<Navbar> {
                 ),
         ),
         SidebarXItem(
-            icon: Icons.local_gas_station,
-            label: 'حالة الوقود',
+            icon: Icons.gas_meter,
+            label: ' حالة الوقود ',
             onTap: (){
               Navigator.pushReplacementNamed(context, '/gasolines');
             }

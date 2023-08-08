@@ -7,6 +7,7 @@ import 'package:oil_pump_system/widgets/Income.dart';
 import 'package:oil_pump_system/widgets/Report.dart';
 import 'package:oil_pump_system/widgets/addDaily.dart';
 import 'package:oil_pump_system/widgets/addClient.dart';
+import 'package:oil_pump_system/widgets/addMachine.dart';
 import 'package:oil_pump_system/widgets/addReciept.dart';
 import 'package:oil_pump_system/widgets/home.dart';
 import 'package:oil_pump_system/widgets/oldDailys.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         '/employees' : (context) => Employees(),
         '/add_employee' : (context) => AddEmployee(),
         '/gasolines' : (context) => Gasolines(),
+        '/add_machine': (context) => AddMachine(),
         '/incomes' : (context) => Incomes(),
         '/add_reciept' : (context) => AddReciept(),
         '/reports' : (context) => Reports(),
