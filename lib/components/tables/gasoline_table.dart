@@ -1,28 +1,112 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:oil_pump_system/API/gas.dart';
 import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/models/gas_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 
 class GasolineTable extends StatefulWidget {
-  GasolineTable({Key? key}) : super(key: key);
+  List data;
+  GasolineTable({Key? key, required this.data}) : super(key: key);
 
   @override
-  State<GasolineTable> createState() => _GasolineTableState();
+  State<GasolineTable> createState() => _GasolineTableState(data: data);
 }
 
 class _GasolineTableState extends State<GasolineTable> {
+  List data;
+  _GasolineTableState({required this.data});
+
   var rowsPerPage = 5;
-  final source = ExampleSource();
+  late final source = ExampleSource(data: data);
   final _searchController = TextEditingController();
+
+  bool isLoading = false;
+
 
   @override
   void initState() {
     super.initState();
     _searchController.text = '';
+  }
+  //server side Functions ------------------
+  //------delete--
+  Future deleteGas() async {
+    setState(() {
+      isLoading = true;
+    });
+    //send to server
+    if(selectedIds.length != 0){
+      final auth = await SharedServices.LoginDetails();
+      API_Gas.Delete_Gas(selectedIds, auth.token).then((response){
+        setState(() {
+          isLoading = false;
+        });
+
+        if(response == true){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('تم الحذف بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+              backgroundColor: Colors.red,
+            ),
+          );
+          selectedIds = [];
+        }else{
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+              backgroundColor: Colors.red,
+            ),
+          );
+          selectedIds = [];
+        }
+      });
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('الرجاء اختيار يومية من الجدول', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+//-------------------------------------
+
+  //delete modal
+  void _deleteModal(BuildContext context){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            title: Text('حذف حالة الوقود'),
+            content: Text('هل انت متأكد برغبتك في حذف يومية الوقود'),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Center(
+                  child: SizedBox(
+                    height: 30,
+                    child: TextButton(
+                        child: Text('حذف'),
+                        style: TextButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            primary: Colors.white
+                        ),
+                        onPressed: (){
+                          deleteGas();
+                          Navigator.of(context).pop();
+                        }
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -72,7 +156,9 @@ class _GasolineTableState extends State<GasolineTable> {
                   children: [
                     SizedBox(width: 5,),
                     TextButton.icon(
-                      onPressed: (){} ,
+                      onPressed: (){
+                        _deleteModal(context);
+                      } ,
                       icon: Icon(Icons.delete),
                       label: Text(''),
                     ),
@@ -112,6 +198,9 @@ class _GasolineTableState extends State<GasolineTable> {
                   label: const Text('الكمية'),
                 ),
                 DataColumn(
+                  label: const Text('التعليق'),
+                ),
+                DataColumn(
                   label: const Text('التاريخ'),
                 ),
               ],
@@ -124,8 +213,10 @@ class _GasolineTableState extends State<GasolineTable> {
 }
 
 class ExampleSource extends AdvancedDataTableSource<Gas> {
+  List data;
+  ExampleSource({required this.data});
+
   String lastSearchTerm = '';
-  List<String> selectedIds = [];
 
   @override
   DataRow? getRow(int index) {
@@ -141,6 +232,7 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
       DataCell(
         Text(currentRowData.fuelType,
           style: TextStyle(
+            fontWeight: FontWeight.w900,
           color: currentRowData.status == 'داخل' ?Colors.green : Colors.red,
         ),
         )
@@ -159,6 +251,12 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
           ),
         ),
       ),
+          DataCell(
+            Text(currentRowData.comment.toString(),
+              style: TextStyle(
+                color: currentRowData.status == 'داخل' ?Colors.green : Colors.red,
+              ),),
+          ),
       DataCell(
         Text(currentRowData.date,
           style: TextStyle(
@@ -188,19 +286,6 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
   @override
   Future<RemoteDataSourceDetails<Gas>> getNextPage(
       NextPageRequest pageRequest) async {
-    //--------------get request to server -----------
-    final url = Uri.parse('http://localhost:5000/gas/');
-    final auth = await SharedServices.LoginDetails();
-
-    Map<String,String> requestHeaders = {
-      'Content-Type' : 'application/json',
-      'x-auth-token' : '${auth.token}'
-    };
-
-    Response response = await get(url, headers:  requestHeaders);
-
-    if(response.statusCode == 200){
-      final data = jsonDecode(response.body);
 
       await Future.delayed(Duration(seconds: 1));
       return RemoteDataSourceDetails(
@@ -214,10 +299,8 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
             ? (data as List<dynamic>).length
             : null, //again in a real world example you would only get the right amount of rows
       );
-    }else{
-      throw Exception('Unable to query remote server');
-    }
-
   }
 }
+//selected list goes here
+List<String> selectedIds = [];
 

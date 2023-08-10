@@ -4,8 +4,7 @@ import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/models/daily_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:http/http.dart';
-import 'dart:convert';
+
 
 class DailyTable extends StatefulWidget {
   int total;

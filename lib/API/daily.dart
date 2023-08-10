@@ -90,6 +90,28 @@ class API_Daily {
       print(e);
     }
   }
+
+  //get One daily
+  static Future Delete_Daily (data, token) async {
+    try{
+      Map<String,String> requestHeaders = {
+        'Content-Type' : 'application/json',
+        'x-auth-token' : '$token'
+      };
+
+      final url = Uri.parse('http://localhost:5000/daily/delete');
+      Response response = await post(url, headers: requestHeaders,body: jsonEncode(data));
+
+      if(response.statusCode == 200){
+        return true;
+      }else{
+        return false;
+      }
+
+    }catch (e){
+      print(e);
+    }
+  }
   //-------------------------
   //add transaction here ----------
   static Future Add_Trans (data, token) async {

@@ -19,6 +19,7 @@ class _AddRecieptState extends State<AddReciept> {
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
+  String? company;
   String? driver;
   String? car_plate;
   String? fuel_type;
@@ -80,9 +81,20 @@ class _AddRecieptState extends State<AddReciept> {
                               backgroundColor: Colors.grey[300]
                           ),
                           FormBuilderTextField(
+                            name: "company",
+                            decoration: InputDecoration(
+                                labelText: 'اسم الشركة',
+                                suffixIcon: Icon(Icons.home_work, color: Colors.blueAccent,)
+                            ),
+                            onChanged: (val){
+                              company = val;
+                            },
+                            validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                          ),
+                          FormBuilderTextField(
                             name: "driver",
                             decoration: InputDecoration(
-                              labelText: 'اسم السائق',
+                              labelText: 'السائق',
                                 suffixIcon: Icon(Icons.person, color: Colors.blueAccent,)
                               ),
                             onChanged: (val){
@@ -161,6 +173,7 @@ class _AddRecieptState extends State<AddReciept> {
                                 if(_formKey.currentState!.saveAndValidate()){
                                   //call to server
                                   final data = {};
+                                  data['company'] = company;
                                   data['driver'] = driver;
                                   data['car_plate'] = car_plate;
                                   data['fuel_type'] = fuel_type;

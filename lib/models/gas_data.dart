@@ -4,7 +4,7 @@ class Gas {
   late final String fuelType;
   late final int total;
   late final String date;
-  late final Null comment;
+  late final String? comment;
   late final String createdAt;
   late final String updatedAt;
 

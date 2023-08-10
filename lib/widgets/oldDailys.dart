@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:oil_pump_system/API/daily.dart';
-import 'package:oil_pump_system/API/outgoing.dart';
 import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/outgoings.dart';
 import 'package:oil_pump_system/components/side_bar.dart';
-import 'package:oil_pump_system/components/tables/daily_table.dart';
 import 'package:oil_pump_system/widgets/dailyDetails.dart';
 import 'package:sidebarx/sidebarx.dart';
 
@@ -77,7 +74,74 @@ class _OldDailysState extends State<OldDailys> {
       dailys = response;
     });
   }
+
+  Future deleteDaily(daily_id) async {
+    setState(() {
+      isLoading = true;
+    });
+    //send to server
+    Map data = {};
+    data['daily_id'] = daily_id;
+      final auth = await SharedServices.LoginDetails();
+      API_Daily.Delete_Daily(data, auth.token).then((response){
+        setState(() {
+          isLoading = false;
+        });
+        if(response == true){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('تم حذف اليومية بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }else{
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      });
+  }
   //-----------------------
+
+  //model widgets
+  void _deleteModal(BuildContext context, daily){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            title: Text('حذف اليومية'),
+            content: Text(' حذف اليومية "${daily['date']}"'),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Center(
+                  child: SizedBox(
+                    height: 30,
+                    child: TextButton(
+                        child: Text('حذف'),
+                        style: TextButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            primary: Colors.white
+                        ),
+                        onPressed: (){
+                          deleteDaily(daily['daily_id']);
+                          Navigator.of(context).pop();
+                        }
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,6 +229,7 @@ class _OldDailysState extends State<OldDailys> {
                             ),
                           ),
                     SizedBox(height: 40,),
+                    dailys.length != 0 ?
                     Container(
                       height: 400,
                       width: MediaQuery.of(context).size.width/1.3,
@@ -182,19 +247,35 @@ class _OldDailysState extends State<OldDailys> {
                                         leading: Icon(Icons.view_agenda),
                                         title: Text(' المبلغ :  ${dailys[index]['amount']} جنيه', style: TextStyle(fontSize: 18)),
                                         subtitle: Text(' التاريخ : ${dailys[index]['date'].toString()}', style: TextStyle(fontWeight: FontWeight.bold),),
-                                        trailing: TextButton.icon(
-                                              onPressed: (){
-                                                Navigator.push(context, MaterialPageRoute(
-                                                  builder: (context) => DailyDetails(date: dailys[index]['date'])
-                                                ));
-                                              },
-                                              style: TextButton.styleFrom(
-                                                backgroundColor: Colors.grey[200],
-                                                minimumSize: Size(60, 45)
+                                        trailing: SizedBox(
+                                          width: 200,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children:[
+                                              TextButton.icon(
+                                                onPressed: (){
+                                                  Navigator.push(context, MaterialPageRoute(
+                                                      builder: (context) => DailyDetails(date: dailys[index]['date'])
+                                                  ));
+                                                },
+                                                style: TextButton.styleFrom(
+                                                    backgroundColor: Colors.grey[200],
+                                                    minimumSize: Size(60, 45)
+                                                ),
+                                                icon: Icon(Icons.mode_edit, color: Colors.blue),
+                                                label: Text('التفاصيل', style: TextStyle(color: Colors.black),),
                                               ),
-                                              icon: Icon(Icons.mode_edit, color: Colors.blue),
-                                              label: Text('التفاصيل', style: TextStyle(color: Colors.black),),
-                                            )
+                                              SizedBox(width: 5,),
+                                              TextButton.icon(
+                                                  onPressed: (){
+                                                    _deleteModal(context, dailys[index]);
+                                                  },
+                                                  icon: Icon(Icons.delete_forever, color: Colors.red,),
+                                                  label: Text('')
+                                              )
+                                            ]
+                                          ),
+                                        )
                                         ),
                                       ),
                                   ],
@@ -203,8 +284,19 @@ class _OldDailysState extends State<OldDailys> {
                           );
                         },
                       ),
-                    ),
-
+                    ): Center(
+                        child: Container(
+                            width: 280,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: Colors.blueAccent,
+                                borderRadius: BorderRadius.circular(12)
+                            ),
+                            child: Center(
+                                child: Text('لا يوجد يوميات اليوم',textAlign: TextAlign.center, style: TextStyle(fontSize: 18, color: Colors.white),)
+                            )
+                        )
+                    )
                   ],
                 ),
                 ]

@@ -19,7 +19,7 @@ class _DailyDetailsState extends State<DailyDetails> {
   var date;
   _DailyDetailsState({required this.date});
 
-  SidebarXController controller = SidebarXController(selectedIndex: 0);
+  SidebarXController controller = SidebarXController(selectedIndex: 0, extended: true);
   bool isLoading = false;
   List trans_data = [];
   List outg_data = [];
@@ -28,7 +28,6 @@ class _DailyDetailsState extends State<DailyDetails> {
 
   @override
   void initState() {
-    // TODO: implement initState
     GetDaily(date);
     super.initState();
   }

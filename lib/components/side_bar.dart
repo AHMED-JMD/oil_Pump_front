@@ -116,18 +116,17 @@ class _NavbarState extends State<Navbar> {
         ),
         SidebarXItem(
             icon: Icons.home_work_rounded,
-            label: ' البنوك ',
-            onTap: (){}
-        ),
-        SidebarXItem(
-            icon: Icons.monetization_on,
-            label: ' الخزنة ',
-            onTap: (){}
+            label: ' الخزنة و البنوك ',
+            onTap: (){
+              Navigator.pushReplacementNamed(context, '/banks');
+            }
         ),
         SidebarXItem(
             icon: Icons.account_balance_wallet,
             label: ' السندات ',
-            onTap: (){}
+            onTap: (){
+              Navigator.pushReplacementNamed(context, '/bonds');
+            }
         ),
       ],
     );

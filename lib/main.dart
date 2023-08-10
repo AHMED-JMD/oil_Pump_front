@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:oil_pump_system/SharedService.dart';
+import 'package:oil_pump_system/widgets/Banks.dart';
+import 'package:oil_pump_system/widgets/Bonds.dart';
 import 'package:oil_pump_system/widgets/Daily.dart';
 import 'package:oil_pump_system/widgets/Clients.dart';
 import 'package:oil_pump_system/widgets/Gasoline.dart';
 import 'package:oil_pump_system/widgets/Income.dart';
-import 'package:oil_pump_system/widgets/Report.dart';
+import 'package:oil_pump_system/widgets/Safe.dart';
 import 'package:oil_pump_system/widgets/addDaily.dart';
 import 'package:oil_pump_system/widgets/addClient.dart';
 import 'package:oil_pump_system/widgets/addMachine.dart';
@@ -50,7 +52,9 @@ class MyApp extends StatelessWidget {
         '/add_machine': (context) => AddMachine(),
         '/incomes' : (context) => Incomes(),
         '/add_reciept' : (context) => AddReciept(),
-        '/reports' : (context) => Reports(),
+        '/banks' : (context) => Banks(),
+        '/safe' : (context) => Safe(),
+        '/bonds' : (context) => Bonds(),
       },
     );
   }

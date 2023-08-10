@@ -217,7 +217,6 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
 
   @override
   DataRow? getRow(int index) {
-    print(lastDetails);
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
         selected: selectedIds.contains(currentRowData.recieptId),
