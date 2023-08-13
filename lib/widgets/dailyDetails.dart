@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:oil_pump_system/API/banks.dart';
 import 'package:oil_pump_system/API/daily.dart';
 import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/components/appBar.dart';
@@ -20,15 +23,23 @@ class _DailyDetailsState extends State<DailyDetails> {
   _DailyDetailsState({required this.date});
 
   SidebarXController controller = SidebarXController(selectedIndex: 0, extended: true);
+  GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
   bool isLoading = false;
+  bool isAppended = false;
+  List bank_data = [];
   List trans_data = [];
   List outg_data = [];
-  int total  = 0;
+  int total = 0;
   int total_count = 0;
+  String daily_id = '';
+  String banks_id = '';
+
 
   @override
   void initState() {
     GetDaily(date);
+    get_all_banks();
     super.initState();
   }
   //server side function
@@ -49,8 +60,136 @@ class _DailyDetailsState extends State<DailyDetails> {
       trans_data = response['daily_trans'][0]['transactions'];
       outg_data = response['daily_trans'][0]['outgoings'];
       total = response['daily_trans'][0]['amount'];
+      daily_id = response['daily_trans'][0]['daily_id'];
+      isAppended = response['daily_trans'][0]['isAppended'];
       // total_outgs = response['total'];
     });
+  }
+  //get banks data
+  Future get_all_banks () async {
+    setState(() {
+      isLoading = true;
+    });
+    // post to server
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Bank.Get_All_Banks(auth.token);
+
+    setState(() {
+      isLoading = false;
+      bank_data = response['banks'];
+    });
+  }
+  //append daily to banks
+  Future appendDaily (data) async {
+    setState(() {
+      isLoading = true;
+    });
+    // post to server
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Bank.Append_Banks(data,auth.token);
+
+    setState(() {
+      isLoading = false;
+    });
+
+    response != false ?
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('تم توريد اليومية بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+        backgroundColor: Colors.green,
+      ),
+    ) :
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('عذرا جدث خطأ ما', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+//--------------------------------------------
+
+  //modals here
+  void _appendModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: SimpleDialog(
+            title: Text('توريد اليومية'),
+            children:[
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: FormBuilder(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      FormBuilderDropdown(
+                        name: 'name',
+                        decoration: InputDecoration(labelText: 'اختر البنك'),
+                        onChanged: (val) {
+                          banks_id = val.toString(); // Print the text value write into TextField
+                        },
+                        items: bank_data
+                            .map((client) => DropdownMenuItem(
+                            value: client['banks_id'].toString(),
+                            child: Text('${client['bank_name']}')
+                        )).toList(),
+                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                      ),
+                      FormBuilderTextField(
+                        name: 'amount',
+                        decoration: InputDecoration(
+                            labelText: 'المبلغ',
+                        ),
+                        initialValue: total.toString(),
+                        readOnly: true,
+                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                      ),
+                      FormBuilderDateTimePicker(
+                        name: 'date',
+                        decoration: InputDecoration(labelText: "التاريخ"),
+                        validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                        inputType: InputType.date,
+                        initialValue: DateTime.now(),
+                      ),
+                      SizedBox(height: 20,),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Center(
+                          child: SizedBox(
+                            height: 30,
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.blueAccent,
+                                primary: Colors.white,
+                              ),
+                              child: Text('اضافة'),
+                              onPressed: (){
+                                if(_formKey.currentState!.saveAndValidate()){
+                                  //send to server ---
+                                  final data = {};
+                                   data['banks_id'] = banks_id;
+                                   data['daily_id'] = daily_id;
+
+                                   appendDaily(data);
+                                  Navigator.of(context).pop();
+                                }
+
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -68,7 +207,7 @@ class _DailyDetailsState extends State<DailyDetails> {
                     Column(
                       children: [
                         SizedBox(height: 40,),
-                        trans_data.length != 0 ?
+
                         Column(
                           children: [
                             Row(
@@ -78,28 +217,51 @@ class _DailyDetailsState extends State<DailyDetails> {
                                 Text(' المبلغ الكلي : $total', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
                               ],
                             ),
-                            SizedBox(height: 30,),
+                            SizedBox(height: 60,),
+                            trans_data.length != 0 ?
+                            Column(
+                              children: [
+                                Container(
+                                    color: Colors.grey[100],
+                                    child: DailyTable(total: total_count ,daily_data: trans_data,)
+                                ),
+                                SizedBox(height: 30,),
+                                Outgoings(total: total_count, data: outg_data,)
+                              ],
+                            )
+                                : Center(
+                                    child: Text('لا يوجد تفاصيل يومية في هذا اليوم',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontSize: 18, color: Colors.black),)
+
+                                ),
+                            SizedBox(height: 60,),
+                            isAppended ?
                             Container(
-                                color: Colors.grey[100],
-                                child: DailyTable(total: total_count ,daily_data: trans_data,)
-                            ),
-                            SizedBox(height: 30,),
-                            Outgoings(total: total_count, data: outg_data,)
-                          ],
-                        )
-                            : Center(
-                            child: Container(
-                                width: 280,
                                 height: 50,
+                                width: MediaQuery.of(context).size.width/1.3,
                                 decoration: BoxDecoration(
-                                    color: Colors.blueAccent,
+                                    color: Colors.blueGrey,
                                     borderRadius: BorderRadius.circular(12)
                                 ),
                                 child: Center(
-                                    child: Text('لا يوجد يومية في هذا اليوم',textAlign: TextAlign.center, style: TextStyle(fontSize: 18, color: Colors.white),)
-                                )
+                                  child: Text('تم توريد اليومية بنجاح',
+                                    style: TextStyle(fontSize: 20, color: Colors.white),),)
                             )
+                            : Container(
+                              width: MediaQuery.of(context).size.width/1.2,
+                              height: 40,
+                              child: ElevatedButton(
+                                onPressed: (){
+                                  _appendModal(context);
+                                },
+                                child: Text('توريد اليومية', style: TextStyle(fontSize: 22),),
+                              ),
+                            ),
+                            SizedBox(height: 40,),
+                          ],
                         )
+
                       ],
                     )
                   ],

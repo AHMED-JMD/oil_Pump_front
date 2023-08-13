@@ -20,6 +20,7 @@ class _AddRecieptState extends State<AddReciept> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
   String? company;
+  String? source;
   String? driver;
   String? car_plate;
   String? fuel_type;
@@ -88,6 +89,17 @@ class _AddRecieptState extends State<AddReciept> {
                             ),
                             onChanged: (val){
                               company = val;
+                            },
+                            validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                          ),
+                          FormBuilderTextField(
+                            name: "source",
+                            decoration: InputDecoration(
+                                labelText: 'مصدر الوقود',
+                                suffixIcon: Icon(Icons.location_on, color: Colors.blueAccent,)
+                            ),
+                            onChanged: (val){
+                              source = val;
                             },
                             validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                           ),
@@ -167,13 +179,15 @@ class _AddRecieptState extends State<AddReciept> {
                           ),
                           SizedBox(height: 40,),
                           SizedBox(
-                            height: 35,
+                            height: 45,
+                            width: 200,
                             child: ElevatedButton(
                               onPressed: (){
                                 if(_formKey.currentState!.saveAndValidate()){
                                   //call to server
                                   final data = {};
                                   data['company'] = company;
+                                  data['source'] = source;
                                   data['driver'] = driver;
                                   data['car_plate'] = car_plate;
                                   data['fuel_type'] = fuel_type;

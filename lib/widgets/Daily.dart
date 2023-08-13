@@ -28,7 +28,8 @@ class _DailysState extends State<Dailys> {
   List data = [];
   List daily_data = [];
   List outg_data = [];
-  int total_pumps = 0;
+  int total_benz = 0;
+  int total_gas = 0;
   int total_dailys = 0;
   int total_outgs = 0;
 
@@ -68,7 +69,7 @@ class _DailysState extends State<Dailys> {
     //call server
     Map date = {};
     date['date'] = today_date.toIso8601String();
-    date['total_pumps'] = total_pumps;
+    date['total_pumps'] = total_benz + total_gas;
     date['total_dailys'] = total_dailys;
     date['total_outgs'] = total_outgs;
     final auth = await SharedServices.LoginDetails();
@@ -132,7 +133,8 @@ class _DailysState extends State<Dailys> {
     setState(() {
       isLoading = false;
       data = response['pumps'];
-      total_pumps = response['total'];
+      total_benz = response['total_benz'];
+      total_gas = response['total_gas'];
     });
   }
 
@@ -154,13 +156,17 @@ class _DailysState extends State<Dailys> {
         content: Text('تم الحذف بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
         backgroundColor: Colors.red,
       ),
-    ) :
+    )
+        :
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
           backgroundColor: Colors.red,
         )
     );
+
+    //refresh
+    getAllPumps();
   }
 
   Future get_OutG() async {
@@ -209,6 +215,9 @@ class _DailysState extends State<Dailys> {
           backgroundColor: Colors.red,
         )
     );
+
+    //refresh
+    get_OutG();
   }
 
   Future updatePump (data) async {
@@ -228,10 +237,13 @@ class _DailysState extends State<Dailys> {
     )  :
     ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-    content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
-    backgroundColor: Colors.red,
+      content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+      backgroundColor: Colors.red,
     )
     );
+
+    //refresh
+    getAllPumps();
   }
   //-----------------------------------------------
 
@@ -243,7 +255,7 @@ class _DailysState extends State<Dailys> {
               padding: const EdgeInsets.fromLTRB(10, 20, 10, 40),
               child: Container(
                 decoration: BoxDecoration(
-                    color: data['type'] == 'جاز' ? Colors.lightGreenAccent : Colors.lightBlueAccent,
+                    color: data['type'] == 'جاز' ? Colors.green : Colors.blue,
                     borderRadius: BorderRadius.circular(12)
                 ),
                 child: Column(
@@ -509,27 +521,81 @@ class _DailysState extends State<Dailys> {
                         color: Colors.grey[300],
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          child: Column(
                             children: [
-                              Text('مجموع القراءات',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 21
+                              Container(
+                                color: Colors.green,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text('قراءة الجاز',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 21
+                                        ),
+                                      ),
+                                      Text('= ${total_gas}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 21,
+                                            color: Colors.black
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              Text('$total_pumps',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 21,
-                                    color: Colors.red
+                              SizedBox(height: 9,),
+                              Container(
+                                color: Colors.blue,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text('قراءة البنزين',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 21
+                                        ),
+                                      ),
+                                      Text('= ${total_benz}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 21,
+                                            color: Colors.black
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
+                              ),
+                              SizedBox(height: 17,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  Text('مجموع القراءات',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 21
+                                    ),
+                                  ),
+                                  Text('= ${total_benz + total_gas}',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 21,
+                                        color: Colors.red
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ),
                       ),
-                      SizedBox(height: 40,),
+                      SizedBox(height: 150,),
                       Container(
                           width: 280,
                           height: 50,
@@ -553,7 +619,7 @@ class _DailysState extends State<Dailys> {
                       ) : Container(
                           color: Colors.grey[100],
                           child: DailyTable(total: total_dailys ,daily_data: daily_data,)),
-                      SizedBox(height: 50,),
+                      SizedBox(height: 150,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [

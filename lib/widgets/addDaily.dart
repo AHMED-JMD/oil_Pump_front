@@ -23,6 +23,8 @@ class _AddDailyState extends State<AddDaily> {
   DateTime? nw_date;
   String? emp_id;
   String? type;
+  String? gas_type;
+  String? gas_amount;
   String? amount;
   String? comment;
   List clients = [];
@@ -140,6 +142,31 @@ class _AddDailyState extends State<AddDaily> {
                                       ))
                                           .toList(),
                                     ),
+                                    FormBuilderDropdown(
+                                      name: 'gas_type',
+                                      decoration: InputDecoration(labelText: 'نوع الوقود'),
+                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                      onChanged: (val) {
+                                        gas_type = val; // Print the text value write into TextField
+                                      },
+                                      items: ['بنزين', 'جاز',]
+                                          .map((type) => DropdownMenuItem(
+                                        value: type,
+                                        child: Text('$type'),
+                                      ))
+                                          .toList(),
+                                    ),
+                                    FormBuilderTextField(
+                                      name: 'gas_amount',
+                                      decoration: InputDecoration(
+                                          labelText: 'كمية الوقود باللتر',
+                                          suffixIcon: Icon(Icons.gas_meter, color: Colors.blueAccent,)
+                                      ),
+                                      onChanged: (val) {
+                                        gas_amount = val; // Print the text value write into TextField
+                                      },
+                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                    ),
                                     // Add another text field
                                     FormBuilderTextField(
                                       name: 'amount',
@@ -194,6 +221,8 @@ class _AddDailyState extends State<AddDaily> {
                                             Map data = {};
                                             data['emp_id'] = emp_id;
                                             data['type'] = type;
+                                            data['gas_type'] = gas_type;
+                                            data['gas_amount'] = gas_amount;
                                             data['amount'] = amount;
                                             data['date'] = nw_date!.toIso8601String();
                                             data['comment'] = comment;

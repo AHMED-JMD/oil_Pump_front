@@ -7,6 +7,7 @@ import 'package:oil_pump_system/SharedService.dart';
 import 'package:oil_pump_system/models/banks_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
+import 'package:oil_pump_system/widgets/banksDetails.dart';
 
 class BanksTable extends StatefulWidget {
   List data;
@@ -23,7 +24,7 @@ class _BanksTableState extends State<BanksTable> {
   GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   var rowsPerPage = 5;
-  late final source = ExampleSource(data: data);
+  late final source = ExampleSource(data: data, context: context);
   final _searchController = TextEditingController();
 
   bool isLoading = false;
@@ -56,6 +57,7 @@ class _BanksTableState extends State<BanksTable> {
             ),
           );
           selectedIds = [];
+
         }else{
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -102,6 +104,7 @@ class _BanksTableState extends State<BanksTable> {
           backgroundColor: Colors.red,
       ),
     );
+
   }
 //-------------------------------------
 
@@ -307,6 +310,9 @@ class _BanksTableState extends State<BanksTable> {
                 DataColumn(
                   label: const Text('التاريخ'),
                 ),
+                DataColumn(
+                  label: const Text('تعديل'),
+                ),
               ],
             ),
           ],
@@ -318,7 +324,8 @@ class _BanksTableState extends State<BanksTable> {
 
 class ExampleSource extends AdvancedDataTableSource<Banks> {
   List data;
-  ExampleSource({required this.data});
+  BuildContext context;
+  ExampleSource({required this.data, required this.context});
 
   String lastSearchTerm = '';
 
@@ -341,6 +348,15 @@ class ExampleSource extends AdvancedDataTableSource<Banks> {
           ),
           DataCell(
             Text(currentRowData.date,),
+          ),
+          DataCell(
+            InkWell(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => BanksDetails(banks_id: currentRowData.banks_id)));
+              },
+              child: Icon(Icons.remove_red_eye, color:  Colors.grey.shade500,),
+            ),
           ),
         ]);
   }

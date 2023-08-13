@@ -7,6 +7,8 @@ import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
+import 'package:oil_pump_system/widgets/receiptDetails.dart';
+
 class IncomeTable extends StatefulWidget {
   IncomeTable({Key? key}) : super(key: key);
 
@@ -17,14 +19,16 @@ class IncomeTable extends StatefulWidget {
 class _IncomeTableState extends State<IncomeTable> {
   var rowsPerPage = 5;
   bool isLoading = false;
-
-  final source = ExampleSource();
   final _searchController = TextEditingController();
+  var source;
 
   @override
   void initState() {
     super.initState();
     _searchController.text = '';
+    setState(() {
+      source = ExampleSource(context: context);
+    });
   }
 
   //modal open
@@ -182,19 +186,19 @@ class _IncomeTableState extends State<IncomeTable> {
               },
               columns: [
                 DataColumn(
-                  label: const Text('اسم السائق'),
+                  label: const Text('مصدر الوقود'),
                 ),
                 DataColumn(
-                  label: const Text('رقم اللوحة'),
+                  label: const Text('اسم الشركة'),
+                ),
+                DataColumn(
+                  label: const Text('اسم السائق'),
                 ),
                 DataColumn(
                   label: const Text('نوع الوقود'),
                 ),
                 DataColumn(
                   label: const Text('الكمية'),
-                ),
-                DataColumn(
-                  label: const Text('تاريخ الشحن'),
                 ),
                 DataColumn(
                   label: const Text('تاريخ الوصول'),
@@ -214,6 +218,8 @@ class _IncomeTableState extends State<IncomeTable> {
 
 class ExampleSource extends AdvancedDataTableSource<Receipt> {
   String lastSearchTerm = '';
+  final BuildContext context;
+  ExampleSource({required this.context});
 
   @override
   DataRow? getRow(int index) {
@@ -227,10 +233,13 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
         },
         cells: [
       DataCell(
-        Text(currentRowData.driver),
+        Text(currentRowData.source),
       ),
       DataCell(
-        Text(currentRowData.carPlate),
+        Text(currentRowData.company),
+      ),
+      DataCell(
+        Text(currentRowData.driver),
       ),
       DataCell(
         Text(currentRowData.fuelType),
@@ -238,16 +247,16 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
       DataCell(
         Text(currentRowData.amount.toString()),
       ),
-      DataCell(
-        Text(currentRowData.ship_date),
-      ),
           DataCell(
             Text(currentRowData.arrive_date),
           ),
           DataCell(
             Center(
               child: InkWell(
-                  onTap: (){},
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => ReceiptDetails(reciept_id: currentRowData.recieptId,) ));
+                  },
                   child: Icon(Icons.remove_red_eye, color: Colors.grey[500],)
               ),
             ),

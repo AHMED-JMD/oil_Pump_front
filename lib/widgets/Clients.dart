@@ -28,14 +28,31 @@ class _EmployeesState extends State<Employees> {
               ],
             ),
             Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: ListView(
                   children: [
                     Container(
-                        color: Colors.grey.shade100,
-                        child: EmployeeTable()
+                      width: MediaQuery.of(context).size.width,
+                      height: 200,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/Curve_Line.png'),
+                            fit: BoxFit.cover,
+                            colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.difference),
+                          )
+                      ),
+                      child: Center(child: Text('العملاء', style: TextStyle(fontSize: 26, color: Colors.white), textAlign: TextAlign.center,)),
                     ),
-                  ],
+                    SizedBox(height: 80,),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                            color: Colors.grey.shade100,
+                            child: EmployeeTable()
+                        ),
+                      ],
+                    ),
+                  ]
                 )
             )
           ],

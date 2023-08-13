@@ -233,34 +233,34 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
         Text(currentRowData.fuelType,
           style: TextStyle(
             fontWeight: FontWeight.w900,
-          color: currentRowData.status == 'داخل' ?Colors.green : Colors.red,
+          color: currentRowData.status == 'تفريغ' ?Colors.green : Colors.red,
         ),
         )
       ),
       DataCell(
         Text(currentRowData.status,
           style: TextStyle(
-            color: currentRowData.status == 'داخل' ?Colors.green : Colors.red,
+            color: currentRowData.status == 'تفريغ' ?Colors.green : Colors.red,
           ),
         ),
       ),
       DataCell(
         Text(currentRowData.total.toString(),
           style: TextStyle(
-            color: currentRowData.status == 'داخل' ?Colors.green : Colors.red,
+            color: currentRowData.status == 'تفريغ' ?Colors.green : Colors.red,
           ),
         ),
       ),
           DataCell(
             Text(currentRowData.comment.toString(),
               style: TextStyle(
-                color: currentRowData.status == 'داخل' ?Colors.green : Colors.red,
+                color: currentRowData.status == 'تفريغ' ?Colors.green : Colors.red,
               ),),
           ),
       DataCell(
         Text(currentRowData.date,
           style: TextStyle(
-            color: currentRowData.status == 'داخل' ?Colors.green : Colors.red,
+            color: currentRowData.status == 'تفريغ' ?Colors.green : Colors.red,
           ),),
       ),
     ]);

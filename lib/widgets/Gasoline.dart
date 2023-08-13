@@ -65,35 +65,53 @@ class _GasolinesState extends State<Gasolines> {
               ],
             ),
             Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: ListView(
                   children: [
-                    data.length != 0?
                     Container(
-                        color: Colors.grey.shade100,
-                        child: Column(
-                          children: [
-                            GasolineTable(data: data,),
-                            Padding(
-                              padding:  EdgeInsets.only(left: 40.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text('متبقي بئر البنزين = $avail_benz',
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
+                      width: MediaQuery.of(context).size.width,
+                      height: 200,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/Curve_Line.png'),
+                            fit: BoxFit.cover,
+                            colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.difference),
+                          )
+                      ),
+                      child: Center(child: Text('حالة الوقود', style: TextStyle(fontSize: 26, color: Colors.white), textAlign: TextAlign.center,)),
+                    ),
+                    SizedBox(height: 80,),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        data.length != 0?
+                        Container(
+                            color: Colors.grey.shade100,
+                            child: Column(
+                              children: [
+                                GasolineTable(data: data,),
+                                Padding(
+                                  padding:  EdgeInsets.only(left: 40.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text('متبقي بئر البنزين = $avail_benz لتر',
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
+                                      ),
+                                      SizedBox(width: 35,),
+                                      Text('متبقي بئر الجازولين = $avail_gas لتر',
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(width: 35,),
-                                  Text('متبقي بئر الجازولين = $avail_gas',
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 20,)
-                          ],
-                        )
-                    ) : GasolineTable(data: data),
-                  ],
+                                ),
+                                SizedBox(height: 20,)
+                              ],
+                            )
+                        ) : GasolineTable(data: data),
+                      ],
+                    ),
+                    SizedBox(height: 50,),
+                  ]
                 )
             ) 
           ],
