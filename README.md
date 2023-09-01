@@ -1,6 +1,13 @@
 # oil_pump_system
 
-A new Flutter project.
+A new Flutter project. is a oil pump station managment system specialized tracking amount of money generated and gas status
+
+#start by cloning the repo:
+- flutter pub get
+- flutter build windows
+
+#requirements:
+flutter development environment
 
 ## Getting Started
 
