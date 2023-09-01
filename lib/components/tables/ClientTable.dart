@@ -183,7 +183,7 @@ class _ClientsTableState extends State<ClientsTable> {
     );
   }
   //open modal
-  void _openModal(BuildContext context) {
+  void _EditAccount(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -213,7 +213,7 @@ class _ClientsTableState extends State<ClientsTable> {
                         name: 'edit_type',
                         decoration: InputDecoration(labelText: 'نوع التعديل'),
                         validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
-                        items: ['حذف', 'اضافة',]
+                        items: ['استرداد', 'خصم',]
                             .map((value) =>
                             DropdownMenuItem(
                               value: value,
@@ -301,7 +301,7 @@ class _ClientsTableState extends State<ClientsTable> {
                               ),
                               ElevatedButton(
                                   onPressed: (){
-                                    _openModal(context);
+                                    _EditAccount(context);
                                   },
                                   child: Text('تعديل حساب')
                               ),
@@ -331,7 +331,7 @@ class _ClientsTableState extends State<ClientsTable> {
                               ),
                               ElevatedButton(
                                   onPressed: (){
-                                    _openModal(context);
+                                    _EditAccount(context);
                                   },
                                   child: Text('تعديل حساب')
                               ),

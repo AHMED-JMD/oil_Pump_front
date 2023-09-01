@@ -135,7 +135,7 @@ class _AddDailyState extends State<AddDaily> {
                                       onChanged: (val) {
                                           type = val;// Print the text value write into TextField
                                       },
-                                      items: ['له', 'عليه',]
+                                      items: ['عليه',]
                                           .map((type) => DropdownMenuItem(
                                         value: type,
                                         child: Text('$type'),
@@ -166,17 +166,6 @@ class _AddDailyState extends State<AddDaily> {
                                           ),
                                           onChanged: (val) {
                                             gas_amount = val; // Print the text value write into TextField
-                                          },
-                                          validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                        ),
-                                        FormBuilderTextField(
-                                          name: 'amount',
-                                          decoration: InputDecoration(
-                                              labelText: 'المبلغ',
-                                              suffixIcon: Icon(Icons.monetization_on, color: Colors.blueAccent,)
-                                          ),
-                                          onChanged: (val) {
-                                            amount = val; // Print the text value write into TextField
                                           },
                                           validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                         ),

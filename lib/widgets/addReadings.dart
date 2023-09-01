@@ -83,10 +83,6 @@ class _AddReadingState extends State<AddReading> {
           backgroundColor: Colors.red,
         )
     );
-
-    setState(() {
-      pump = {};
-    });
   }
 
   @override
@@ -113,13 +109,12 @@ class _AddReadingState extends State<AddReading> {
                               radius: 50,
                             ),
                             FormBuilderDropdown(
-                              name: 'pump_name',
+                              name: 'pump_id',
                               decoration: InputDecoration(labelText: 'اسم المكنة'),
                               onChanged: (val) {
                                 pump_id = val;
                                 getPump(val);
                               },
-                              initialValue: pump_id,
                               items: data
                                   .map((pump) => DropdownMenuItem(
                                   value: pump['pump_id'].toString(),
@@ -177,9 +172,8 @@ class _AddReadingState extends State<AddReading> {
                                     data['date'] = _formKey.currentState!.value['date'].toIso8601String();
                                     //------
                                     addReading(data);
-                                    setState(() {
-                                      pump = {};
-                                    });
+                                    // Reset the form fields
+                                    _formKey.currentState!.reset();
 
                                   }
                                 },
