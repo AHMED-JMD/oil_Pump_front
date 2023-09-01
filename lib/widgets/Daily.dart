@@ -1,13 +1,14 @@
+import 'package:OilEnergy_System/API/reading.dart';
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/API/daily.dart';
-import 'package:oil_pump_system/API/outgoing.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/outgoings.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
-import 'package:oil_pump_system/components/tables/daily_table.dart';
+import 'package:OilEnergy_System/API/daily.dart';
+import 'package:OilEnergy_System/API/outgoing.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/outgoings.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
+import 'package:OilEnergy_System/components/tables/daily_table.dart';
 import 'package:sidebarx/sidebarx.dart';
-import 'package:oil_pump_system/API/pump.dart';
+import 'package:OilEnergy_System/API/pump.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
@@ -19,13 +20,15 @@ class Dailys extends StatefulWidget {
 }
 
 class _DailysState extends State<Dailys> {
-  SidebarXController controller = SidebarXController(selectedIndex: 0, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 2, extended: true);
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   bool isLoading = false;
   bool nw_daily = false;
   DateTime today_date = DateTime.now();
-  List data = [];
+  late String formattedDate = formatDate(today_date);
+  List readings = [];
+  String? selectedPump;
   List daily_data = [];
   List outg_data = [];
   int total_benz = 0;
@@ -37,9 +40,20 @@ class _DailysState extends State<Dailys> {
   @override
   void initState() {
     super.initState();
-    getAllPumps();
+    getAllReadings();
     getDailys();
     get_OutG();
+  }
+
+  //function to format date
+  String formatDate(DateTime dateTime) {
+    String twoDigits(int n) {
+      if (n >= 10) return "$n";
+      return "0$n";
+    }
+
+    String formattedDate = "${dateTime.year}-${twoDigits(dateTime.month)}-${twoDigits(dateTime.day)}";
+    return "$formattedDate";
   }
 
   //server side function
@@ -121,52 +135,23 @@ class _DailysState extends State<Dailys> {
     );
   }
 
-  Future getAllPumps() async{
+  Future getAllReadings() async{
     setState(() {
       isLoading = true;
     });
 
     //call server
+    Map datas = {};
+    datas['date'] = today_date.toIso8601String();
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Pump.GetAllPump(auth.token);
+    final response = await API_Reading.GetReading(datas, auth.token);
 
     setState(() {
       isLoading = false;
-      data = response['pumps'];
+      readings = response['reading'];
       total_benz = response['total_benz'];
       total_gas = response['total_gas'];
     });
-  }
-
-  Future deletePump (pumpId) async {
-    setState(() {
-      isLoading = true;
-    });
-    //server post
-    final data = {};
-    data['pump_id'] = pumpId;
-    final auth = await SharedServices.LoginDetails();
-    final response = await API_Pump.DeletePump(data, auth.token);
-
-    setState(() {
-      isLoading = false;
-    });
-    response != false ? ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('تم الحذف بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
-        backgroundColor: Colors.red,
-      ),
-    )
-        :
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
-          backgroundColor: Colors.red,
-        )
-    );
-
-    //refresh
-    getAllPumps();
   }
 
   Future get_OutG() async {
@@ -188,7 +173,7 @@ class _DailysState extends State<Dailys> {
     }) :
     setState(() {
       isLoading = false;
-      data = [];
+      outg_data = [];
     });
   }
 
@@ -218,9 +203,11 @@ class _DailysState extends State<Dailys> {
 
     //refresh
     get_OutG();
+    await Future.delayed(Duration(milliseconds: 700));
+    Navigator.pushReplacementNamed(context, '/dailys');
   }
 
-  Future updatePump (data) async {
+  Future updateReading (data) async {
     setState(() {
       isLoading = true;
     });
@@ -231,63 +218,96 @@ class _DailysState extends State<Dailys> {
     response != false ?
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('تم تعديل بيانات المكنة بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+          content: Text('تم تعديل بيانات القراءة بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
           backgroundColor: Colors.green,
         )
     )  :
     ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+      content: Text('تم تسجيل القراءة مسبقا', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
       backgroundColor: Colors.red,
     )
     );
 
     //refresh
-    getAllPumps();
+    getAllReadings();
+  }
+
+  Future deleteReading (reading_id) async {
+    setState(() {
+      isLoading = true;
+    });
+    //send to server
+    Map data = {};
+    data['reading_id'] = reading_id;
+
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Reading.DeleteOne(data, auth.token);
+
+    response != false ?
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('تم حذف القراءة بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+          backgroundColor: Colors.green,
+        )
+    )  :
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('تم تسجيل القراءة مسبقا', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+          backgroundColor: Colors.red,
+        )
+    );
+
+    //refresh
+    getAllReadings();
   }
   //-----------------------------------------------
 
   
   //widgget Function
-  Widget Pumps(BuildContext context, data){
+  Widget Pumps(BuildContext context, data, height){
          return
            Padding(
               padding: const EdgeInsets.fromLTRB(10, 20, 10, 40),
               child: Container(
+                height: height,
                 decoration: BoxDecoration(
-                    color: data['type'] == 'جاز' ? Colors.green : Colors.blue,
-                    borderRadius: BorderRadius.circular(12)
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: data['type'] == 'جازولين' ? Colors.green : Colors.red,
+                      width: 3
+                    )
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('${data['name']}'),
+                    Text('${data['pump_name']}'),
                     SizedBox(height: 5,),
-                    Text('القراءة : ${data['reading']}'),
+                    Text(' ${data['f_reading']}', style: TextStyle(fontSize: 18)),
+                    Text(' ${data['last_reading']}', style: TextStyle(fontSize: 18)),
                     Text('عدد اللترات : ${data['amount']}'),
-                    Text('القيمة : ${data['value']} جنيه ', style: TextStyle(fontSize: 18),),
-
+                    Text('القيمة : ${data['value']}', style: TextStyle(fontSize: 18),),
                     SizedBox(height: 10,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ElevatedButton(
                             onPressed: (){
-                              _openModal(context, data);
+                              _updateReading(context, data);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black54
                             ),
-                            child: Text('قراءة جديدة')
+                            child: Text('تعديل البيانات')
                         ),
-                         SizedBox(width: 10,),
-                         InkWell(
-                           onTap: (){
-                             _deleteModal(context, data);
-                           },
-                             child: Icon(Icons.delete, color: Colors.redAccent,)
-                         ),
-
+                        SizedBox(width: 5,),
+                        InkWell(
+                            onTap: (){
+                              _deleteReading(context, data);
+                            },
+                            child: Icon(Icons.delete, color: Colors.redAccent,)
+                        ),
                       ],
                     ),
                     SizedBox(height: 10,),
@@ -297,16 +317,108 @@ class _DailysState extends State<Dailys> {
             );
   }
 
-  // modals functions
-  void _deleteModal(BuildContext context, data){
+  void _updateReading(BuildContext context, machine) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter SetState){
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: SimpleDialog(
+                  title: Text("تعديل القراءة"),
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: FormBuilder(
+                        // Define the form key to identify the form
+                        key: _formKey,
+                        // Define the form fields
+                        child: Column(
+                          children: [
+                            // Add a dropdown field
+                            FormBuilderTextField(
+                              name: 'machine',
+                              decoration: InputDecoration(labelText: 'المكنة'),
+                              initialValue: machine.isNotEmpty? '${machine['pump_name']}' : '',
+                              readOnly: true,
+                              validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                            ),
+                            // Add a text field
+
+                            FormBuilderTextField(
+                              name: 'reading',
+                              decoration: InputDecoration(labelText: 'القراءة'),
+                              readOnly: true,
+                              initialValue: machine.isNotEmpty? '${machine['f_reading']}' : '',
+                              validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                            ),
+                            // Add another text field
+                            FormBuilderTextField(
+                              name: 'nw_read',
+                              decoration: InputDecoration(labelText: 'القراءة الجديدة'),
+                              initialValue: machine.isNotEmpty? '${machine['last_reading']}' : '',
+                              validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                            ),
+                            SizedBox(height: 40,),
+                            // Add a submit button
+                            SizedBox(
+                              width: 100,
+                              height: 40,
+                              child: ElevatedButton(
+                                child: Text('ارسال'),
+                                style: ElevatedButton.styleFrom(
+                                    textStyle: TextStyle(fontSize: 18)
+                                ),
+                                onPressed: () {
+                                  if (_formKey.currentState!.saveAndValidate()) {
+                                    var data = {};
+                                    data['pump_id'] = machine['pumpPumpId'];
+                                    data['reading'] = _formKey.currentState!.value['reading'];
+                                    data['nw_reading'] = _formKey.currentState!.value['nw_read'];
+                                    data['date'] = today_date.toIso8601String();
+
+                                    //call backend------------
+                                    updateReading(data);
+                                    Navigator.pop(context);
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        TextButton.icon(
+                          icon: Icon(Icons.close),
+                          onPressed: () => Navigator.pop(context),
+                          label: Text('الغاء'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+            );
+
+          },
+
+        );
+      },
+    );
+  }
+
+  void _deleteReading(BuildContext context, data){
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: AlertDialog(
-            title: Text('حذف المكنة'),
-            content: Text(' هل انت متأكد برغبتك في حذف المكنة ${data['name']}'),
+            title: Text('حذف القراءة'),
+            content: Text(' هل انت متأكد برغبتك في حذف قراءة ${data['pump_name']}'),
             actions: [
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -320,95 +432,12 @@ class _DailysState extends State<Dailys> {
                             primary: Colors.white
                         ),
                         onPressed: (){
-                          deletePump(data['pump_id']);
+                          deleteReading(data['reading_id']);
                           Navigator.of(context).pop();
                         }
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _openModal(BuildContext context, machine) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: SimpleDialog(
-            title: Text("قراءة جديدة"),
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: FormBuilder(
-                  // Define the form key to identify the form
-                  key: _formKey,
-                  // Define the form fields
-                  child: Column(
-                    children: [
-                      // Add a dropdown field
-                      FormBuilderTextField(
-                        name: 'machine',
-                        decoration: InputDecoration(labelText: 'المكنة'),
-                        initialValue: machine.isNotEmpty? '${machine['name']}' : '',
-                        readOnly: true,
-                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                      ),
-                      // Add a text field
-                      FormBuilderTextField(
-                        name: 'old_read',
-                        decoration: InputDecoration(labelText: 'القراءة'),
-                        readOnly: true,
-                        initialValue: machine.isNotEmpty? '${machine['reading']}' : '',
-                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                      ),
-                      // Add another text field
-                      FormBuilderTextField(
-                        name: 'nw_read',
-                        decoration: InputDecoration(labelText: 'القراءة الجديدة'),
-                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                      ),
-                      SizedBox(height: 40,),
-                      // Add a submit button
-                      SizedBox(
-                        width: 100,
-                        height: 40,
-                        child: ElevatedButton(
-                          child: Text('ارسال'),
-                          style: ElevatedButton.styleFrom(
-                              textStyle: TextStyle(fontSize: 18)
-                          ),
-                          onPressed: () {
-                            if (_formKey.currentState!.saveAndValidate()) {
-                              var data = {};
-                              data['pump_id'] = machine['pump_id'];
-                              data['nw_reading'] = _formKey.currentState!.value['nw_read'];
-
-                              //call backend------------
-                              updatePump(data);
-                              Navigator.pop(context);
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  TextButton.icon(
-                    icon: Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                    label: Text('الغاء'),
-                  ),
-                ],
               ),
             ],
           ),
@@ -507,24 +536,63 @@ class _DailysState extends State<Dailys> {
                 child: ListView(
                   children:[Column(
                     children: [
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: ScrollPhysics(),
-                            itemCount: data.length,
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 5
-                              ),
-                            itemBuilder: (context, index) =>
-                              Pumps(context, data[index])
+                          SizedBox(height: 10,),
+                          Container(
+                            color: Colors.blueGrey,
+                            width: MediaQuery.of(context).size.width/3,
+                            height: 40,
+                            child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      ' تاريخ اليومية : ',
+                                      style: TextStyle(fontSize: 19, color: Colors.white, fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      ' ${formattedDate} ',
+                                      style: TextStyle(fontSize: 19, color: Colors.white, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                )
+
+                          ),
+                          SizedBox(height: 20,),
+                          LayoutBuilder(
+                            builder: (BuildContext context, BoxConstraints constraints ){
+                              if(constraints.maxWidth > 800){
+                                return GridView.builder(
+                                      shrinkWrap: true,
+                                      physics: ScrollPhysics(),
+                                      itemCount: readings.length,
+                                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 5,
+                                        childAspectRatio: 0.75,
+                                      ),
+                                      itemBuilder: (context, index) =>
+                                          Pumps(context, readings[index], 430.0)
+                                    );
+                              }else{
+                                return GridView.builder(
+                                    shrinkWrap: true,
+                                    physics: ScrollPhysics(),
+                                    itemCount: readings.length,
+                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      childAspectRatio: 0.75,
+                                    ),
+                                    itemBuilder: (context, index) =>
+                                        Pumps(context, readings[index], 300.0)
+                                );
+                              }
+                            }
                           ),
                       Container(
-                        color: Colors.grey[300],
+                        color: Colors.grey[200],
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
                               Container(
-                                color: Colors.green,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Row(
@@ -540,7 +608,7 @@ class _DailysState extends State<Dailys> {
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 21,
-                                            color: Colors.black
+                                            color: Colors.green
                                         ),
                                       ),
                                     ],
@@ -549,7 +617,6 @@ class _DailysState extends State<Dailys> {
                               ),
                               SizedBox(height: 9,),
                               Container(
-                                color: Colors.blue,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Row(
@@ -565,7 +632,7 @@ class _DailysState extends State<Dailys> {
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 21,
-                                            color: Colors.black
+                                            color: Colors.red
                                         ),
                                       ),
                                     ],
@@ -586,7 +653,7 @@ class _DailysState extends State<Dailys> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 21,
-                                        color: Colors.red
+                                        color: Colors.black
                                     ),
                                   ),
                                 ],
@@ -594,6 +661,14 @@ class _DailysState extends State<Dailys> {
                             ],
                           ),
                         ),
+                      ),
+                      SizedBox(height: 10,),
+                      ElevatedButton.icon(
+                          onPressed: (){
+                            Navigator.pushReplacementNamed(context, '/add_reading');
+                          },
+                          icon: Icon(Icons.add, size: 30,),
+                          label: Text('قراءة جديدة'),
                       ),
                       SizedBox(height: 150,),
                       Container(
@@ -662,7 +737,7 @@ class _DailysState extends State<Dailys> {
                             onPressed: (){
                               addDaily();
                             },
-                            child: Text('حساب اليومية', style: TextStyle(fontSize: 18),)
+                            child: Text('حفظ اليومية', style: TextStyle(fontSize: 18),)
                         ),
                       ),
                       SizedBox(height: 25,),

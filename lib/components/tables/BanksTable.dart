@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:oil_pump_system/API/banks.dart';
-import 'package:oil_pump_system/API/gas.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/models/banks_data.dart';
+import 'package:OilEnergy_System/API/banks.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/models/banks_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:oil_pump_system/widgets/banksDetails.dart';
+import 'package:OilEnergy_System/widgets/banksDetails.dart';
 
 class BanksTable extends StatefulWidget {
   List data;
@@ -44,7 +43,7 @@ class _BanksTableState extends State<BanksTable> {
     //send to server
     if(selectedIds.length != 0){
       final auth = await SharedServices.LoginDetails();
-      API_Bank.Delete_Bank(selectedIds, auth.token).then((response){
+      API_Bank.Delete_Bank(selectedIds, auth.token).then((response) async{
         setState(() {
           isLoading = false;
         });
@@ -56,6 +55,8 @@ class _BanksTableState extends State<BanksTable> {
               backgroundColor: Colors.red,
             ),
           );
+          await Future.delayed(Duration(milliseconds: 600));
+          Navigator.pushReplacementNamed(context, '/banks');
           selectedIds = [];
 
         }else{
@@ -85,7 +86,6 @@ class _BanksTableState extends State<BanksTable> {
     //send to server
     final auth = await SharedServices.LoginDetails();
     final response = await API_Bank.Add_Banks(data, auth.token);
-    print(response);
 
     setState(() {
       isLoading = false;
@@ -100,10 +100,12 @@ class _BanksTableState extends State<BanksTable> {
     ) :
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('تم الحذف بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+          content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
           backgroundColor: Colors.red,
       ),
     );
+    await Future.delayed(Duration(milliseconds: 300));
+    Navigator.pushReplacementNamed(context, '/banks');
 
   }
 //-------------------------------------
@@ -229,64 +231,59 @@ class _BanksTableState extends State<BanksTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 400,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: TextField(
-                          controller: _searchController,
-                          decoration: const InputDecoration(
-                            labelText: 'ابحث',
+            LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints ){
+                if(constraints.maxWidth > 700){
+                  return Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(width: 5,),
+                          TextButton.icon(
+                            onPressed: (){
+                              _deleteModal(context);
+                            } ,
+                            icon: Icon(Icons.delete),
+                            label: Text(''),
                           ),
-                          onSubmitted: (vlaue) {
-                            source.filterServerSide(_searchController.text);
-                          },
-                        ),
+                          ElevatedButton.icon(
+                            onPressed: (){
+                              _addBankModal(context);
+                            } ,
+                            icon: Icon(Icons.add),
+                            label: Text('حساب بنك جديد'),
+                          ),
+                        ],
+                      );
+                }else{
+                  return Column(
+                    children: [
+                      SizedBox(height: 20,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(width: 5,),
+                          TextButton.icon(
+                            onPressed: (){
+                              _deleteModal(context);
+                            } ,
+                            icon: Icon(Icons.delete),
+                            label: Text(''),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: (){
+                              _addBankModal(context);
+                            } ,
+                            icon: Icon(Icons.add),
+                            label: Text('حساب بنك جديد'),
+                          ),
+                        ],
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _searchController.text = '';
-                        });
-                        source.filterServerSide(_searchController.text);
-                      },
-                      icon: const Icon(Icons.clear),
-                    ),
-                    IconButton(
-                      onPressed: () =>
-                          source.filterServerSide(_searchController.text),
-                      icon: const Icon(Icons.search),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    SizedBox(width: 5,),
-                    TextButton.icon(
-                      onPressed: (){
-                        _deleteModal(context);
-                      } ,
-                      icon: Icon(Icons.delete),
-                      label: Text(''),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: (){
-                        _addBankModal(context);
-                      } ,
-                      icon: Icon(Icons.add),
-                      label: Text('حساب بنك جديد'),
-                    ),
-                  ],
-                )
-
-              ],
+                    ],
+                  );
+                }
+              },
             ),
+            SizedBox(height: 20,),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,

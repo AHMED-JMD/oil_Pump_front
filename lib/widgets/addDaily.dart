@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/API/daily.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/API/client.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
+import 'package:OilEnergy_System/API/daily.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/API/client.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sidebarx/sidebarx.dart';
@@ -133,7 +133,7 @@ class _AddDailyState extends State<AddDaily> {
                                       decoration: InputDecoration(labelText: 'الحالة'),
                                       validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                       onChanged: (val) {
-                                        type = val; // Print the text value write into TextField
+                                          type = val;// Print the text value write into TextField
                                       },
                                       items: ['له', 'عليه',]
                                           .map((type) => DropdownMenuItem(
@@ -142,73 +142,76 @@ class _AddDailyState extends State<AddDaily> {
                                       ))
                                           .toList(),
                                     ),
-                                    FormBuilderDropdown(
-                                      name: 'gas_type',
-                                      decoration: InputDecoration(labelText: 'نوع الوقود'),
-                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                      onChanged: (val) {
-                                        gas_type = val; // Print the text value write into TextField
-                                      },
-                                      items: ['بنزين', 'جاز',]
-                                          .map((type) => DropdownMenuItem(
-                                        value: type,
-                                        child: Text('$type'),
-                                      ))
-                                          .toList(),
-                                    ),
-                                    FormBuilderTextField(
-                                      name: 'gas_amount',
-                                      decoration: InputDecoration(
-                                          labelText: 'كمية الوقود باللتر',
-                                          suffixIcon: Icon(Icons.gas_meter, color: Colors.blueAccent,)
-                                      ),
-                                      onChanged: (val) {
-                                        gas_amount = val; // Print the text value write into TextField
-                                      },
-                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                    ),
-                                    // Add another text field
-                                    FormBuilderTextField(
-                                      name: 'amount',
-                                      decoration: InputDecoration(
-                                          labelText: 'المبلغ',
-                                          suffixIcon: Icon(Icons.monetization_on, color: Colors.blueAccent,)
-                                      ),
-                                      onChanged: (val) {
-                                        amount = val; // Print the text value write into TextField
-                                      },
-                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                    ),
-                                    FormBuilderDateTimePicker(
-                                      name: 'date',
-                                      decoration: InputDecoration(
-                                        labelText: 'التاريخ',
-                                          suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
-                                      ),
-                                      onChanged: (value){
-                                        nw_date = value;
-                                      },
-                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                      initialDate: DateTime.now(),
-                                      initialValue: DateTime.now(),
-                                      inputType: InputType.date,
-                                    ),
-                                    FormBuilderTextField(
-                                      name: 'comment',
-                                      decoration: InputDecoration(
-                                        labelText: 'البيان',
-                                          suffixIcon: Icon(Icons.comment, color: Colors.blueAccent,)
-                                      ),
-                                      onChanged: (val) {
-                                        comment = val; // Print the text value write into TextField
-                                      },
-                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                    ),
+                                    Column(
+                                      children: [
+                                        FormBuilderDropdown(
+                                          name: 'gas_type',
+                                          decoration: InputDecoration(labelText: 'نوع الوقود'),
+                                          validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                          onChanged: (val) {
+                                            gas_type = val; // Print the text value write into TextField
+                                          },
+                                          items: ['بنزين', 'جازولين',]
+                                              .map((type) => DropdownMenuItem(
+                                            value: type,
+                                            child: Text('$type'),
+                                          ))
+                                              .toList(),
+                                        ),
+                                        FormBuilderTextField(
+                                          name: 'gas_amount',
+                                          decoration: InputDecoration(
+                                              labelText: 'كمية الوقود باللتر',
+                                              suffixIcon: Icon(Icons.gas_meter, color: Colors.blueAccent,)
+                                          ),
+                                          onChanged: (val) {
+                                            gas_amount = val; // Print the text value write into TextField
+                                          },
+                                          validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                        ),
+                                        FormBuilderTextField(
+                                          name: 'amount',
+                                          decoration: InputDecoration(
+                                              labelText: 'المبلغ',
+                                              suffixIcon: Icon(Icons.monetization_on, color: Colors.blueAccent,)
+                                          ),
+                                          onChanged: (val) {
+                                            amount = val; // Print the text value write into TextField
+                                          },
+                                          validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                        ),
+                                        FormBuilderDateTimePicker(
+                                          name: 'date',
+                                          decoration: InputDecoration(
+                                              labelText: 'التاريخ',
+                                              suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
+                                          ),
+                                          onChanged: (value){
+                                            nw_date = value;
+                                          },
+                                          validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                          initialDate: DateTime.now(),
+                                          initialValue: DateTime.now(),
+                                          inputType: InputType.date,
+                                        ),
+                                        FormBuilderTextField(
+                                          name: 'comment',
+                                          decoration: InputDecoration(
+                                              labelText: 'البيان',
+                                              suffixIcon: Icon(Icons.comment, color: Colors.blueAccent,)
+                                          ),
+                                          onChanged: (val) {
+                                            comment = val; // Print the text value write into TextField
+                                          },
+                                          validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                        ),
+                                      ],
+                                    ), // Add another text field
                                     SizedBox(height: 40,),
                                     // Add a submit button
                                     SizedBox(
-                                      width: 100,
-                                      height: 40,
+                                      width: 300,
+                                      height: 50,
                                       child: ElevatedButton(
                                         child: Text('ارسال'),
                                         style: ElevatedButton.styleFrom(

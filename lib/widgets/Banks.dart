@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/API/banks.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
-import 'package:oil_pump_system/components/tables/BanksTable.dart';
+import 'package:OilEnergy_System/API/banks.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
+import 'package:OilEnergy_System/components/tables/BanksTable.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class Banks extends StatefulWidget {
@@ -14,7 +14,7 @@ class Banks extends StatefulWidget {
 }
 
 class _BanksState extends State<Banks> {
-  SidebarXController controller = SidebarXController(selectedIndex: 4, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 7, extended: true);
   bool isLoading = false;
   List data = [];
   int total = 0;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:oil_pump_system/API/auth.dart';
+import 'package:OilEnergy_System/API/auth.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Container(
                     width: 600,
-                    height: 450,
+                    height: 460,
                     decoration: BoxDecoration(
                         color: Color.fromRGBO(255, 255, 255, 0.8),
                       borderRadius: BorderRadius.circular(13)
@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
 
                                       if(response == true){
 
-                                        Navigator.pushReplacementNamed(context, '/old_daily');
+                                        Navigator.pushReplacementNamed(context, '/home');
                                       }
                                       else{
                                         ScaffoldMessenger.of(context).showSnackBar(

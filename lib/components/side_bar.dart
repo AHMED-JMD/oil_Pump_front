@@ -69,33 +69,51 @@ class _NavbarState extends State<Navbar> {
       footerDivider: divider,
       items:  [
         SidebarXItem(
-            // icon: Icons.home_work,
-            iconWidget:
-            DropdownButton(
-                  value: selected,
-                  hint: Text(' اليوميات ', style: TextStyle(color: Colors.grey[300]),),
-                  onChanged: (value){
-                    setState(() {
-                      selected = value;
-                    });
-                    value == 'يوميات سابقة' ? Navigator.pushReplacementNamed(context, '/old_daily') : Navigator.pushReplacementNamed(context, '/dailys');
-                  },
-                  items: options.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  style: TextStyle(color: Colors.grey[300]),
-                  icon: Icon(Icons.arrow_drop_down_circle_sharp),
-                  iconEnabledColor: Colors.grey[300],
-                  dropdownColor: canvasColor,
-                  underline: SizedBox(),
-                ),
+            icon: Icons.home,
+            label: ' الرئيسية ',
+            onTap: (){
+              Navigator.pushReplacementNamed(context, '/home');
+            }
+        ),
+        SidebarXItem(
+            icon: Icons.bar_chart_outlined,
+            label: ' اليوميات ',
+            onTap: (){
+              Navigator.pushReplacementNamed(context, '/old_daily');
+            }
+            // iconWidget:
+            // DropdownButton(
+            //       value: selected,
+            //       hint: Text(' اليوميات ', style: TextStyle(color: Colors.grey[300]),),
+            //       onChanged: (value){
+            //         setState(() {
+            //           selected = value;
+            //         });
+            //         value == 'يوميات سابقة' ? Navigator.pushReplacementNamed(context, '/old_daily') : Navigator.pushReplacementNamed(context, '/dailys');
+            //       },
+            //       items: options.map<DropdownMenuItem<String>>((String value) {
+            //         return DropdownMenuItem<String>(
+            //           value: value,
+            //           child: Text(value),
+            //         );
+            //       }).toList(),
+            //       style: TextStyle(color: Colors.grey[300]),
+            //       icon: Icon(Icons.arrow_drop_down_circle_sharp),
+            //       iconEnabledColor: Colors.grey[300],
+            //       dropdownColor: canvasColor,
+            //       underline: SizedBox(),
+            //     ),
+        ),
+        SidebarXItem(
+            icon: Icons.add_chart_rounded,
+            label: ' يومية جديدة ',
+            onTap: (){
+              Navigator.pushReplacementNamed(context, '/dailys');
+            }
         ),
         SidebarXItem(
             icon: Icons.gas_meter,
-            label: ' حالة الوقود ',
+            label: ' الوقود ',
             onTap: (){
               Navigator.pushReplacementNamed(context, '/gasolines');
             }
@@ -104,7 +122,14 @@ class _NavbarState extends State<Navbar> {
             icon: Icons.person_4,
             label: 'العملاء',
             onTap: (){
-              Navigator.pushReplacementNamed(context, '/employees');
+              Navigator.pushReplacementNamed(context, '/clients');
+            }
+        ),
+        SidebarXItem(
+            icon: Icons.local_gas_station,
+            label: ' مكنات الوقود ',
+            onTap: (){
+              Navigator.pushReplacementNamed(context, '/machines');
             }
         ),
         SidebarXItem(
@@ -119,13 +144,6 @@ class _NavbarState extends State<Navbar> {
             label: ' الخزنة و البنوك ',
             onTap: (){
               Navigator.pushReplacementNamed(context, '/banks');
-            }
-        ),
-        SidebarXItem(
-            icon: Icons.account_balance_wallet,
-            label: ' السندات ',
-            onTap: (){
-              Navigator.pushReplacementNamed(context, '/bonds');
             }
         ),
       ],

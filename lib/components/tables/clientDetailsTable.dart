@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/API/daily.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/models/daily_data.dart';
+import 'package:OilEnergy_System/API/daily.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/models/daily_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 
@@ -119,66 +119,64 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 400,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: TextField(
-                          controller: _searchController,
-                          decoration: const InputDecoration(
-                            labelText: 'ابحث',
+            LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints ){
+                if(constraints.maxWidth > 700){
+                  return Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton.icon(
+                            onPressed: (){
+                              _deleteModal(context);
+                            } ,
+                            icon: Icon(
+                              Icons.delete,
+                            ),
+                            label: Text(''),
                           ),
-                          onSubmitted: (vlaue) {
-                            source.filterServerSide(_searchController.text);
-                          },
-                        ),
+                          SizedBox(width: 3,),
+                          ElevatedButton(
+                              onPressed: (){
+                                Navigator.pushNamed(context, '/add_daily');
+                              } ,
+                              child: Text('معاملة جديدة')
+                          ),
+                          SizedBox(width: 5,),
+                        ],
+                      );
+                }else{
+                  return Column(
+                    children: [
+                      SizedBox(height: 20,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton.icon(
+                            onPressed: (){
+                              _deleteModal(context);
+                            } ,
+                            icon: Icon(
+                              Icons.delete,
+                            ),
+                            label: Text(''),
+                          ),
+                          SizedBox(width: 3,),
+                          ElevatedButton(
+                              onPressed: (){
+                                Navigator.pushNamed(context, '/add_daily');
+                              } ,
+                              child: Text('معاملة جديدة')
+                          ),
+                          SizedBox(width: 5,),
+                        ],
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _searchController.text = '';
-                        });
-                        source.filterServerSide(_searchController.text);
-                      },
-                      icon: const Icon(Icons.clear),
-                    ),
-                    IconButton(
-                      onPressed: () =>
-                          source.filterServerSide(_searchController.text),
-                      icon: const Icon(Icons.search),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    TextButton.icon(
-                      onPressed: (){
-                        _deleteModal(context);
-                      } ,
-                      icon: Icon(
-                        Icons.delete,
-                      ),
-                      label: Text(''),
-                    ),
-                    SizedBox(width: 3,),
-                    ElevatedButton(
-                        onPressed: (){
-                          Navigator.pushNamed(context, '/add_daily');
-                        } ,
-                        child: Text('معاملة جديدة')
-                    ),
-                    SizedBox(width: 5,),
-                  ],
-                )
-
-              ],
+                      SizedBox(height: 20,)
+                    ],
+                  );
+                }
+              },
             ),
+            SizedBox(height: 20,),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,

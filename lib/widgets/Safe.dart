@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class Safe extends StatefulWidget {

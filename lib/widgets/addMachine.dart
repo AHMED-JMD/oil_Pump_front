@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:oil_pump_system/API/pump.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
+import 'package:OilEnergy_System/API/pump.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class AddMachine extends StatefulWidget {
@@ -16,7 +16,7 @@ class AddMachine extends StatefulWidget {
 
 class _AddMachineState extends State<AddMachine> {
   GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
-  SidebarXController controller = SidebarXController(selectedIndex: 1, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 5, extended: true);
 
   bool isLoading = false;
 
@@ -76,7 +76,7 @@ class _AddMachineState extends State<AddMachine> {
                                           labelText: 'نوع المكنة'
                                       ),
                                       validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                      items: ['جاز', 'بنزين'].map((value) =>
+                                      items: ['جازولين', 'بنزين'].map((value) =>
                                           DropdownMenuItem(
                                             value: value,
                                             child: Text('$value'),
@@ -93,7 +93,7 @@ class _AddMachineState extends State<AddMachine> {
                                   FormBuilderTextField(
                                     name: 'reading',
                                     decoration: InputDecoration(
-                                      labelText: 'القراءة الاولى'
+                                      labelText: 'قراءة العداد'
                                     ),
                                     validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                   ),

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:api_cache_manager/api_cache_manager.dart';
 import 'package:api_cache_manager/models/cache_db_model.dart';
-import 'package:oil_pump_system/models/Login.dart';
+import 'package:OilEnergy_System/models/Login.dart';
 
 class SharedServices {
   //check logged in status

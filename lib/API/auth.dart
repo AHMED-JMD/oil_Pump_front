@@ -1,7 +1,7 @@
 import 'package:http/http.dart';
 import 'dart:convert';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/models/Login.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/models/Login.dart';
 
 class API_auth {
   static Future Login(data) async{

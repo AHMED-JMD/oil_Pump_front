@@ -1,18 +1,20 @@
+import 'package:OilEnergy_System/widgets/Pumps.dart';
+import 'package:OilEnergy_System/widgets/addReadings.dart';
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/widgets/Banks.dart';
-import 'package:oil_pump_system/widgets/Bonds.dart';
-import 'package:oil_pump_system/widgets/Daily.dart';
-import 'package:oil_pump_system/widgets/Clients.dart';
-import 'package:oil_pump_system/widgets/Gasoline.dart';
-import 'package:oil_pump_system/widgets/Income.dart';
-import 'package:oil_pump_system/widgets/Safe.dart';
-import 'package:oil_pump_system/widgets/addDaily.dart';
-import 'package:oil_pump_system/widgets/addClient.dart';
-import 'package:oil_pump_system/widgets/addMachine.dart';
-import 'package:oil_pump_system/widgets/addReciept.dart';
-import 'package:oil_pump_system/widgets/home.dart';
-import 'package:oil_pump_system/widgets/oldDailys.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/widgets/Banks.dart';
+import 'package:OilEnergy_System/widgets/Daily.dart';
+import 'package:OilEnergy_System/widgets/Clients.dart';
+import 'package:OilEnergy_System/widgets/Gasoline.dart';
+import 'package:OilEnergy_System/widgets/Income.dart';
+import 'package:OilEnergy_System/widgets/MainPage.dart';
+import 'package:OilEnergy_System/widgets/Safe.dart';
+import 'package:OilEnergy_System/widgets/addDaily.dart';
+import 'package:OilEnergy_System/widgets/addClient.dart';
+import 'package:OilEnergy_System/widgets/addMachine.dart';
+import 'package:OilEnergy_System/widgets/addReciept.dart';
+import 'package:OilEnergy_System/widgets/home.dart';
+import 'package:OilEnergy_System/widgets/oldDailys.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -27,7 +29,7 @@ void main() async{
 
   bool _isLoggedIn = await SharedServices.isLoggedIn();
   if(_isLoggedIn){
-    _defaultHome = OldDailys();
+    _defaultHome = MainPage();
   }
 
   runApp(const MyApp());
@@ -39,22 +41,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(fontFamily: 'Cairo'),
       debugShowCheckedModeBanner: false,
       routes: {
         '/' : (context) => _defaultHome,
+        '/home': (context) => MainPage(),
         '/login' : (context) => HomePage(),
         '/dailys': (context) => Dailys(),
         '/add_daily' : (context) => AddDaily(),
         '/old_daily' : (context) => OldDailys(),
-        '/employees' : (context) => Employees(),
-        '/add_employee' : (context) => AddEmployee(),
+        '/clients' : (context) => Clients(),
+        '/add_client' : (context) => AddEmployee(),
         '/gasolines' : (context) => Gasolines(),
+        '/machines' : (context) => Machine_Pumps(),
         '/add_machine': (context) => AddMachine(),
+        '/add_reading': (context) => AddReading(),
         '/incomes' : (context) => Incomes(),
         '/add_reciept' : (context) => AddReciept(),
         '/banks' : (context) => Banks(),
         '/safe' : (context) => Safe(),
-        '/bonds' : (context) => Bonds(),
       },
     );
   }

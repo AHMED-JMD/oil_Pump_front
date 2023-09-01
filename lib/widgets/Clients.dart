@@ -1,18 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
-import 'package:oil_pump_system/components/tables/ClientTable.dart';
+import 'package:OilEnergy_System/API/client.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
+import 'package:OilEnergy_System/components/tables/ClientTable.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sidebarx/sidebarx.dart';
 
-class Employees extends StatefulWidget {
-  const Employees({super.key});
+class Clients extends StatefulWidget {
+  const Clients({super.key});
 
   @override
-  State<Employees> createState() => _EmployeesState();
+  State<Clients> createState() => _ClientsState();
 }
 
-class _EmployeesState extends State<Employees> {
-  SidebarXController controller = SidebarXController(selectedIndex: 2, extended: true);
+class _ClientsState extends State<Clients> {
+  SidebarXController controller = SidebarXController(selectedIndex: 4, extended: true);
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+  bool isLoading = false;
+  List clients = [];
+
+  @override
+  void initState() {
+    getClients();
+    super.initState();
+  }
+
+  //Future server functions
+  Future getClients() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    //send to server
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Emp.getClients(auth.token);
+
+    if(response != false){
+      setState(() {
+        isLoading = false;
+        clients = response;
+      });
+    }
+  }
+  //on Submit
+  Future _OnSubmit(data) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    //send to server
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Emp.FindClient(data, auth.token);
+
+    if(response != false){
+      setState(() {
+        isLoading = false;
+        clients = response;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +94,136 @@ class _EmployeesState extends State<Employees> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        clients.length != 0?
                         Container(
                             color: Colors.grey.shade100,
-                            child: EmployeeTable()
-                        ),
+                            child: Column(
+                              children: [
+                                FormBuilder(
+                                    key: _formKey,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 8.0, right: 20),
+                                              child: Container(
+                                                width: MediaQuery.of(context).size.width/3.2,
+                                                child: FormBuilderTextField(
+                                                    name: 'name',
+                                                    decoration: InputDecoration(
+                                                        labelText: 'ابحث بالاسم',
+                                                    ),
+                                                    onChanged: (val){},
+                                                    validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الحقول"),
+                                                  ),
+                                              ),
+                                            ),
+                                            SizedBox(width: 10,),
+                                            // Add a submit button
+                                            IconButton(
+                                              onPressed: (){
+                                                if(_formKey.currentState!.saveAndValidate()){
+                                                    //send to server
+                                                  _OnSubmit(_formKey.currentState!.value);
+                                                  setState(() {
+                                                    clients = [];
+                                                  });
+                                                }
+                                              },
+                                              icon: Icon(Icons.search, size: 30,),
+                                            ),
+                                            SizedBox(width: 20,),
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 8.0),
+                                              child: TextButton.icon(
+                                                onPressed: () {
+                                                  getClients();
+                                                  setState(() {
+                                                    clients = [];
+                                                  });
+                                                },
+                                                style: TextButton.styleFrom(
+                                                  backgroundColor: Colors.grey[300],
+                                                  minimumSize: Size(70, 50)
+                                                ),
+                                                label: Text('الكل', style: TextStyle(color: Colors.black, fontSize: 17),),
+                                                icon: const Icon(Icons.person_search_outlined, size: 30, color: Colors.red,),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
+                                ClientsTable(clients: clients,),
+                              ],
+                            )
+                        ) : Column(
+                          children: [
+                            FormBuilder(
+                                key: _formKey,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 8.0, right: 20),
+                                          child: Container(
+                                            width: MediaQuery.of(context).size.width/3.2,
+                                            child: FormBuilderTextField(
+                                              name: 'name',
+                                              decoration: InputDecoration(
+                                                labelText: 'ابحث بالاسم',
+                                              ),
+                                              onChanged: (val){},
+                                              validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الحقول"),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 10,),
+                                        // Add a submit button
+                                        IconButton(
+                                          onPressed: (){
+                                            if(_formKey.currentState!.saveAndValidate()){
+                                              //send to server
+                                              _OnSubmit(_formKey.currentState!.value);
+                                              setState(() {
+                                                clients = [];
+                                              });
+                                            }
+                                          },
+                                          icon: Icon(Icons.search, size: 30,),
+                                        ),
+                                        SizedBox(width: 20,),
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 8.0),
+                                          child: TextButton.icon(
+                                            onPressed: () {
+                                              getClients();
+                                              setState(() {
+                                                clients = [];
+                                              });
+                                            },
+                                            style: TextButton.styleFrom(
+                                                backgroundColor: Colors.grey[300],
+                                                minimumSize: Size(70, 50)
+                                            ),
+                                            label: Text('الكل', style: TextStyle(color: Colors.black, fontSize: 17),),
+                                            icon: const Icon(Icons.person_search_outlined, size: 30, color: Colors.red,),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                            ),
+                            SizedBox(height: 20,),
+                            ClientsTable(clients: clients),
+                          ],
+                        )
                       ],
                     ),
                   ]

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:oil_pump_system/API/daily.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
-import 'package:oil_pump_system/widgets/dailyDetails.dart';
+import 'package:OilEnergy_System/API/daily.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
+import 'package:OilEnergy_System/widgets/dailyDetails.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class OldDailys extends StatefulWidget {
@@ -16,7 +16,7 @@ class OldDailys extends StatefulWidget {
 }
 
 class _OldDailysState extends State<OldDailys> {
-  SidebarXController controller = SidebarXController(selectedIndex: 0, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 1, extended: true);
   GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   bool isLoading = false;
@@ -82,8 +82,10 @@ class _OldDailysState extends State<OldDailys> {
     //send to server
     Map data = {};
     data['daily_id'] = daily_id;
+    data['date'] = date!.toIso8601String();
+
       final auth = await SharedServices.LoginDetails();
-      API_Daily.Delete_Daily(data, auth.token).then((response){
+      API_Daily.Delete_Daily(data, auth.token).then((response)async {
         setState(() {
           isLoading = false;
         });
@@ -94,6 +96,8 @@ class _OldDailysState extends State<OldDailys> {
               backgroundColor: Colors.red,
             ),
           );
+          await Future.delayed(Duration(milliseconds: 600));
+          Navigator.pushReplacementNamed(context, '/old_daily');
         }else{
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -166,7 +170,15 @@ class _OldDailysState extends State<OldDailys> {
                             colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.difference),
                           )
                       ),
-                      child: Center(child: Text('اليوميات السابقة', style: TextStyle(fontSize: 26, color: Colors.white), textAlign: TextAlign.center,)),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('اليوميات السابقة',
+                                style: TextStyle(fontSize: 26, color: Colors.white),
+                                textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 70,),
                     Padding(
@@ -293,7 +305,7 @@ class _OldDailysState extends State<OldDailys> {
                                 borderRadius: BorderRadius.circular(12)
                             ),
                             child: Center(
-                                child: Text('لا يوجد يوميات اليوم',textAlign: TextAlign.center, style: TextStyle(fontSize: 18, color: Colors.white),)
+                                child: Text('لا يوجد يوميات سابقة',textAlign: TextAlign.center, style: TextStyle(fontSize: 18, color: Colors.white),)
                             )
                         )
                     )

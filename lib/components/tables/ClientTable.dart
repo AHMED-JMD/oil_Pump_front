@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/API/client.dart';
-import 'package:oil_pump_system/SharedService.dart';
+import 'package:OilEnergy_System/API/client.dart';
+import 'package:OilEnergy_System/SharedService.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:http/http.dart';
-import 'dart:convert';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:oil_pump_system/models/employee_data.dart';
-import 'package:oil_pump_system/widgets/ClientsDetails.dart';
+import 'package:OilEnergy_System/models/employee_data.dart';
+import 'package:OilEnergy_System/widgets/ClientsDetails.dart';
 
 
-class EmployeeTable extends StatefulWidget {
+class ClientsTable extends StatefulWidget {
   // late void Function(int) setPage;
-  EmployeeTable({Key? key,}) : super(key: key);
+  List clients;
+  ClientsTable({Key? key, required this.clients}) : super(key: key);
 
   @override
-  State<EmployeeTable> createState() => _EmployeeTableState();
+  State<ClientsTable> createState() => _ClientsTableState(clients: clients);
 }
 
-class _EmployeeTableState extends State<EmployeeTable> {
+class _ClientsTableState extends State<ClientsTable> {
+  List clients;
+  _ClientsTableState({required this.clients});
+
   bool isLoading = false;
-  var rowsPerPage = 5;
+  var rowsPerPage = 10;
+  List filteredClients = [];
   final _searchController = TextEditingController();
+  late final source = ExampleSource(context: context, clients: clients, filtered: filteredClients);
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   @override
@@ -32,7 +36,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
   }
 
   //server ---- function to delete employee
-  Future<void> deleteEmploye() async{
+  Future deleteClient() async{
     setState(() {
       isLoading = true;
     });
@@ -40,7 +44,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
     //send response to server
     if(selectedIds.length != 0) {
       final auth = await SharedServices.LoginDetails();
-      API_Emp.Delete_Client(selectedIds, auth.token).then((response){
+      API_Emp.Delete_Client(selectedIds, auth.token).then((response) async{
         setState(() {
           isLoading = false;
         });
@@ -51,6 +55,9 @@ class _EmployeeTableState extends State<EmployeeTable> {
               backgroundColor: Colors.red,
             ),
           );
+
+          await Future.delayed(Duration(milliseconds: 600));
+          Navigator.pushReplacementNamed(context, '/employees');
           selectedIds = [];
         }else{
           ScaffoldMessenger.of(context).showSnackBar(
@@ -71,6 +78,72 @@ class _EmployeeTableState extends State<EmployeeTable> {
         ),
       );
     }
+  }
+  //update clients
+  Future updateClient(data) async{
+    setState(() {
+      isLoading = true;
+    });
+
+    //send response to server
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Emp.EditClient(data, auth.token);
+
+    if(response != false){
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('تم التعديل بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17, color: Colors.white),),
+          backgroundColor: Colors.green,
+        ),
+      );
+      await Future.delayed(Duration(milliseconds: 600));
+      Navigator.pushReplacementNamed(context, '/clients');
+    }else{
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17, color: Colors.white),),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+
+  }
+  //find client
+  Future findClient(name) async{
+    setState(() {
+      isLoading = true;
+    });
+
+    //send response to server
+    Map data = {};
+    data['name'] = name;
+
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Emp.FindClient(data, auth.token);
+
+    if(response != false){
+      setState(() {
+        isLoading = false;
+        filteredClients = response;
+      });
+    }else{
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('لايوجد عميل بهدا الاسم', textAlign: TextAlign.center, style: TextStyle(fontSize: 17, color: Colors.white),),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+
   }
 
   //delete open
@@ -96,7 +169,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
                       ),
                       child: Text('حذف'),
                       onPressed: (){
-                        deleteEmploye();
+                        deleteClient();
                         Navigator.of(context).pop();
                       },
                     ),
@@ -117,7 +190,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: SimpleDialog(
-            title: Text('خصم الراتب'),
+            title: Text('تعديل الحساب'),
             children:[
               Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -126,42 +199,75 @@ class _EmployeeTableState extends State<EmployeeTable> {
                  child: Column(
                   children: [
                     FormBuilderDropdown(
-                        name: 'employee',
+                        name: 'emp_id',
                         decoration: InputDecoration(labelText: 'اختر الموظف'),
                         validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
-                        items: ['items', 'item2', 'item3']
-                        .map((value) =>
+                        items: clients
+                        .map((client) =>
+                            DropdownMenuItem(
+                              value: client['emp_id'],
+                              child: Text('${client['name']}'),
+                            )).toList()
+                        ),
+                    FormBuilderDropdown(
+                        name: 'edit_type',
+                        decoration: InputDecoration(labelText: 'نوع التعديل'),
+                        validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                        items: ['حذف', 'اضافة',]
+                            .map((value) =>
                             DropdownMenuItem(
                               value: value,
                               child: Text(value),
                             )).toList()
-                        ),
+                    ),
                     FormBuilderTextField(
                         name: 'amount',
                         decoration: InputDecoration(labelText: 'المبلغ'),
                         validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
-                    )
+                    ),
+                    FormBuilderDateTimePicker(
+                      name: 'date',
+                      decoration: InputDecoration(
+                          labelText: 'التاريخ',
+                          suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
+                      ),
+                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                      initialDate: DateTime.now(),
+                      inputType: InputType.date,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0, top: 30),
+                      child: Center(
+                        child: SizedBox(
+                          height: 30,
+                          width: 70,
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: Colors.blueAccent,
+                              primary: Colors.white,
+                            ),
+                            child: Text('خصم'),
+                            onPressed: (){
+                              if(_formKey.currentState!.saveAndValidate()){
+                                Map data = {};
+                                data['emp_id'] = _formKey.currentState!.value['emp_id'];
+                                data['edit_type'] = _formKey.currentState!.value['edit_type'];
+                                data['amount'] = _formKey.currentState!.value['amount'];
+                                data['date'] = _formKey.currentState!.value['date'].toIso8601String();
+
+                                //server
+                                updateClient(data);
+                                Navigator.of(context).pop();
+                              }
+
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
             ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Center(
-                  child: SizedBox(
-                    height: 30,
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        primary: Colors.white,
-                      ),
-                      child: Text('خصم'),
-                      onPressed: (){
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ),
-                ),
               ),
           ],
           ),
@@ -171,90 +277,83 @@ class _EmployeeTableState extends State<EmployeeTable> {
   }
 
 
-  //refresher for refreshing page
-  Future _refresher () async {
-    setState(() {
-      rowsPerPage = 6;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return  RefreshIndicator(
-      onRefresh: _refresher,
-      child: Padding(
+    return  Padding(
         padding: const EdgeInsets.all(15.0),
         child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 400,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: TextField(
-                              controller: _searchController,
-                              decoration: const InputDecoration(
-                                labelText: 'ابحث',
+                LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints ){
+                    if(constraints.maxWidth > 700){
+                      return Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                              SizedBox(width: 5,),
+                              TextButton.icon(
+                                onPressed: (){
+                                  deleteModal(context);
+                                } ,
+                                icon: Icon(Icons.delete),
+                                label: Text(''),
                               ),
-                              onSubmitted: (vlaue) {
-                                ExampleSource(context: context).filterServerSide(_searchController.text);
-                              },
-                            ),
+                              ElevatedButton(
+                                  onPressed: (){
+                                    _openModal(context);
+                                  },
+                                  child: Text('تعديل حساب')
+                              ),
+                              SizedBox(width: 5,),
+                              ElevatedButton(
+                                  onPressed: (){
+                                    Navigator.pushNamed(context, '/add_client');
+                                  } ,
+                                  child: Text('+ اضافة عميل')
+                              ),
+                            ],
+                          );
+                    }else{
+                      return Column(
+                        children: [
+                          SizedBox(height: 20,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              SizedBox(width: 5,),
+                              TextButton.icon(
+                                onPressed: (){
+                                  deleteModal(context);
+                                } ,
+                                icon: Icon(Icons.delete),
+                                label: Text(''),
+                              ),
+                              ElevatedButton(
+                                  onPressed: (){
+                                    _openModal(context);
+                                  },
+                                  child: Text('تعديل حساب')
+                              ),
+                              SizedBox(width: 5,),
+                              ElevatedButton(
+                                  onPressed: (){
+                                    Navigator.pushNamed(context, '/add_employee');
+                                  } ,
+                                  child: Text('+ اضافة عميل')
+                              ),
+                            ],
                           ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _searchController.text = '';
-                            });
-                            ExampleSource(context: context).filterServerSide(_searchController.text);
-                          },
-                          icon: const Icon(Icons.clear),
-                        ),
-                        IconButton(
-                          onPressed: () =>
-                              ExampleSource(context: context).filterServerSide(_searchController.text),
-                          icon: const Icon(Icons.search),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(width: 5,),
-                        TextButton.icon(
-                            onPressed: (){
-                              deleteModal(context);
-                            } ,
-                            icon: Icon(Icons.delete),
-                            label: Text(''),
-                        ),
-                        ElevatedButton(
-                            onPressed: (){
-                              _openModal(context);
-                            },
-                            child: Text('خصم حساب')
-                        ),
-                        SizedBox(width: 5,),
-                        ElevatedButton(
-                            onPressed: (){
-                              Navigator.pushNamed(context, '/add_employee');
-                            } ,
-                            child: Text('+ اضافة عميل')
-                        ),
-                      ],
-                    )
-
-                  ],
+                          SizedBox(height: 20,)
+                        ],
+                      );
+                    }
+                  },
                 ),
+                SizedBox(height: 20,),
                 AdvancedPaginatedDataTable(
                     addEmptyRows: false,
-                    source: ExampleSource(context: context),
+                    source: source,
                     showFirstLastButtons: true,
                     rowsPerPage: rowsPerPage,
                     availableRowsPerPage: [ 5, 10, 25],
@@ -290,14 +389,15 @@ class _EmployeeTableState extends State<EmployeeTable> {
               ],
             ),
           ),
-      ),
-    );
+      );
   }
 }
 
 class ExampleSource extends AdvancedDataTableSource<Clients> {
   final BuildContext context;
-  ExampleSource({required this.context});
+  List clients;
+  List filtered;
+  ExampleSource({required this.context, required this.clients, required this.filtered});
 
   String lastSearchTerm = '';
 
@@ -362,32 +462,20 @@ class ExampleSource extends AdvancedDataTableSource<Clients> {
   @override
   Future<RemoteDataSourceDetails<Clients>> getNextPage(
       NextPageRequest pageRequest) async {
-    //--------------get request to server -----------
-    final url = Uri.parse('http://localhost:5000/clients/');
-    final auth = await SharedServices.LoginDetails();
-    Map<String,String> requestHeaders = {
-      'Content-Type' : 'application/json',
-      'x-auth-token' : '${auth.token}'
-    };
-    Response response = await get(url, headers: requestHeaders);
-    if(response.statusCode == 200){
-      final _data = jsonDecode(response.body);
 
+print(filtered);
       await Future.delayed(Duration(milliseconds: 700));
       return RemoteDataSourceDetails(
-        _data.length,
-        (_data as List<dynamic>)
+        clients.length,
+        (clients as List<dynamic>)
             .map((json) => Clients.fromJson(json))
             .skip(pageRequest.offset)
             .take(pageRequest.pageSize)
             .toList(),
-        filteredRows: lastSearchTerm.isNotEmpty
-            ? (_data as List<dynamic>).length
+        filteredRows: filtered.length != 0
+            ? (filtered as List<dynamic>).length
             : null,
       );
-    } else{
-      throw Exception('Unable to query remote server');
-    }
     //---------------------//------------------------
   }
 }

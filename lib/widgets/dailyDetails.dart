@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:oil_pump_system/API/banks.dart';
-import 'package:oil_pump_system/API/daily.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/outgoings.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
-import 'package:oil_pump_system/components/tables/daily_table.dart';
+import 'package:OilEnergy_System/API/banks.dart';
+import 'package:OilEnergy_System/API/daily.dart';
+import 'package:OilEnergy_System/API/reading.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/outgoings.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
+import 'package:OilEnergy_System/components/tables/daily_table.dart';
+import 'package:OilEnergy_System/components/tables/reading_table.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class DailyDetails extends StatefulWidget {
@@ -22,7 +24,7 @@ class _DailyDetailsState extends State<DailyDetails> {
   var date;
   _DailyDetailsState({required this.date});
 
-  SidebarXController controller = SidebarXController(selectedIndex: 0, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 1, extended: true);
   GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   bool isLoading = false;
@@ -30,6 +32,7 @@ class _DailyDetailsState extends State<DailyDetails> {
   List bank_data = [];
   List trans_data = [];
   List outg_data = [];
+  List readings = [];
   int total = 0;
   int total_count = 0;
   String daily_id = '';
@@ -39,6 +42,7 @@ class _DailyDetailsState extends State<DailyDetails> {
   @override
   void initState() {
     GetDaily(date);
+    GetReadings(date);
     get_all_banks();
     super.initState();
   }
@@ -63,6 +67,23 @@ class _DailyDetailsState extends State<DailyDetails> {
       daily_id = response['daily_trans'][0]['daily_id'];
       isAppended = response['daily_trans'][0]['isAppended'];
       // total_outgs = response['total'];
+    });
+  }
+  //get readings
+  Future GetReadings (date) async{
+    setState(() {
+      isLoading = true;
+    });
+
+    //post to server
+    Map datas = {};
+    datas['date'] = date;
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Reading.GetReading(datas, auth.token);
+
+    setState(() {
+      isLoading = false;
+      readings = response;
     });
   }
   //get banks data
@@ -105,6 +126,8 @@ class _DailyDetailsState extends State<DailyDetails> {
         backgroundColor: Colors.red,
       ),
     );
+    await Future.delayed(Duration(milliseconds: 700));
+    Navigator.pushReplacementNamed(context, '/old_daily');
   }
 //--------------------------------------------
 
@@ -218,23 +241,36 @@ class _DailyDetailsState extends State<DailyDetails> {
                               ],
                             ),
                             SizedBox(height: 60,),
+                            readings.length !=0 ?
+                            Container(
+                                color: Colors.grey[100],
+                                child: ReadingTable(total: total_count, readings: readings,)
+                            )
+                                : Center(child: Text('الرجاء حساب قراءات اليوم', style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 19
+                            ),),),
+                            SizedBox(height: 60,),
                             trans_data.length != 0 ?
-                            Column(
-                              children: [
                                 Container(
                                     color: Colors.grey[100],
                                     child: DailyTable(total: total_count ,daily_data: trans_data,)
-                                ),
-                                SizedBox(height: 30,),
-                                Outgoings(total: total_count, data: outg_data,)
-                              ],
-                            )
+                                )
                                 : Center(
-                                    child: Text('لا يوجد تفاصيل يومية في هذا اليوم',
+                                    child: Text('لا يوجد معاملات يومية في هذا اليوم',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(fontSize: 18, color: Colors.black),)
 
                                 ),
+                            SizedBox(height: 30,),
+                            outg_data.length != 0 ?
+                            Outgoings(total: total_count, data: outg_data,)
+                            : Center(
+                                child: Text('لا يوجد منصرفات في هذا اليوم',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 18, color: Colors.black),)
+
+                            ),
                             SizedBox(height: 60,),
                             isAppended ?
                             Container(

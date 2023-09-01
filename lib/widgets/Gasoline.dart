@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/API/gas.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
-import 'package:oil_pump_system/components/tables/gasoline_table.dart';
+import 'package:OilEnergy_System/API/gas.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
+import 'package:OilEnergy_System/components/tables/gasoline_table.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class Gasolines extends StatefulWidget {
@@ -14,7 +16,8 @@ class Gasolines extends StatefulWidget {
 }
 
 class _GasolinesState extends State<Gasolines> {
-  SidebarXController controller = SidebarXController(selectedIndex: 1, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 3, extended: true);
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   bool isLoading = false;
   List data = [];
@@ -50,9 +53,28 @@ class _GasolinesState extends State<Gasolines> {
     });
 
   }
+  //on Submit
+  Future _OnSubmit(datas) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    //send to server
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Gas.Find_Gas(datas, auth.token);
+
+    if(response != false){
+      setState(() {
+        isLoading = false;
+        data = response;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: APPBAR(context),
       body: Directionality(
@@ -88,6 +110,69 @@ class _GasolinesState extends State<Gasolines> {
                             color: Colors.grey.shade100,
                             child: Column(
                               children: [
+                                FormBuilder(
+                                    key: _formKey,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 8.0, right: 20),
+                                              child: Container(
+                                                width: MediaQuery.of(context).size.width/3.2,
+                                                child: FormBuilderDateTimePicker(
+                                                  name: "date",
+                                                  onChanged: (value){},
+                                                  decoration: InputDecoration(
+                                                      labelText: "اختر اليوم",
+                                                  ),
+                                                  validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
+                                                  initialDate: DateTime.now(),
+                                                  inputType: InputType.date,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: 10,),
+                                            // Add a submit button
+                                            IconButton(
+                                              onPressed: (){
+                                                if(_formKey.currentState!.saveAndValidate()){
+                                                  //send to server
+                                                  Map datas = {};
+                                                  datas['date'] = _formKey.currentState!.value['date'].toIso8601String();
+
+                                                  _OnSubmit(datas);
+                                                  setState(() {
+                                                    data = [];
+                                                  });
+                                                }
+                                              },
+                                              icon: Icon(Icons.search, size: 30,),
+                                            ),
+                                            SizedBox(width: 20,),
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 8.0),
+                                              child: TextButton.icon(
+                                                onPressed: () {
+                                                  getAllGas();
+                                                  setState(() {
+                                                    data = [];
+                                                  });
+                                                },
+                                                style: TextButton.styleFrom(
+                                                    backgroundColor: Colors.grey[300],
+                                                    minimumSize: Size(70, 50)
+                                                ),
+                                                label: Text('الكل', style: TextStyle(color: Colors.black, fontSize: 17),),
+                                                icon: const Icon(Icons.person_search_outlined, size: 30, color: Colors.red,),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                ),
                                 GasolineTable(data: data,),
                                 Padding(
                                   padding:  EdgeInsets.only(left: 40.0),
@@ -107,7 +192,75 @@ class _GasolinesState extends State<Gasolines> {
                                 SizedBox(height: 20,)
                               ],
                             )
-                        ) : GasolineTable(data: data),
+                        ) : Column(
+                          children: [
+                            FormBuilder(
+                                key: _formKey,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 8.0, right: 20),
+                                          child: Container(
+                                            width: MediaQuery.of(context).size.width/3.2,
+                                            child: FormBuilderDateTimePicker(
+                                              name: "date",
+                                              onChanged: (value){},
+                                              decoration: InputDecoration(
+                                                labelText: "اختر اليوم",
+                                              ),
+                                              validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
+                                              initialDate: DateTime.now(),
+                                              inputType: InputType.date,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 10,),
+                                        // Add a submit button
+                                        IconButton(
+                                          onPressed: (){
+                                            if(_formKey.currentState!.saveAndValidate()){
+                                              //send to server
+                                              Map datas = {};
+                                              datas['date'] = _formKey.currentState!.value['date'].toIso8601String();
+
+                                              _OnSubmit(datas);
+                                              setState(() {
+                                                data = [];
+                                              });
+                                            }
+                                          },
+                                          icon: Icon(Icons.search, size: 30,),
+                                        ),
+                                        SizedBox(width: 20,),
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 8.0),
+                                          child: TextButton.icon(
+                                            onPressed: () {
+                                              getAllGas();
+                                              setState(() {
+                                                data = [];
+                                              });
+                                            },
+                                            style: TextButton.styleFrom(
+                                                backgroundColor: Colors.grey[300],
+                                                minimumSize: Size(70, 50)
+                                            ),
+                                            label: Text('الكل', style: TextStyle(color: Colors.black, fontSize: 17),),
+                                            icon: const Icon(Icons.person_search_outlined, size: 30, color: Colors.red,),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                            ),
+                            SizedBox(height: 20,),
+                            GasolineTable(data: data),
+                          ],
+                        ),
                       ],
                     ),
                     SizedBox(height: 50,),

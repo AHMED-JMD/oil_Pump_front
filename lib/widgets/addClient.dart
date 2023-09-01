@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:oil_pump_system/API/client.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
+import 'package:OilEnergy_System/API/client.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sidebarx/sidebarx.dart';
 
@@ -139,8 +139,8 @@ class _AddEmployeeState extends State<AddEmployee> {
                                         SizedBox(height: 40,),
                                         // Add a submit button
                                         SizedBox(
-                                          width: 100,
-                                          height: 40,
+                                          width: 300,
+                                          height: 50,
                                           child: ElevatedButton(
                                             child: Text('ارسال'),
                                             style: ElevatedButton.styleFrom(

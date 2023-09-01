@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/API/banks.dart';
-import 'package:oil_pump_system/API/daily.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
-import 'package:oil_pump_system/widgets/dailyDetails.dart';
+import 'package:OilEnergy_System/API/banks.dart';
+import 'package:OilEnergy_System/API/daily.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
+import 'package:OilEnergy_System/widgets/dailyDetails.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class BanksDetails extends StatefulWidget {

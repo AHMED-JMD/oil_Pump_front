@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/API/gas.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/models/gas_data.dart';
+import 'package:OilEnergy_System/API/gas.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/models/gas_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 
@@ -17,7 +17,7 @@ class _GasolineTableState extends State<GasolineTable> {
   List data;
   _GasolineTableState({required this.data});
 
-  var rowsPerPage = 5;
+  var rowsPerPage = 10;
   late final source = ExampleSource(data: data);
   final _searchController = TextEditingController();
 
@@ -38,11 +38,10 @@ class _GasolineTableState extends State<GasolineTable> {
     //send to server
     if(selectedIds.length != 0){
       final auth = await SharedServices.LoginDetails();
-      API_Gas.Delete_Gas(selectedIds, auth.token).then((response){
+      API_Gas.Delete_Gas(selectedIds, auth.token).then((response) async {
         setState(() {
           isLoading = false;
         });
-
         if(response == true){
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -50,6 +49,8 @@ class _GasolineTableState extends State<GasolineTable> {
               backgroundColor: Colors.red,
             ),
           );
+          await Future.delayed(Duration(milliseconds: 600));
+          Navigator.pushReplacementNamed(context, '/gasolines');
           selectedIds = [];
         }else{
           ScaffoldMessenger.of(context).showSnackBar(
@@ -116,64 +117,53 @@ class _GasolineTableState extends State<GasolineTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 400,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: TextField(
-                          controller: _searchController,
-                          decoration: const InputDecoration(
-                            labelText: 'ابحث',
+            LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints ){
+                if(constraints.maxWidth > 700){
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(width: 5,),
+                          TextButton.icon(
+                            onPressed: (){
+                              _deleteModal(context);
+                            } ,
+                            icon: Icon(Icons.delete),
+                            label: Text(''),
                           ),
-                          onSubmitted: (vlaue) {
-                            source.filterServerSide(_searchController.text);
-                          },
-                        ),
+                        ],
+                      );
+                }else{
+                  return Column(
+                    children: [
+                      SizedBox(height: 20,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(width: 5,),
+                          TextButton.icon(
+                            onPressed: (){
+                              _deleteModal(context);
+                            } ,
+                            icon: Icon(Icons.delete),
+                            label: Text(''),
+                          ),
+                          SizedBox(width: 3,),
+                          ElevatedButton(
+                              onPressed: (){
+                                Navigator.pushReplacementNamed(context, '/add_machine');
+                              } ,
+                              child: Text('اضافة مكنة')
+                          ),
+                        ],
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _searchController.text = '';
-                        });
-                        source.filterServerSide(_searchController.text);
-                      },
-                      icon: const Icon(Icons.clear),
-                    ),
-                    IconButton(
-                      onPressed: () =>
-                          source.filterServerSide(_searchController.text),
-                      icon: const Icon(Icons.search),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    SizedBox(width: 5,),
-                    TextButton.icon(
-                      onPressed: (){
-                        _deleteModal(context);
-                      } ,
-                      icon: Icon(Icons.delete),
-                      label: Text(''),
-                    ),
-                    SizedBox(width: 3,),
-                    ElevatedButton(
-                        onPressed: (){
-                          Navigator.pushReplacementNamed(context, '/add_machine');
-                        } ,
-                        child: Text('اضافة مكنة')
-                    ),
-                  ],
-                )
-
-              ],
+                      SizedBox(height: 20,)
+                    ],
+                  );
+                }
+              },
             ),
+            SizedBox(height: 20,),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,

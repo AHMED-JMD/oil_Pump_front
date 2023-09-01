@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:oil_pump_system/API/reciept.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
+import 'package:OilEnergy_System/API/reciept.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class ReceiptDetails extends StatefulWidget {
@@ -125,6 +125,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                           suffixIcon: Icon(Icons.home_work, color: Colors.blueAccent,)
                                       ),
                                       initialValue: data['company'],
+                                      readOnly: true,
                                       onChanged: (val){
                                         company = val;
                                       },
@@ -140,6 +141,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                           suffixIcon: Icon(Icons.location_on, color: Colors.blueAccent,)
                                       ),
                                       initialValue: data['source'],
+                                      readOnly: true,
                                       onChanged: (val){
                                         source = val;
                                       },
@@ -161,6 +163,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                       suffixIcon: Icon(Icons.calendar_month,  color: Colors.blueAccent)
                                   ),
                                   initialValue: DateTime.tryParse(data['ship_date'])!.toLocal(),
+                                  enabled: false,
                                   onChanged: (val){
                                     ship_date = val;
                                   },
@@ -180,6 +183,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                     arrive_date = val;
                                   },
                                   initialValue: DateTime.tryParse(data['arrive_date'])!.toUtc(),
+                                  enabled: false,
                                   validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                   initialDate: DateTime.now(),
 
@@ -197,7 +201,8 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                               fuel_type = val as String?;
                             },
                             initialValue: data['fuel_type'],
-                            items: ['بنزين', 'جاز']
+                            enabled: false,
+                            items: ['بنزين', 'جازولين']
                                 .map((type) => DropdownMenuItem(
                               value: type,
                               child: Text('$type'),
@@ -211,6 +216,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                 suffixIcon: Icon(Icons.gas_meter_outlined, color: Colors.blueAccent,)
                             ),
                             initialValue: data['amount'].toString(),
+                            readOnly: true,
                             onChanged: (val){
                               amount = val;
                             },
@@ -229,6 +235,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                       suffixIcon: Icon(Icons.person, color: Colors.blueAccent,)
                                   ),
                                   initialValue: data['driver'],
+                                  readOnly: true,
                                   onChanged: (val){
                                     driver = val;
                                   },
@@ -244,6 +251,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                       suffixIcon: Icon(Icons.car_crash_outlined, color: Colors.blueAccent,)
                                   ),
                                   initialValue: data['car_plate'],
+                                  readOnly: true,
                                   onChanged: (val){
                                     car_plate = val;
                                   },
@@ -257,25 +265,24 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                             height: 45,
                             width: 200,
                             child: ElevatedButton(
-                              onPressed: (){
-                                if(_formKey.currentState!.saveAndValidate()){
-                                  //call to server
-
-                                  final datac = {};
-                                  datac['company'] = company;
-                                  datac['source'] = source;
-                                  datac['driver'] = driver;
-                                  datac['car_plate'] = car_plate;
-                                  datac['fuel_type'] = fuel_type;
-                                  datac['amount'] = amount;
-                                  datac['ship_date'] = ship_date!.toIso8601String();
-                                  datac['arrive_date'] = arrive_date!.toIso8601String();
-
-                                  //server
-                                  print(datac);
-                                  _OnSubmit(datac);
-                                }
-                              },
+                              onPressed: null,
+                                // if(_formKey.currentState!.saveAndValidate()){
+                                //   //call to server
+                                //
+                                //   final datac = {};
+                                //   datac['company'] = company;
+                                //   datac['source'] = source;
+                                //   datac['driver'] = driver;
+                                //   datac['car_plate'] = car_plate;
+                                //   datac['fuel_type'] = fuel_type;
+                                //   datac['amount'] = amount;
+                                //   datac['ship_date'] = ship_date!.toIso8601String();
+                                //   datac['arrive_date'] = arrive_date!.toIso8601String();
+                                //
+                                //   //server
+                                //   print(datac);
+                                //   _OnSubmit(datac);
+                                // }
                               child: Text('تحديث'),
                               style: ElevatedButton.styleFrom(
                                   textStyle: TextStyle(fontSize: 18)

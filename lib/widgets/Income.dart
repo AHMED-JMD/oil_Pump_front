@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
-import 'package:oil_pump_system/components/tables/income_table.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
+import 'package:OilEnergy_System/components/tables/income_table.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class Incomes extends StatefulWidget {
@@ -12,7 +12,7 @@ class Incomes extends StatefulWidget {
 }
 
 class _IncomesState extends State<Incomes> {
-  SidebarXController controller = SidebarXController(selectedIndex: 3, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 6, extended: true);
 
   @override
   Widget build(BuildContext context) {

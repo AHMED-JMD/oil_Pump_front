@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/API/outgoing.dart';
-import 'package:oil_pump_system/SharedService.dart';
+import 'package:OilEnergy_System/API/outgoing.dart';
+import 'package:OilEnergy_System/SharedService.dart';
 
 class Outgoings extends StatefulWidget {
   int total;
@@ -34,7 +34,7 @@ class _OutgoingsState extends State<Outgoings> {
     data['outg_id'] = outg_id;
     final auth = await SharedServices.LoginDetails();
     final response = await API_OutG.Delete_OutG(data, auth.token);
-    print(response);
+
     setState(() {
       isLoading = false;
     });
@@ -48,6 +48,9 @@ class _OutgoingsState extends State<Outgoings> {
       content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
       backgroundColor: Colors.red,
     );
+
+    await Future.delayed(Duration(milliseconds: 700));
+    Navigator.pushReplacementNamed(context, '/dailys');
   }
 
   //modal widgets

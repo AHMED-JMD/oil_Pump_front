@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:oil_pump_system/API/reciept.dart';
-import 'package:oil_pump_system/SharedService.dart';
-import 'package:oil_pump_system/components/appBar.dart';
-import 'package:oil_pump_system/components/side_bar.dart';
+import 'package:OilEnergy_System/API/reciept.dart';
+import 'package:OilEnergy_System/SharedService.dart';
+import 'package:OilEnergy_System/components/appBar.dart';
+import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sidebarx/sidebarx.dart';
@@ -133,7 +133,7 @@ class _AddRecieptState extends State<AddReciept> {
                             onChanged: (val){
                               fuel_type = val;
                             },
-                            items: ['بنزين', 'جاز']
+                            items: ['بنزين', 'جازولين']
                                 .map((type) => DropdownMenuItem(
                               value: type,
                               child: Text('$type'),
@@ -143,7 +143,7 @@ class _AddRecieptState extends State<AddReciept> {
                           FormBuilderTextField(
                             name: "amount",
                             decoration: InputDecoration(
-                                labelText: 'كمية الوقود',
+                                labelText: 'كمية الوقود باللتر',
                               suffixIcon: Icon(Icons.gas_meter_outlined, color: Colors.blueAccent,)
                             ),
                             onChanged: (val){

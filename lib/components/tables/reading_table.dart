@@ -1,82 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:OilEnergy_System/API/reciept.dart';
+import 'package:OilEnergy_System/API/reading.dart';
 import 'package:OilEnergy_System/SharedService.dart';
-import 'package:OilEnergy_System/models/income_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:http/http.dart';
-import 'dart:convert';
+import 'package:OilEnergy_System/models/reading_data.dart';
 
-import 'package:OilEnergy_System/widgets/receiptDetails.dart';
 
-class IncomeTable extends StatefulWidget {
-  IncomeTable({Key? key}) : super(key: key);
+class ReadingTable extends StatefulWidget {
+  int total;
+  List readings;
+  ReadingTable({Key? key, required this.total, required this.readings}) : super(key: key);
 
   @override
-  State<IncomeTable> createState() => _IncomeTableState();
+  State<ReadingTable> createState() => _ReadingTableState(total: total, readings: readings);
 }
 
-class _IncomeTableState extends State<IncomeTable> {
+class _ReadingTableState extends State<ReadingTable> {
+  int total;
+  List readings;
+  _ReadingTableState({required this.total, required this.readings});
+
   var rowsPerPage = 5;
-  bool isLoading = false;
+  var sortIndex = 0;
+  var sortAsc = true;
+  late final source = ExampleSource(daily_data: readings);
   final _searchController = TextEditingController();
-  var source;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _searchController.text = '';
-    setState(() {
-      source = ExampleSource(context: context);
-    });
   }
 
-  //modal open
-  void _openModal(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: AlertDialog(
-            title: Text('حذف الايصال'),
-            content: Text('هل انت متأكد برغبتك في حذف الايصال.'),
-            actions: [
-              Center(
-                child: SizedBox(
-                  height: 30,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      primary: Colors.white,
-                      backgroundColor: Colors.red
-                    ),
-                    child: Text('حذف'),
-                    onPressed: (){
-                      deleteReciept();
-                      Navigator.of(context).pop();
-                    }
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  //function to delete from server
-  Future deleteReciept ()async {
+  //server side Functions ------------------
+  //------delete--
+  Future deleteReading() async {
     setState(() {
       isLoading = true;
     });
+    //send to server
     if(selectedIds.length != 0){
-      //call server
       final auth = await SharedServices.LoginDetails();
-      API_Reciept.Delete_Reciept(selectedIds, auth.token).then((response) async{
+      API_Reading.Delete(selectedIds, auth.token).then((response){
         setState(() {
           isLoading = false;
         });
+        print(response);
         if(response == true){
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -84,8 +54,6 @@ class _IncomeTableState extends State<IncomeTable> {
               backgroundColor: Colors.red,
             ),
           );
-          await Future.delayed(Duration(milliseconds: 600));
-          Navigator.pushReplacementNamed(context, '/incomes');
           selectedIds = [];
         }else{
           ScaffoldMessenger.of(context).showSnackBar(
@@ -97,14 +65,54 @@ class _IncomeTableState extends State<IncomeTable> {
           selectedIds = [];
         }
       });
+      // await Future.delayed(Duration(milliseconds: 600));
+      // Navigator.pushReplacementNamed(context, '/dailys');
     }else{
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('الرجاء اختيار ايصال من الجدول', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+          content: Text('الرجاء اختيار يومية من الجدول', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
           backgroundColor: Colors.red,
         ),
       );
     }
+  }
+  //-------------------------------------------
+
+  //delete modal
+  void _deleteModal(BuildContext context){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            title: Text('حذف القراءة'),
+            content: Text('هل انت متأكد برغبتك في حذف القراءة'),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Center(
+                  child: SizedBox(
+                    height: 30,
+                    child: TextButton(
+                        child: Text('حذف'),
+                        style: TextButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            primary: Colors.white
+                        ),
+                        onPressed: (){
+                          deleteReading();
+                          Navigator.of(context).pop();
+                        }
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
 
@@ -158,19 +166,15 @@ class _IncomeTableState extends State<IncomeTable> {
                         children: [
                           TextButton.icon(
                             onPressed: (){
-                              _openModal(context);
-                            } ,
-                            icon: Icon(Icons.delete),
+                              _deleteModal(context);
+                            },
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.blue,
+                            ),
                             label: Text(''),
                           ),
-                          SizedBox(width: 5,),
-                          ElevatedButton(
-                              onPressed: (){
-                                Navigator.pushReplacementNamed(context, '/add_reciept');
-                              } ,
-                              child: Text('+ ايصال جديد')
-                          ),
-                          SizedBox(width: 5,),
+                          SizedBox(width: 3,),
                         ],
                       )
                     ],
@@ -217,19 +221,15 @@ class _IncomeTableState extends State<IncomeTable> {
                         children: [
                           TextButton.icon(
                             onPressed: (){
-                              _openModal(context);
-                            } ,
-                            icon: Icon(Icons.delete),
+                              _deleteModal(context);
+                            },
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.blue,
+                            ),
                             label: Text(''),
                           ),
-                          SizedBox(width: 5,),
-                          ElevatedButton(
-                              onPressed: (){
-                                Navigator.pushReplacementNamed(context, '/add_reciept');
-                              } ,
-                              child: Text('+ ايصال جديد')
-                          ),
-                          SizedBox(width: 5,),
+                          SizedBox(width: 3,),
                         ],
                       ),
                       SizedBox(height: 20,)
@@ -253,27 +253,44 @@ class _IncomeTableState extends State<IncomeTable> {
               },
               columns: [
                 DataColumn(
-                  label: const Text('مصدر الوقود'),
+                    label: const Text('اسم المكنة'),
+                    onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('اسم الشركة'),
+                    label: const Text('القراءة السابقة'),
+                    onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('اسم السائق'),
+                    label: const Text('القراءة الجديدة'),
+                    onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('نوع الوقود'),
+                    label: const Text('عدد اللترات'),
+                    onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('الكمية'),
+                    label: const Text('المبلغ'),
+                    onSort: setSort
                 ),
-                DataColumn(
-                  label: const Text('تاريخ الوصول'),
+              ],
+            ),
+            SizedBox(height: 12,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(' مجموع القراءات ',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 21
+                  ),
                 ),
-                DataColumn(
-                  label: const Text('عرض/ تعديل'),
+                Text('$total',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 21,
+                      color: Colors.red
+                  ),
                 ),
-
               ],
             ),
           ],
@@ -281,54 +298,48 @@ class _IncomeTableState extends State<IncomeTable> {
       ),
     );
   }
+
+  //sorting function
+  void setSort(int i, bool asc) => setState(() {
+    sortIndex = i;
+    sortAsc = asc;
+  });
 }
 
-class ExampleSource extends AdvancedDataTableSource<Receipt> {
+//class of data models and Rows
+class ExampleSource extends AdvancedDataTableSource<Reading> {
+  List daily_data;
+  ExampleSource({ required this.daily_data});
+
   String lastSearchTerm = '';
-  final BuildContext context;
-  ExampleSource({required this.context});
 
   @override
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-        selected: selectedIds.contains(currentRowData.recieptId),
+        selected: selectedIds.contains(currentRowData.readingId),
         onSelectChanged: (selected) {
           if(selected != null){
-            selectedRow(currentRowData.recieptId, selected);
+            selectedRow(currentRowData.readingId, selected);
           }
         },
         cells: [
-      DataCell(
-        Text(currentRowData.source),
-      ),
-      DataCell(
-        Text(currentRowData.company),
-      ),
-      DataCell(
-        Text(currentRowData.driver),
-      ),
-      DataCell(
-        Text(currentRowData.fuelType),
-      ),
-      DataCell(
-        Text(currentRowData.amount.toString()),
-      ),
           DataCell(
-            Text(currentRowData.arrive_date),
+            Text(currentRowData.pump_name),
           ),
           DataCell(
-            Center(
-              child: InkWell(
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => ReceiptDetails(reciept_id: currentRowData.recieptId,) ));
-                  },
-                  child: Icon(Icons.remove_red_eye, color: Colors.grey[500],)
-              ),
-            ),
+            Text(currentRowData.fReading.toString()),
           ),
-    ]);
+          DataCell(
+            Text(currentRowData.lastReading.toString()),
+          ),
+          DataCell(
+            Text(currentRowData.amount.toString()),
+          ),
+          DataCell(
+              Text(currentRowData.value.toString())
+          ),
+        ]);
   }
 
   @override
@@ -349,38 +360,24 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
   }
 
   @override
-  Future<RemoteDataSourceDetails<Receipt>> getNextPage(
+  Future<RemoteDataSourceDetails<Reading>> getNextPage(
       NextPageRequest pageRequest) async {
     //--------------get request to server -----------
-    final url = Uri.parse('http://localhost:5000/reciept/');
-    final auth = await SharedServices.LoginDetails();
+    await Future.delayed(Duration(milliseconds: 700));
+    return RemoteDataSourceDetails(
+      daily_data.length,
+      (daily_data as List<dynamic>)
+          .map((json) => Reading.fromJson(json))
+          .skip(pageRequest.offset)
+          .take(pageRequest.pageSize)
+          .toList(),
+      filteredRows: lastSearchTerm.isNotEmpty
+          ? (daily_data as List<dynamic>).length
+          : null,
+    );
 
-    Map<String,String> requestHeaders = {
-      'Content-Type' : 'application/json',
-      'x-auth-token' : '${auth.token}'
-    };
 
-    Response response = await get(url, headers:  requestHeaders);
-
-    if(response.statusCode == 200){
-      final data = jsonDecode(response.body);
-
-      await Future.delayed(Duration(seconds: 1));
-      return RemoteDataSourceDetails(
-        data.length,
-        (data as List<dynamic>)
-            .map((json) => Receipt.fromJson(json))
-            .skip(pageRequest.offset)
-            .take(pageRequest.pageSize)
-            .toList(),
-        filteredRows: lastSearchTerm.isNotEmpty
-            ? (data as List<dynamic>).length
-            : null,
-      );
-    }else{
-      throw Exception('Unable to query remote server');
-    }
   }
 }
-//selected ids
+//selected list here
 List<String> selectedIds = [];
