@@ -112,15 +112,15 @@ class _AddReadingState extends State<AddReading> {
                               name: 'pump_id',
                               decoration: InputDecoration(labelText: 'اسم المكنة'),
                               onChanged: (val) {
-                                pump_id = val;
                                 getPump(val);
                               },
+                              initialValue: '',
                               items: data
                                   .map((pump) => DropdownMenuItem(
                                   value: pump['pump_id'].toString(),
                                   child: Text('${pump['name']}')
                               )).toList(),
-                              validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+
                             ),
                             pump.isNotEmpty ?
                             Column(

@@ -83,7 +83,7 @@ class _DailyDetailsState extends State<DailyDetails> {
 
     setState(() {
       isLoading = false;
-      readings = response;
+      readings = response['reading'];
     });
   }
   //get banks data
