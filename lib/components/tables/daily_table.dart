@@ -20,7 +20,7 @@ class _DailyTableState extends State<DailyTable> {
    List daily_data;
   _DailyTableState({required this.total, required this.daily_data});
 
-  var rowsPerPage = 5;
+  var rowsPerPage = 10;
   var sortIndex = 0;
   var sortAsc = true;
   late final source = ExampleSource(daily_data: daily_data);
@@ -283,11 +283,15 @@ class _DailyTableState extends State<DailyTable> {
                     onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('التاريخ'),
+                    label: const Text('الوقود باللتر'),
                     onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('عرض/ تعديل'),
+                  label: const Text('نوع الوقود'),
+                    onSort: setSort
+                ),
+                DataColumn(
+                  label: const Text('التاريخ'),
                 ),
               ],
             ),
@@ -353,16 +357,14 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
       DataCell(
         Text(currentRowData.type),
       ),
-      DataCell(
-        Text(currentRowData.date),
+          DataCell(
+            Text(currentRowData.gas_amount.toString()),
+          ),
+          DataCell(
+        Text(currentRowData.gas_type),
       ),
           DataCell(
-            Center(
-              child: InkWell(
-                  onTap: (){},
-                  child: Icon(Icons.remove_red_eye, color: Colors.grey[500],)
-              ),
-            ),
+            Text(currentRowData.date),
           ),
     ]);
   }

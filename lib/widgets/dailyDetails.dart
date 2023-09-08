@@ -34,6 +34,8 @@ class _DailyDetailsState extends State<DailyDetails> {
   List outg_data = [];
   List readings = [];
   int total = 0;
+  int total_benz = 0;
+  int total_gas = 0;
   int total_count = 0;
   String daily_id = '';
   String banks_id = '';
@@ -84,6 +86,8 @@ class _DailyDetailsState extends State<DailyDetails> {
     setState(() {
       isLoading = false;
       readings = response['reading'];
+      total_benz = response['total_benz'];
+      total_gas = response['total_gas'];
     });
   }
   //get banks data
@@ -244,7 +248,7 @@ class _DailyDetailsState extends State<DailyDetails> {
                             readings.length !=0 ?
                             Container(
                                 color: Colors.grey[100],
-                                child: ReadingTable(total: total_count, readings: readings,)
+                                child: ReadingTable(total: total_benz + total_gas, readings: readings,)
                             )
                                 : Center(child: Text('الرجاء حساب قراءات اليوم', style: TextStyle(
                               fontWeight: FontWeight.bold,

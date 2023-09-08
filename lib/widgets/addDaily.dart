@@ -142,23 +142,21 @@ class _AddDailyState extends State<AddDaily> {
                                       ))
                                           .toList(),
                                     ),
-                                    Column(
-                                      children: [
-                                        FormBuilderDropdown(
-                                          name: 'gas_type',
-                                          decoration: InputDecoration(labelText: 'نوع الوقود'),
-                                          validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                          onChanged: (val) {
-                                            gas_type = val; // Print the text value write into TextField
-                                          },
-                                          items: ['بنزين', 'جازولين',]
-                                              .map((type) => DropdownMenuItem(
+                                    FormBuilderDropdown(
+                                      name: 'gas_type',
+                                      decoration: InputDecoration(labelText: 'نوع الوقود'),
+                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                      onChanged: (val) {
+                                        gas_type = val; // Print the text value write into TextField
+                                      },
+                                      items: ['بنزين', 'جازولين',]
+                                          .map((type) => DropdownMenuItem(
                                             value: type,
                                             child: Text('$type'),
                                           ))
                                               .toList(),
                                         ),
-                                        FormBuilderTextField(
+                                    FormBuilderTextField(
                                           name: 'gas_amount',
                                           decoration: InputDecoration(
                                               labelText: 'كمية الوقود باللتر',
@@ -169,7 +167,7 @@ class _AddDailyState extends State<AddDaily> {
                                           },
                                           validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                         ),
-                                        FormBuilderDateTimePicker(
+                                    FormBuilderDateTimePicker(
                                           name: 'date',
                                           decoration: InputDecoration(
                                               labelText: 'التاريخ',
@@ -183,7 +181,7 @@ class _AddDailyState extends State<AddDaily> {
                                           initialValue: DateTime.now(),
                                           inputType: InputType.date,
                                         ),
-                                        FormBuilderTextField(
+                                    FormBuilderTextField(
                                           name: 'comment',
                                           decoration: InputDecoration(
                                               labelText: 'البيان',
@@ -193,9 +191,7 @@ class _AddDailyState extends State<AddDaily> {
                                             comment = val; // Print the text value write into TextField
                                           },
                                           validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                        ),
-                                      ],
-                                    ), // Add another text field
+                                        ), // Add another text field
                                     SizedBox(height: 40,),
                                     // Add a submit button
                                     SizedBox(

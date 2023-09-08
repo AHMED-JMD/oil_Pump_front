@@ -14,7 +14,7 @@ class Safe extends StatefulWidget {
 
 class _SafeState extends State<Safe> {
   SidebarXController controller = SidebarXController(selectedIndex: 7, extended: true);
-  int safe_append = 0;
+  int total = 0;
   bool isLoading = false;
   DateTime date = DateTime.now();
 
@@ -40,9 +40,9 @@ class _SafeState extends State<Safe> {
       // isLoading = false;
       // trans_data = response['daily_trans'][0]['transactions'];
       // outg_data = response['daily_trans'][0]['outgoings'];
-      // total = response['daily_trans'][0]['amount'];
+      total = response['daily_trans'][0]['amount'];
       // daily_id = response['daily_trans'][0]['daily_id'];
-      safe_append = response['daily_trans'][0]['safe'];
+      // safe_append = response['daily_trans'][0]['safe'];
       // total_outgs = response['total'];
     });
   }
@@ -71,7 +71,7 @@ class _SafeState extends State<Safe> {
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.all(12.0),
-                                    child: Text('$safe_append', style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),),
+                                    child: Text('$total', style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),),
                                   )),
                             ],
                           ),

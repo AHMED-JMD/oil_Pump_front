@@ -20,7 +20,7 @@ class _ReadingTableState extends State<ReadingTable> {
   List readings;
   _ReadingTableState({required this.total, required this.readings});
 
-  var rowsPerPage = 5;
+  var rowsPerPage = 10;
   var sortIndex = 0;
   var sortAsc = true;
   late final source = ExampleSource(daily_data: readings);

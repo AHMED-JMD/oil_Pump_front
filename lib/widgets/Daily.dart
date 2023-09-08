@@ -32,7 +32,9 @@ class _DailysState extends State<Dailys> {
   List daily_data = [];
   List outg_data = [];
   int total_benz = 0;
+  int benz_amount = 0;
   int total_gas = 0;
+  int gas_amount = 0;
   int total_dailys = 0;
   int total_outgs = 0;
 
@@ -151,6 +153,8 @@ class _DailysState extends State<Dailys> {
       readings = response['reading'];
       total_benz = response['total_benz'];
       total_gas = response['total_gas'];
+      benz_amount = response['benz_amount'];
+      gas_amount = response['gas_amount'];
     });
   }
 
@@ -597,13 +601,14 @@ class _DailysState extends State<Dailys> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
-                                      Text('قراءة الجاز',
+                                      Text('عدد اللترات = ${gas_amount}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 21
+                                            fontSize: 21,
+                                            color: Colors.green
                                         ),
                                       ),
-                                      Text('= ${total_gas}',
+                                      Text('المبلغ = ${total_gas}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 21,
@@ -621,13 +626,14 @@ class _DailysState extends State<Dailys> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
-                                      Text('قراءة البنزين',
+                                      Text('عدد اللترات = ${benz_amount}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 21
+                                            fontSize: 21,
+                                            color: Colors.red
                                         ),
                                       ),
-                                      Text('= ${total_benz}',
+                                      Text('المبلغ = ${total_benz}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 21,
@@ -642,7 +648,7 @@ class _DailysState extends State<Dailys> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
-                                  Text('مجموع القراءات',
+                                  Text('المجموع',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 21

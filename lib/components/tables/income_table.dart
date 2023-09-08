@@ -17,7 +17,7 @@ class IncomeTable extends StatefulWidget {
 }
 
 class _IncomeTableState extends State<IncomeTable> {
-  var rowsPerPage = 5;
+  var rowsPerPage = 10;
   bool isLoading = false;
   final _searchController = TextEditingController();
   var source;

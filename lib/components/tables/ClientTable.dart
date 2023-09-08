@@ -57,7 +57,7 @@ class _ClientsTableState extends State<ClientsTable> {
           );
 
           await Future.delayed(Duration(milliseconds: 600));
-          Navigator.pushReplacementNamed(context, '/employees');
+          Navigator.pushReplacementNamed(context, '/clients');
           selectedIds = [];
         }else{
           ScaffoldMessenger.of(context).showSnackBar(
@@ -213,7 +213,7 @@ class _ClientsTableState extends State<ClientsTable> {
                         name: 'edit_type',
                         decoration: InputDecoration(labelText: 'نوع التعديل'),
                         validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
-                        items: ['استرداد', 'خصم',]
+                        items: ['ايراد', 'خصم',]
                             .map((value) =>
                             DropdownMenuItem(
                               value: value,
@@ -373,10 +373,10 @@ class _ClientsTableState extends State<ClientsTable> {
                         numeric: true,
                       ),
                       DataColumn(
-                        label: const Text('السكن'),
+                        label: const Text('وقود بنزين'),
                       ),
                       DataColumn(
-                        label: const Text('تعليق'),
+                        label: const Text('وقود جازولين'),
                       ),
                       DataColumn(
                         label: const Text('الحساب'),
@@ -419,10 +419,10 @@ class ExampleSource extends AdvancedDataTableSource<Clients> {
         Text(currentRowData.phoneNum.toString()),
       ),
       DataCell(
-        Text(currentRowData.address),
+        Text('${currentRowData.benz_amount.toString()} لتر'),
       ),
       DataCell(
-        Text(currentRowData.comment.toString()),
+        Text('${currentRowData.gas_amount.toString()} لتر'),
       ),
           DataCell(
             Text(currentRowData.account.toString()),

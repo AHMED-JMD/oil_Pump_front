@@ -22,7 +22,7 @@ class _BanksTableState extends State<BanksTable> {
 
   GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
-  var rowsPerPage = 5;
+  var rowsPerPage = 10;
   late final source = ExampleSource(data: data, context: context);
   final _searchController = TextEditingController();
 

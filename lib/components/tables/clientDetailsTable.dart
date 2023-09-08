@@ -17,7 +17,7 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
   final trans;
   _ClientDetailsTableState({required this.trans});
 
-  var rowsPerPage = 5;
+  var rowsPerPage = 10;
   var sortIndex = 0;
   var sortAsc = true;
   final _searchController = TextEditingController();
@@ -208,11 +208,15 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
                     onSort: setSort
                 ),
                 DataColumn(
-                    label: const Text('التاريخ'),
+                    label: const Text('الوقود باللتر'),
                     onSort: setSort
                 ),
                 DataColumn(
-                  label: const Text('عرض/ تعديل'),
+                    label: const Text('نوع الوقود'),
+                    onSort: setSort
+                ),
+                DataColumn(
+                  label: const Text('التاريخ'),
                 ),
               ],
             ),
@@ -261,15 +265,13 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
               Text(currentRowData.type),
             ),
             DataCell(
-              Text(currentRowData.date),
+              Text(currentRowData.gas_amount.toString()),
             ),
             DataCell(
-              Center(
-                child: InkWell(
-                    onTap: (){},
-                    child: Icon(Icons.remove_red_eye, color: Colors.grey[500],)
-                ),
-              ),
+              Text(currentRowData.gas_type),
+            ),
+            DataCell(
+              Text(currentRowData.date),
             ),
           ]);
     }else{

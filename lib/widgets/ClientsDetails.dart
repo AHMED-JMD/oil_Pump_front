@@ -79,7 +79,6 @@ class _ClientDetailsState extends State<ClientDetails> {
         child: Row(
           children: [
             Navbar(controller: controller),
-
             Expanded(
               child: ListView(
                 children:[
@@ -89,7 +88,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                       padding: const EdgeInsets.all(20.0),
                       child: Container(
                         width: MediaQuery.of(context).size.width/1.3,
-                        height: 230,
+                        height: 290,
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(12)
@@ -102,7 +101,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                                children: [
                                  Container(
                                    height:70,
-                                   width: 300,
+                                   width: 500,
                                      decoration: BoxDecoration(
                                        color: Colors.blueGrey,
                                        borderRadius: BorderRadius.circular(12)
@@ -148,7 +147,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                               children: [
                                 Container(
                                   height:70,
-                                  width: 300,
+                                  width: 280,
                                     decoration: BoxDecoration(
                                         color: Colors.blueGrey,
                                         borderRadius: BorderRadius.circular(12)
@@ -162,24 +161,63 @@ class _ClientDetailsState extends State<ClientDetails> {
                                           ],
                                         )),
                                 ),
+
                                 Container(
                                   height:70,
                                   width: 300,
-                                    decoration: BoxDecoration(
-                                        color: Colors.blueAccent,
-                                        borderRadius: BorderRadius.circular(12)
-                                    ),
-                                    child: Center(
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.monetization_on, color: Colors.black,),
-                                            Text('  اجمالي الحساب : ${client['account']}', style: TextStyle(color: Colors.white, fontSize: 19),),
-                                          ],
-                                        )),
+                                  decoration: BoxDecoration(
+                                      color: Colors.blueAccent,
+                                      borderRadius: BorderRadius.circular(12)
+                                  ),
+                                  child: Center(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.monetization_on, color: Colors.black,),
+                                          Text('  اجمالي الحساب : ${client['account']}', style: TextStyle(color: Colors.white, fontSize: 19),),
+                                        ],
+                                      )),
                                 ),
                               ],
                             ),
+                            SizedBox(height: 20,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Container(
+                                  height:70,
+                                  width: 220,
+                                  decoration: BoxDecoration(
+                                      color: Colors.greenAccent,
+                                      borderRadius: BorderRadius.circular(12)
+                                  ),
+                                  child: Center(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.gas_meter_outlined, color: Colors.black,),
+                                          Text('  الجاز باللتر : ${client['gas_amount']}', style: TextStyle(color: Colors.white, fontSize: 19),),
+                                        ],
+                                      )),
+                                ),
+                                Container(
+                                  height:70,
+                                  width: 220,
+                                  decoration: BoxDecoration(
+                                      color: Colors.redAccent,
+                                      borderRadius: BorderRadius.circular(12)
+                                  ),
+                                  child: Center(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.gas_meter_outlined, color: Colors.black,),
+                                          Text('  البنزين باللتر : ${client['benz_amount']}', style: TextStyle(color: Colors.white, fontSize: 19),),
+                                        ],
+                                      )),
+                                ),
+                              ],
+                            )
                           ],
                         ),
                       ),
