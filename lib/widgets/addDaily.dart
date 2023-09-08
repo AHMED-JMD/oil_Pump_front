@@ -135,7 +135,7 @@ class _AddDailyState extends State<AddDaily> {
                                       onChanged: (val) {
                                           type = val;// Print the text value write into TextField
                                       },
-                                      items: ['عليه',]
+                                      items: ['عليه','له']
                                           .map((type) => DropdownMenuItem(
                                         value: type,
                                         child: Text('$type'),

@@ -28,7 +28,7 @@ class _DailyDetailsState extends State<DailyDetails> {
   GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   bool isLoading = false;
-  bool isAppended = false;
+  int safe_append = 0;
   List bank_data = [];
   List trans_data = [];
   List outg_data = [];
@@ -65,7 +65,7 @@ class _DailyDetailsState extends State<DailyDetails> {
       outg_data = response['daily_trans'][0]['outgoings'];
       total = response['daily_trans'][0]['amount'];
       daily_id = response['daily_trans'][0]['daily_id'];
-      isAppended = response['daily_trans'][0]['isAppended'];
+      safe_append = response['daily_trans'][0]['amount'];
       // total_outgs = response['total'];
     });
   }
@@ -163,10 +163,10 @@ class _DailyDetailsState extends State<DailyDetails> {
                       FormBuilderTextField(
                         name: 'amount',
                         decoration: InputDecoration(
-                            labelText: 'المبلغ',
+                            labelText: 'المبلغ المتاح',
                         ),
-                        initialValue: total.toString(),
                         readOnly: true,
+                        initialValue: safe_append.toString(),
                         validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                       ),
                       FormBuilderDateTimePicker(
@@ -272,7 +272,7 @@ class _DailyDetailsState extends State<DailyDetails> {
 
                             ),
                             SizedBox(height: 60,),
-                            isAppended ?
+                            safe_append == 0 ?
                             Container(
                                 height: 50,
                                 width: MediaQuery.of(context).size.width/1.3,

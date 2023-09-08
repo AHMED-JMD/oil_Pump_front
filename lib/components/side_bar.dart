@@ -140,8 +140,15 @@ class _NavbarState extends State<Navbar> {
             }
         ),
         SidebarXItem(
+            icon: Icons.safety_check_outlined,
+            label: ' الخزنة اليومية ',
+            onTap: (){
+              Navigator.pushReplacementNamed(context, '/safe');
+            }
+        ),
+        SidebarXItem(
             icon: Icons.home_work_rounded,
-            label: ' الخزنة و البنوك ',
+            label: ' البنوك ',
             onTap: (){
               Navigator.pushReplacementNamed(context, '/banks');
             }
@@ -150,6 +157,7 @@ class _NavbarState extends State<Navbar> {
     );
   }
 }
+
 const canvasColor = Color(0xFF2E2E48);
 const scaffoldBackgroundColor = Color(0xFF464667);
 const accentCanvasColor = Color(0xFF3E3E61);

@@ -253,19 +253,16 @@ class _IncomeTableState extends State<IncomeTable> {
               },
               columns: [
                 DataColumn(
-                  label: const Text('مصدر الوقود'),
-                ),
-                DataColumn(
                   label: const Text('اسم الشركة'),
-                ),
-                DataColumn(
-                  label: const Text('اسم السائق'),
                 ),
                 DataColumn(
                   label: const Text('نوع الوقود'),
                 ),
                 DataColumn(
                   label: const Text('الكمية'),
+                ),
+                DataColumn(
+                  label: const Text('العجز'),
                 ),
                 DataColumn(
                   label: const Text('تاريخ الوصول'),
@@ -300,13 +297,7 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
         },
         cells: [
       DataCell(
-        Text(currentRowData.source),
-      ),
-      DataCell(
         Text(currentRowData.company),
-      ),
-      DataCell(
-        Text(currentRowData.driver),
       ),
       DataCell(
         Text(currentRowData.fuelType),
@@ -314,6 +305,9 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
       DataCell(
         Text(currentRowData.amount.toString()),
       ),
+          DataCell(
+            Text(currentRowData.shortage.toString()),
+          ),
           DataCell(
             Text(currentRowData.arrive_date),
           ),
@@ -365,7 +359,7 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
     if(response.statusCode == 200){
       final data = jsonDecode(response.body);
 
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(Duration(milliseconds: 700));
       return RemoteDataSourceDetails(
         data.length,
         (data as List<dynamic>)

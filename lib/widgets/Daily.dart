@@ -270,7 +270,7 @@ class _DailysState extends State<Dailys> {
            Padding(
               padding: const EdgeInsets.fromLTRB(10, 20, 10, 40),
               child: Container(
-                height: height,
+                height: 500,
                 decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(12),
@@ -282,10 +282,9 @@ class _DailysState extends State<Dailys> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('${data['pump_name']}'),
-                    SizedBox(height: 5,),
                     Text(' ${data['f_reading']}', style: TextStyle(fontSize: 18)),
                     Text(' ${data['last_reading']}', style: TextStyle(fontSize: 18)),
+                    Text('راجع التنك: ${data['returned']}', style: TextStyle(fontSize: 18)),
                     Text('عدد اللترات : ${data['amount']}'),
                     Text('القيمة : ${data['value']}', style: TextStyle(fontSize: 18),),
                     SizedBox(height: 10,),

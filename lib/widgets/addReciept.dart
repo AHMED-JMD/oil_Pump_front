@@ -95,7 +95,7 @@ class _AddRecieptState extends State<AddReciept> {
                           FormBuilderTextField(
                             name: "source",
                             decoration: InputDecoration(
-                                labelText: 'مصدر الوقود',
+                                labelText: 'مصدر الشحن',
                                 suffixIcon: Icon(Icons.location_on, color: Colors.blueAccent,)
                             ),
                             onChanged: (val){

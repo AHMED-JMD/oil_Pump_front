@@ -14,7 +14,7 @@ class Banks extends StatefulWidget {
 }
 
 class _BanksState extends State<Banks> {
-  SidebarXController controller = SidebarXController(selectedIndex: 7, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 8, extended: true);
   bool isLoading = false;
   List data = [];
   int total = 0;

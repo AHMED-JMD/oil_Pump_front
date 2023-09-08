@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                                 : Text(''),
                             Center(
                               child: Text(
-                                  'نظام تشغيل طرمبة الميناء الجاف',
+                                  'نظام تشغيل طرمبة اويل انرجي',
                                   style: TextStyle(
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold,

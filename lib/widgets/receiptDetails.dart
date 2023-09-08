@@ -19,7 +19,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
   String reciept_id;
   _ReceiptDetailsState({required this.reciept_id});
 
-  SidebarXController controller = SidebarXController(selectedIndex: 3, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 6, extended: true);
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
@@ -29,6 +29,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
   String? driver;
   String? car_plate;
   String? fuel_type;
+  String? shortage;
   String? amount;
   DateTime? ship_date;
   DateTime? arrive_date;
@@ -125,7 +126,6 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                           suffixIcon: Icon(Icons.home_work, color: Colors.blueAccent,)
                                       ),
                                       initialValue: data['company'],
-                                      readOnly: true,
                                       onChanged: (val){
                                         company = val;
                                       },
@@ -141,7 +141,6 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                           suffixIcon: Icon(Icons.location_on, color: Colors.blueAccent,)
                                       ),
                                       initialValue: data['source'],
-                                      readOnly: true,
                                       onChanged: (val){
                                         source = val;
                                       },
@@ -163,7 +162,6 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                       suffixIcon: Icon(Icons.calendar_month,  color: Colors.blueAccent)
                                   ),
                                   initialValue: DateTime.tryParse(data['ship_date'])!.toLocal(),
-                                  enabled: false,
                                   onChanged: (val){
                                     ship_date = val;
                                   },
@@ -183,7 +181,6 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                     arrive_date = val;
                                   },
                                   initialValue: DateTime.tryParse(data['arrive_date'])!.toUtc(),
-                                  enabled: false,
                                   validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                   initialDate: DateTime.now(),
 
@@ -201,7 +198,6 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                               fuel_type = val as String?;
                             },
                             initialValue: data['fuel_type'],
-                            enabled: false,
                             items: ['بنزين', 'جازولين']
                                 .map((type) => DropdownMenuItem(
                               value: type,
@@ -210,13 +206,24 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                 .toList(),
                           ),
                           FormBuilderTextField(
+                            name: "shortage",
+                            decoration: InputDecoration(
+                                labelText: 'عجز العربة',
+                                suffixIcon: Icon(Icons.gas_meter_outlined, color: Colors.blueAccent,)
+                            ),
+                            initialValue: data['shortage'].toString(),
+                            onChanged: (val){
+                              shortage = val;
+                            },
+                            validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                          ),
+                          FormBuilderTextField(
                             name: "amount",
                             decoration: InputDecoration(
                                 labelText: 'كمية الوقود',
                                 suffixIcon: Icon(Icons.gas_meter_outlined, color: Colors.blueAccent,)
                             ),
                             initialValue: data['amount'].toString(),
-                            readOnly: true,
                             onChanged: (val){
                               amount = val;
                             },
@@ -235,7 +242,6 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                       suffixIcon: Icon(Icons.person, color: Colors.blueAccent,)
                                   ),
                                   initialValue: data['driver'],
-                                  readOnly: true,
                                   onChanged: (val){
                                     driver = val;
                                   },
@@ -251,7 +257,6 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                       suffixIcon: Icon(Icons.car_crash_outlined, color: Colors.blueAccent,)
                                   ),
                                   initialValue: data['car_plate'],
-                                  readOnly: true,
                                   onChanged: (val){
                                     car_plate = val;
                                   },
@@ -265,24 +270,26 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                             height: 45,
                             width: 200,
                             child: ElevatedButton(
-                              onPressed: null,
-                                // if(_formKey.currentState!.saveAndValidate()){
-                                //   //call to server
-                                //
-                                //   final datac = {};
-                                //   datac['company'] = company;
-                                //   datac['source'] = source;
-                                //   datac['driver'] = driver;
-                                //   datac['car_plate'] = car_plate;
-                                //   datac['fuel_type'] = fuel_type;
-                                //   datac['amount'] = amount;
-                                //   datac['ship_date'] = ship_date!.toIso8601String();
-                                //   datac['arrive_date'] = arrive_date!.toIso8601String();
-                                //
-                                //   //server
-                                //   print(datac);
-                                //   _OnSubmit(datac);
-                                // }
+                              onPressed: (){
+                                if(_formKey.currentState!.saveAndValidate()){
+                                  //call to server
+
+                                  final datac = {};
+                                  datac['reciept_id'] = reciept_id;
+                                  datac['company'] = _formKey.currentState!.value['company'];
+                                  datac['source'] = _formKey.currentState!.value['source'];
+                                  datac['driver'] = _formKey.currentState!.value['driver'];
+                                  datac['car_plate'] = _formKey.currentState!.value['car_plate'];
+                                  datac['fuel_type'] = _formKey.currentState!.value['fuel_type'];
+                                  datac['shortage'] = _formKey.currentState!.value['shortage'];
+                                  datac['amount'] = _formKey.currentState!.value['amount'];
+                                  datac['ship_date'] = _formKey.currentState!.value['ship_date']!.toIso8601String();
+                                  datac['arrive_date'] = _formKey.currentState!.value['arrive_date']!.toIso8601String();
+
+                                  //server
+                                  _OnSubmit(datac);
+                                }
+                              },
                               child: Text('تحديث'),
                               style: ElevatedButton.styleFrom(
                                   textStyle: TextStyle(fontSize: 18)

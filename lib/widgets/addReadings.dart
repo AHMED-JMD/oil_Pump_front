@@ -120,7 +120,6 @@ class _AddReadingState extends State<AddReading> {
                                   value: pump['pump_id'].toString(),
                                   child: Text('${pump['name']}')
                               )).toList(),
-
                             ),
                             pump.isNotEmpty ?
                             Column(

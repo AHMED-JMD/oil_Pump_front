@@ -45,7 +45,7 @@ class _DailyBarChartState extends State<DailyBarChart> {
 
   @override
   Widget build(BuildContext context) {
-    daily_data = data.map((d) => DailyData(dailyId: d['daily_id'], date: d['date'], amount: d['amount'], isAppended: d['isAppended'], createdAt: d['createdAt'], updatedAt: d['updatedAt'])).toList();
+    daily_data = data.map((d) => DailyData(dailyId: d['daily_id'], date: d['date'], amount: d['amount'], safe: d['safe'], createdAt: d['createdAt'], updatedAt: d['updatedAt'])).toList();
 
     return daily_data.length != 0 ? Container(
       height: 300,

@@ -5,6 +5,7 @@ class Receipt {
   late final String driver;
   late final String carPlate;
   late final String fuelType;
+  late final int shortage;
   late final int amount;
   late final String arrive_date;
   late final String ship_date;
@@ -19,6 +20,7 @@ class Receipt {
         required this.driver,
         required this.carPlate,
         required this.fuelType,
+        required this.shortage,
         required this.amount,
         required this.arrive_date,
         required this.ship_date,
@@ -34,6 +36,7 @@ class Receipt {
     driver = json['driver'];
     carPlate = json['car_plate'];
     fuelType = json['fuel_type'];
+    shortage = json['shortage'];
     amount = json['amount'];
     arrive_date = json['arrive_date'];
     ship_date = json['ship_date'];
@@ -50,6 +53,7 @@ class Receipt {
     data['driver'] = this.driver;
     data['car_plate'] = this.carPlate;
     data['fuel_type'] = this.fuelType;
+    data['shortage'] = this.shortage;
     data['amount'] = this.amount;
     data['arrive_date'] = this.arrive_date;
     data['ship_date'] = this.ship_date;
