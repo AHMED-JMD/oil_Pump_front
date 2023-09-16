@@ -8,6 +8,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sidebarx/sidebarx.dart';
 
+
 class Clients extends StatefulWidget {
   const Clients({super.key});
 
@@ -20,6 +21,7 @@ class _ClientsState extends State<Clients> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
   List clients = [];
+  List<String> clients_names = [];
 
   @override
   void initState() {
@@ -62,8 +64,24 @@ class _ClientsState extends State<Clients> {
     }
   }
 
+  //function to extract clients names
+  Future extractName (List Clients) async {
+    List<String> names = [];
+    //iterate
+    Clients.map((map) => map['name']).forEach((value) {
+      names.add(value);
+    });
+
+    setState(() {
+      clients_names = names;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    //extract names from clients
+    extractName(clients);
     return Scaffold(
       appBar: APPBAR(context),
       body: Directionality(
@@ -111,13 +129,12 @@ class _ClientsState extends State<Clients> {
                                               child: Container(
                                                 width: MediaQuery.of(context).size.width/3.2,
                                                 child: FormBuilderTextField(
-                                                    name: 'name',
-                                                    decoration: InputDecoration(
-                                                        labelText: 'ابحث بالاسم',
-                                                    ),
-                                                    onChanged: (val){},
-                                                    validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الحقول"),
+                                                  name: 'name',
+                                                  decoration: InputDecoration(
+                                                      labelText: 'ابحث عن الاسم',
                                                   ),
+                                                  validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                                ),
                                               ),
                                             ),
                                             SizedBox(width: 10,),

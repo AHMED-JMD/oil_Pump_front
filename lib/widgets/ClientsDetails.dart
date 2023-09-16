@@ -239,28 +239,53 @@ class _ClientDetailsState extends State<ClientDetails> {
                                               children: [
                                                 Padding(
                                                   padding: const EdgeInsets.only(top: 8.0, right: 20),
-                                                  child: Container(
-                                                    width: MediaQuery.of(context).size.width/3.2,
-                                                    child: FormBuilderDateTimePicker(
-                                                      name: "date",
-                                                      onChanged: (value){},
-                                                      decoration: InputDecoration(
-                                                        labelText: "اختر اليوم",
+                                                  child: Row(
+                                                    children: [
+                                                      Text('من : ', style: TextStyle(fontSize: 17),),
+                                                      SizedBox(width: 10,),
+                                                      Container(
+                                                        width: MediaQuery.of(context).size.width/7,
+                                                        child: FormBuilderDateTimePicker(
+                                                          name: "start_date",
+                                                          onChanged: (value){},
+                                                          decoration: InputDecoration(
+                                                            labelText: "اختر اليوم",
+                                                            suffixIcon: Icon(Icons.calendar_month, color: Colors.blue,)
+                                                          ),
+                                                          validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
+                                                          initialDate: DateTime.now(),
+                                                          inputType: InputType.date,
+                                                        ),
                                                       ),
-                                                      validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
-                                                      initialDate: DateTime.now(),
-                                                      inputType: InputType.date,
-                                                    ),
+                                                      SizedBox(width: 10,),
+                                                      Text('الى : ', style: TextStyle(fontSize: 17),),
+                                                      SizedBox(width: 10,),
+                                                      Container(
+                                                        width: MediaQuery.of(context).size.width/7,
+                                                        child: FormBuilderDateTimePicker(
+                                                          name: "end_date",
+                                                          onChanged: (value){},
+                                                          decoration: InputDecoration(
+                                                              labelText: "اختر اليوم",
+                                                              suffixIcon: Icon(Icons.calendar_month, color: Colors.blue,)
+                                                          ),
+                                                          validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
+                                                          initialDate: DateTime.now(),
+                                                          inputType: InputType.date,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                                 SizedBox(width: 10,),
                                                 // Add a submit button
-                                                IconButton(
+                                                TextButton.icon(
                                                   onPressed: (){
                                                     if(_formKey.currentState!.saveAndValidate()){
                                                       //send to server
                                                       Map datas = {};
-                                                      datas['date'] = _formKey.currentState!.value['date'].toIso8601String();
+                                                      datas['start_date'] = _formKey.currentState!.value['start_date'].toIso8601String();
+                                                      datas['end_date'] = _formKey.currentState!.value['end_date'].toIso8601String();
                                                       datas['emp_id'] = emp_id;
 
                                                       _OnSubmit(datas);
@@ -269,7 +294,12 @@ class _ClientDetailsState extends State<ClientDetails> {
                                                       });
                                                     }
                                                   },
+                                                  style: TextButton.styleFrom(
+                                                    primary: Colors.black,
+                                                    minimumSize: Size(50, 50)
+                                                  ),
                                                   icon: Icon(Icons.search, size: 30,),
+                                                  label: Text('بحث'),
                                                 ),
                                                 SizedBox(width: 20,),
                                                 Padding(

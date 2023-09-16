@@ -9,7 +9,7 @@ import 'package:OilEnergy_System/widgets/Gasoline.dart';
 import 'package:OilEnergy_System/widgets/Income.dart';
 import 'package:OilEnergy_System/widgets/MainPage.dart';
 import 'package:OilEnergy_System/widgets/Safe.dart';
-import 'package:OilEnergy_System/widgets/addDaily.dart';
+import 'package:OilEnergy_System/widgets/addTrans.dart';
 import 'package:OilEnergy_System/widgets/addClient.dart';
 import 'package:OilEnergy_System/widgets/addMachine.dart';
 import 'package:OilEnergy_System/widgets/addReciept.dart';

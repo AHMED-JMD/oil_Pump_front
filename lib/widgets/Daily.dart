@@ -25,8 +25,8 @@ class _DailysState extends State<Dailys> {
 
   bool isLoading = false;
   bool nw_daily = false;
-  DateTime today_date = DateTime.now();
-  late String formattedDate = formatDate(today_date);
+  DateTime? today_date = DateTime.now();
+  // late String formattedDate = formatDate(today_date);
   List readings = [];
   String? selectedPump;
   List daily_data = [];
@@ -62,11 +62,12 @@ class _DailysState extends State<Dailys> {
   Future getDailys() async {
     setState(() {
       isLoading = true;
+      daily_data = [];
     });
     //send to server
 
     final datas = {};
-    datas['date'] = today_date.toIso8601String();
+    datas['date'] = today_date!.toIso8601String();
     final auth = await SharedServices.LoginDetails();
     API_Daily.get_Trans(datas, auth.token).then((response){
       setState(() {
@@ -84,7 +85,7 @@ class _DailysState extends State<Dailys> {
 
     //call server
     Map date = {};
-    date['date'] = today_date.toIso8601String();
+    date['date'] = today_date!.toIso8601String();
     date['total_pumps'] = total_benz + total_gas;
     date['total_dailys'] = total_dailys;
     date['total_outgs'] = total_outgs;
@@ -144,7 +145,7 @@ class _DailysState extends State<Dailys> {
 
     //call server
     Map datas = {};
-    datas['date'] = today_date.toIso8601String();
+    datas['date'] = today_date!.toIso8601String();
     final auth = await SharedServices.LoginDetails();
     final response = await API_Reading.GetReading(datas, auth.token);
 
@@ -161,10 +162,11 @@ class _DailysState extends State<Dailys> {
   Future get_OutG() async {
     setState(() {
       isLoading = false;
+      outg_data = [];
     });
     //post to server
     final datas = {};
-    datas['date'] = today_date.toIso8601String();
+    datas['date'] = today_date!.toIso8601String();
 
     final auth = await SharedServices.LoginDetails();
     final response = await API_OutG.Get_OutG(datas, auth.token);
@@ -207,8 +209,6 @@ class _DailysState extends State<Dailys> {
 
     //refresh
     get_OutG();
-    await Future.delayed(Duration(milliseconds: 700));
-    Navigator.pushReplacementNamed(context, '/dailys');
   }
 
   Future updateReading (data) async {
@@ -286,8 +286,8 @@ class _DailysState extends State<Dailys> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(' ${data['f_reading']}', style: TextStyle(fontSize: 18)),
                     Text(' ${data['last_reading']}', style: TextStyle(fontSize: 18)),
+                    Text(' ${data['f_reading']}', style: TextStyle(fontSize: 18)),
                     Text('راجع التنك: ${data['returned']}', style: TextStyle(fontSize: 18)),
                     Text('عدد اللترات : ${data['amount']}'),
                     Text('القيمة : ${data['value']}', style: TextStyle(fontSize: 18),),
@@ -379,7 +379,7 @@ class _DailysState extends State<Dailys> {
                                     data['pump_id'] = machine['pumpPumpId'];
                                     data['reading'] = _formKey.currentState!.value['reading'];
                                     data['nw_reading'] = _formKey.currentState!.value['nw_read'];
-                                    data['date'] = today_date.toIso8601String();
+                                    data['date'] = today_date!.toIso8601String();
 
                                     //call backend------------
                                     updateReading(data);
@@ -405,9 +405,7 @@ class _DailysState extends State<Dailys> {
                   ],
                 ),
             );
-
           },
-
         );
       },
     );
@@ -541,25 +539,30 @@ class _DailysState extends State<Dailys> {
                     children: [
                           SizedBox(height: 10,),
                           Container(
-                            color: Colors.blueGrey,
                             width: MediaQuery.of(context).size.width/3,
-                            height: 40,
-                            child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      ' تاريخ اليومية : ',
-                                      style: TextStyle(fontSize: 19, color: Colors.white, fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(
-                                      ' ${formattedDate} ',
-                                      style: TextStyle(fontSize: 19, color: Colors.white, fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                )
+                            height: 70,
+                            child: FormBuilderDateTimePicker(
+                              name: 'date',
+                              decoration: InputDecoration(
+                                  labelText: 'التاريخ',
+                                  suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
+                              ),
+                              onChanged: (value){
+                                setState(() {
+                                  today_date = value;
+                                  getAllReadings();
+                                  getDailys();
+                                  get_OutG();
+                                });
 
+                              },
+                              validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                              initialDate: DateTime.now(),
+                              initialValue: DateTime.now(),
+                              inputType: InputType.date,
+                            ),
                           ),
-                          SizedBox(height: 20,),
+                          SizedBox(height: 30,),
                           LayoutBuilder(
                             builder: (BuildContext context, BoxConstraints constraints ){
                               if(constraints.maxWidth > 800){

@@ -55,7 +55,6 @@ class _ClientsTableState extends State<ClientsTable> {
               backgroundColor: Colors.red,
             ),
           );
-
           await Future.delayed(Duration(milliseconds: 600));
           Navigator.pushReplacementNamed(context, '/clients');
           selectedIds = [];
@@ -235,6 +234,14 @@ class _ClientsTableState extends State<ClientsTable> {
                       initialDate: DateTime.now(),
                       inputType: InputType.date,
                     ),
+                    FormBuilderTextField(
+                      name: 'comment',
+                      decoration: InputDecoration(
+                          labelText: 'التعليق',
+                          suffixIcon: Icon(Icons.comment, color: Colors.blueAccent,)
+                      ),
+                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0, top: 30),
                       child: Center(
@@ -254,6 +261,7 @@ class _ClientsTableState extends State<ClientsTable> {
                                 data['edit_type'] = _formKey.currentState!.value['edit_type'];
                                 data['amount'] = _formKey.currentState!.value['amount'];
                                 data['date'] = _formKey.currentState!.value['date'].toIso8601String();
+                                data['comment'] = _formKey.currentState!.value['comment'];
 
                                 //server
                                 updateClient(data);
@@ -299,6 +307,13 @@ class _ClientsTableState extends State<ClientsTable> {
                                 icon: Icon(Icons.delete),
                                 label: Text(''),
                               ),
+                                ElevatedButton(
+                                    onPressed: (){
+                                      Navigator.pushNamed(context, '/add_daily');
+                                    },
+                                    child: Text('معاملة جديدة')
+                                ),
+                                SizedBox(width: 10,),
                               ElevatedButton(
                                   onPressed: (){
                                     _EditAccount(context);

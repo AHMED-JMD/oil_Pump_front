@@ -37,7 +37,7 @@ class _DailyBarChartState extends State<DailyBarChart> {
 
     setState(() {
       isLoading = false;
-      data = response;
+      data = response['daily_trans'];
       user = auth.user.username;
     });
   }
@@ -68,7 +68,7 @@ class _DailyBarChartState extends State<DailyBarChart> {
                         left: BorderSide(width: 1),
                         bottom: BorderSide(width: 1),
                       )),
-                  maxY: 5000000,
+                  maxY: 8000000,
                   groupsSpace: 40,
                   barTouchData: BarTouchData(enabled: true),
                     titlesData: FlTitlesData(

@@ -21,7 +21,7 @@ class _AddReadingState extends State<AddReading> {
   bool isLoading = false;
   List data = [];
   Map pump = {};
-  String? pump_id;
+  String? selectedPump_id;
 
   @override
   void initState() {
@@ -48,6 +48,7 @@ class _AddReadingState extends State<AddReading> {
   Future getPump(pump_id) async{
     setState(() {
       isLoading = true;
+      pump = {};
     });
 
     //call server
@@ -65,6 +66,7 @@ class _AddReadingState extends State<AddReading> {
   Future addReading (data) async {
     setState(() {
       isLoading = true;
+      pump.clear();
     });
     //send to server
     final auth = await SharedServices.LoginDetails();
@@ -83,6 +85,7 @@ class _AddReadingState extends State<AddReading> {
           backgroundColor: Colors.red,
         )
     );
+    Navigator.pushReplacementNamed(context, "/add_reading");
   }
 
   @override
@@ -112,7 +115,14 @@ class _AddReadingState extends State<AddReading> {
                               name: 'pump_id',
                               decoration: InputDecoration(labelText: 'اسم المكنة'),
                               onChanged: (val) {
-                                getPump(val);
+                               setState(() {
+                                 selectedPump_id = val;
+                                 pump = {};
+                                 //make sure val != ''
+                                 if(val != ''){
+                                   getPump(val);
+                                 }
+                               });
                               },
                               initialValue: '',
                               items: data
@@ -129,7 +139,7 @@ class _AddReadingState extends State<AddReading> {
                                   decoration: InputDecoration(
                                       labelText: 'قراءة العداد'
                                   ),
-                                  initialValue: pump.isNotEmpty ? '${pump['reading']}' : '',
+                                  initialValue: pump.isNotEmpty ? pump['reading'].toString() : '',
                                   validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الحقول"),
                                 ),
                                 FormBuilderTextField(
@@ -165,15 +175,18 @@ class _AddReadingState extends State<AddReading> {
                                 onPressed: () {
                                   if (_formKey.currentState!.saveAndValidate()) {
                                     var data = {};
-                                    data['pump_id'] = pump['pump_id'];
+                                    data['pump_id'] = selectedPump_id;
                                     data['reading'] = _formKey.currentState!.value['reading'];
                                     data['nw_reading'] = _formKey.currentState!.value['nw_read'];
                                     data['date'] = _formKey.currentState!.value['date'].toIso8601String();
                                     //------
                                     addReading(data);
-                                    // Reset the form fields
+                                    //reset form
                                     _formKey.currentState!.reset();
-
+                                    //setState
+                                    setState(() {
+                                      pump = {};
+                                    });
                                   }
                                 },
                               ),

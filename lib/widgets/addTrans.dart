@@ -25,7 +25,7 @@ class _AddDailyState extends State<AddDaily> {
   String? type;
   String? gas_type;
   String? gas_amount;
-  String? amount;
+  String? price;
   String? comment;
   List clients = [];
 
@@ -167,6 +167,17 @@ class _AddDailyState extends State<AddDaily> {
                                           },
                                           validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                         ),
+                                    FormBuilderTextField(
+                                      name: 'price',
+                                      decoration: InputDecoration(
+                                          labelText: 'سعر اللتر',
+                                          suffixIcon: Icon(Icons.gas_meter, color: Colors.blueAccent,)
+                                      ),
+                                      onChanged: (val) {
+                                        price = val; // Print the text value write into TextField
+                                      },
+                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                    ),
                                     FormBuilderDateTimePicker(
                                           name: 'date',
                                           decoration: InputDecoration(
@@ -178,7 +189,6 @@ class _AddDailyState extends State<AddDaily> {
                                           },
                                           validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                           initialDate: DateTime.now(),
-                                          initialValue: DateTime.now(),
                                           inputType: InputType.date,
                                         ),
                                     FormBuilderTextField(
@@ -211,7 +221,7 @@ class _AddDailyState extends State<AddDaily> {
                                             data['type'] = type;
                                             data['gas_type'] = gas_type;
                                             data['gas_amount'] = gas_amount;
-                                            data['amount'] = amount;
+                                            data['price'] = price;
                                             data['date'] = nw_date!.toIso8601String();
                                             data['comment'] = comment;
 
