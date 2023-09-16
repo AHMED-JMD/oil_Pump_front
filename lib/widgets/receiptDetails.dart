@@ -8,7 +8,7 @@ import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class ReceiptDetails extends StatefulWidget {
-  String reciept_id;
+  final String reciept_id;
   ReceiptDetails({super.key, required this.reciept_id});
 
   @override
@@ -19,7 +19,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
   String reciept_id;
   _ReceiptDetailsState({required this.reciept_id});
 
-  SidebarXController controller = SidebarXController(selectedIndex: 6, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 7, extended: true);
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;

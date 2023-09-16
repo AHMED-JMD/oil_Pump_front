@@ -77,7 +77,7 @@ class _AddDailyState extends State<AddDaily> {
 
     //get data
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Emp.getClients(auth.token);
+    final response = await API_Client.getClients(auth.token);
 
       setState(() {
         clients = response;

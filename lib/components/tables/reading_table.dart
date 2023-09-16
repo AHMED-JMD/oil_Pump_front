@@ -7,8 +7,8 @@ import 'package:OilEnergy_System/models/reading_data.dart';
 
 
 class ReadingTable extends StatefulWidget {
-  int total;
-  List readings;
+  final int total;
+  final List readings;
   ReadingTable({Key? key, required this.total, required this.readings}) : super(key: key);
 
   @override

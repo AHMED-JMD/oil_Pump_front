@@ -119,63 +119,6 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints ){
-                if(constraints.maxWidth > 700){
-                  return Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton.icon(
-                            onPressed: (){
-                              _deleteModal(context);
-                            } ,
-                            icon: Icon(
-                              Icons.delete,
-                            ),
-                            label: Text(''),
-                          ),
-                          SizedBox(width: 3,),
-                          ElevatedButton(
-                              onPressed: (){
-                                Navigator.pushNamed(context, '/add_daily');
-                              } ,
-                              child: Text('معاملة جديدة')
-                          ),
-                          SizedBox(width: 5,),
-                        ],
-                      );
-                }else{
-                  return Column(
-                    children: [
-                      SizedBox(height: 20,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton.icon(
-                            onPressed: (){
-                              _deleteModal(context);
-                            } ,
-                            icon: Icon(
-                              Icons.delete,
-                            ),
-                            label: Text(''),
-                          ),
-                          SizedBox(width: 3,),
-                          ElevatedButton(
-                              onPressed: (){
-                                Navigator.pushNamed(context, '/add_daily');
-                              } ,
-                              child: Text('معاملة جديدة')
-                          ),
-                          SizedBox(width: 5,),
-                        ],
-                      ),
-                      SizedBox(height: 20,)
-                    ],
-                  );
-                }
-              },
-            ),
             SizedBox(height: 20,),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,

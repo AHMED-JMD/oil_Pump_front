@@ -5,13 +5,13 @@ import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:OilEnergy_System/models/employee_data.dart';
+import 'package:OilEnergy_System/models/client_data.dart';
 import 'package:OilEnergy_System/widgets/ClientsDetails.dart';
 
 
 class ClientsTable extends StatefulWidget {
   // late void Function(int) setPage;
-  List clients;
+  final List clients;
   ClientsTable({Key? key, required this.clients}) : super(key: key);
 
   @override
@@ -44,7 +44,7 @@ class _ClientsTableState extends State<ClientsTable> {
     //send response to server
     if(selectedIds.length != 0) {
       final auth = await SharedServices.LoginDetails();
-      API_Emp.Delete_Client(selectedIds, auth.token).then((response) async{
+      API_Client.Delete_Client(selectedIds, auth.token).then((response) async{
         setState(() {
           isLoading = false;
         });
@@ -86,7 +86,7 @@ class _ClientsTableState extends State<ClientsTable> {
 
     //send response to server
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Emp.EditClient(data, auth.token);
+    final response = await API_Client.EditClient(data, auth.token);
 
     if(response != false){
       setState(() {
@@ -124,7 +124,7 @@ class _ClientsTableState extends State<ClientsTable> {
     data['name'] = name;
 
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Emp.FindClient(data, auth.token);
+    final response = await API_Client.FindClient(data, auth.token);
 
     if(response != false){
       setState(() {

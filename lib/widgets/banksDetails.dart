@@ -8,7 +8,7 @@ import 'package:OilEnergy_System/widgets/dailyDetails.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class BanksDetails extends StatefulWidget {
-  String banks_id;
+  final String banks_id;
   BanksDetails({super.key, required this.banks_id});
 
   @override
@@ -19,7 +19,7 @@ class _BanksDetailsState extends State<BanksDetails> {
   String banks_id;
   _BanksDetailsState({required this.banks_id});
 
-  SidebarXController controller = SidebarXController(selectedIndex: 4, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 9, extended: true);
   List dailys = [];
   Map bank = {};
   bool isLoading = false;

@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart';
 
-class API_Client {
-  static Future<dynamic> AddClient (data, token) async {
+class API_Emp {
+  static Future<dynamic> AddEmp (data, token) async {
     try{
       Map<String,String> requestHeaders = {
         'Content-Type' : 'application/json',
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/clients/');
+      final url = Uri.parse('http://localhost:5000/employee/');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -18,18 +18,38 @@ class API_Client {
         return response.body;
       }
     }catch (e) {
-       print(e);
+      print(e);
     }
   }
-  //edit client account
-  static Future<dynamic> EditClient (data, token) async {
+  //update employee
+  static Future<dynamic> UpdateEmp (data, token) async {
     try{
       Map<String,String> requestHeaders = {
         'Content-Type' : 'application/json',
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/clients/update');
+      final url = Uri.parse('http://localhost:5000/employee/update_data');
+      Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
+
+      if(response.statusCode == 200){
+        return true;
+      }else{
+        return response.body;
+      }
+    }catch (e) {
+      print(e);
+    }
+  }
+  //edit client account
+  static Future<dynamic> EditEmp (data, token) async {
+    try{
+      Map<String,String> requestHeaders = {
+        'Content-Type' : 'application/json',
+        'x-auth-token' : '$token'
+      };
+
+      final url = Uri.parse('http://localhost:5000/employee/update');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -42,14 +62,14 @@ class API_Client {
     }
   }
   //get all clients
-  static Future<dynamic> getClients ( token) async {
+  static Future<dynamic> getEmps ( token) async {
     try{
       Map<String,String> requestHeaders = {
         'Content-Type' : 'application/json',
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/clients/');
+      final url = Uri.parse('http://localhost:5000/employee/');
       Response response = await get(url, headers: requestHeaders);
 
       if(response.statusCode == 200){
@@ -62,15 +82,35 @@ class API_Client {
       print(e);
     }
   }
-  //get one clients
-  static Future<dynamic> getOneClients (data, token) async {
+  //get all clients
+  static Future<dynamic> New_month ( token) async {
     try{
       Map<String,String> requestHeaders = {
         'Content-Type' : 'application/json',
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/clients/get-one');
+      final url = Uri.parse('http://localhost:5000/employee/new_month');
+      Response response = await get(url, headers: requestHeaders);
+
+      if(response.statusCode == 200){
+        return true;
+      }else{
+        return response.body;
+      }
+    }catch (e) {
+      print(e);
+    }
+  }
+  //get one clients
+  static Future<dynamic> getOneEmp (data, token) async {
+    try{
+      Map<String,String> requestHeaders = {
+        'Content-Type' : 'application/json',
+        'x-auth-token' : '$token'
+      };
+
+      final url = Uri.parse('http://localhost:5000/employee/get-one');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -84,14 +124,14 @@ class API_Client {
     }
   }
   //find client
-  static Future<dynamic> FindClient (data, token) async {
+  static Future<dynamic> FindEmp (data, token) async {
     try{
       Map<String,String> requestHeaders = {
         'Content-Type' : 'application/json',
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/clients/find_one');
+      final url = Uri.parse('http://localhost:5000/employee/find_one');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -105,14 +145,14 @@ class API_Client {
     }
   }
   //delete clients
-  static Future<dynamic> Delete_Client (emp_id, token) async {
+  static Future<dynamic> Delete_Emp (emp_id, token) async {
     try{
       Map<String,String> requestHeaders = {
         'Content-Type' : 'application/json',
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/clients/delete');
+      final url = Uri.parse('http://localhost:5000/employee/delete');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(emp_id));
 
       if(response.statusCode == 200){

@@ -16,7 +16,7 @@ class AddMachine extends StatefulWidget {
 
 class _AddMachineState extends State<AddMachine> {
   GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
-  SidebarXController controller = SidebarXController(selectedIndex: 5, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 6, extended: true);
 
   bool isLoading = false;
 

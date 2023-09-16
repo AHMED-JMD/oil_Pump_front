@@ -1,4 +1,6 @@
+import 'package:OilEnergy_System/widgets/Employees.dart';
 import 'package:OilEnergy_System/widgets/Pumps.dart';
+import 'package:OilEnergy_System/widgets/addEmployee.dart';
 import 'package:OilEnergy_System/widgets/addReadings.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -51,7 +53,9 @@ class MyApp extends StatelessWidget {
         '/add_daily' : (context) => AddDaily(),
         '/old_daily' : (context) => OldDailys(),
         '/clients' : (context) => Clients(),
-        '/add_client' : (context) => AddEmployee(),
+        '/employees': (context) => Employees(),
+        '/add_employes': (context) => AddEmployee(),
+        '/add_client' : (context) => AddClient(),
         '/gasolines' : (context) => Gasolines(),
         '/machines' : (context) => Machine_Pumps(),
         '/add_machine': (context) => AddMachine(),

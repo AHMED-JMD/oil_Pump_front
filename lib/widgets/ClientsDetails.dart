@@ -43,7 +43,7 @@ class _ClientDetailsState extends State<ClientDetails> {
     final auth = await SharedServices.LoginDetails();
     Map data = {};
     data['emp_id'] = emp_id;
-    final response = await API_Emp.getOneClients(data, auth.token);
+    final response = await API_Client.getOneClients(data, auth.token);
 
     setState(() {
       isLoading = false;

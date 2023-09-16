@@ -15,7 +15,7 @@ class AddReciept extends StatefulWidget {
 }
 
 class _AddRecieptState extends State<AddReciept> {
-  SidebarXController controller = SidebarXController(selectedIndex: 3, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 7, extended: true);
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;

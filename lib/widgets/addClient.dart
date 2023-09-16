@@ -8,16 +8,16 @@ import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sidebarx/sidebarx.dart';
 
-class AddEmployee extends StatefulWidget {
-  const AddEmployee({Key? key,}) : super(key: key);
+class AddClient extends StatefulWidget {
+  const AddClient({Key? key,}) : super(key: key);
 
   @override
-  State<AddEmployee> createState() => _AddEmployeeState();
+  State<AddClient> createState() => _AddClientState();
 }
 
-class _AddEmployeeState extends State<AddEmployee> {
+class _AddClientState extends State<AddClient> {
 
-  SidebarXController controller = SidebarXController(selectedIndex: 2, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 4, extended: true);
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   //state of widget
@@ -30,7 +30,7 @@ class _AddEmployeeState extends State<AddEmployee> {
 
     //call backend
     final auth = await SharedServices.LoginDetails();
-    API_Emp.AddClient(data, auth.token).then((response){
+    API_Client.AddClient(data, auth.token).then((response){
       setState(() {
         isLoading = false;
       });

@@ -85,6 +85,7 @@ class _AddReadingState extends State<AddReading> {
           backgroundColor: Colors.red,
         )
     );
+    //delete when you figure the issue
     Navigator.pushReplacementNamed(context, "/add_reading");
   }
 

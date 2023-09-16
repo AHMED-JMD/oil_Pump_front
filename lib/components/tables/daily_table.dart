@@ -7,8 +7,8 @@ import 'package:advanced_datatable/advanced_datatable_source.dart';
 
 
 class DailyTable extends StatefulWidget {
-  int total;
-  List daily_data;
+  final int total;
+  final List daily_data;
   DailyTable({Key? key, required this.total, required this.daily_data}) : super(key: key);
 
   @override

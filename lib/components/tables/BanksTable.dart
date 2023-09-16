@@ -9,7 +9,7 @@ import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:OilEnergy_System/widgets/banksDetails.dart';
 
 class BanksTable extends StatefulWidget {
-  List data;
+  final List data;
   BanksTable({Key? key, required this.data}) : super(key: key);
 
   @override

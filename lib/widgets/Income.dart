@@ -12,7 +12,7 @@ class Incomes extends StatefulWidget {
 }
 
 class _IncomesState extends State<Incomes> {
-  SidebarXController controller = SidebarXController(selectedIndex: 6, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 7, extended: true);
 
   @override
   Widget build(BuildContext context) {

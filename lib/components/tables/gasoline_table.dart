@@ -9,7 +9,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
 class GasolineTable extends StatefulWidget {
-  List data;
+  final List data;
   GasolineTable({Key? key, required this.data}) : super(key: key);
 
   @override

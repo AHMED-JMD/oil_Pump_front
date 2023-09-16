@@ -8,7 +8,7 @@ import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class Machine_Detail extends StatefulWidget {
-  String pump_id;
+  final String pump_id;
   Machine_Detail({super.key, required this.pump_id});
 
   @override

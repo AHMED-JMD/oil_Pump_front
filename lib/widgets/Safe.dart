@@ -13,7 +13,7 @@ class Safe extends StatefulWidget {
 }
 
 class _SafeState extends State<Safe> {
-  SidebarXController controller = SidebarXController(selectedIndex: 7, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 8, extended: true);
   int total = 0;
   bool isLoading = false;
   DateTime date = DateTime.now();

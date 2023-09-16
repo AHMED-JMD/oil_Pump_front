@@ -37,7 +37,7 @@ class _ClientsState extends State<Clients> {
 
     //send to server
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Emp.getClients(auth.token);
+    final response = await API_Client.getClients(auth.token);
 
     if(response != false){
       setState(() {
@@ -54,7 +54,7 @@ class _ClientsState extends State<Clients> {
 
     //send to server
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Emp.FindClient(data, auth.token);
+    final response = await API_Client.FindClient(data, auth.token);
 
     if(response != false){
       setState(() {

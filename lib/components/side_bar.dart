@@ -126,6 +126,13 @@ class _NavbarState extends State<Navbar> {
             }
         ),
         SidebarXItem(
+            icon: Icons.person_pin,
+            label: ' الموظفين ',
+            onTap: (){
+              Navigator.pushReplacementNamed(context, '/employees');
+            }
+        ),
+        SidebarXItem(
             icon: Icons.local_gas_station,
             label: ' مكنات الوقود ',
             onTap: (){

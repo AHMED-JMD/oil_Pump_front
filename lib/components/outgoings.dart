@@ -3,8 +3,8 @@ import 'package:OilEnergy_System/API/outgoing.dart';
 import 'package:OilEnergy_System/SharedService.dart';
 
 class Outgoings extends StatefulWidget {
-  int total;
-  List data;
+  final int total;
+  final List data;
   Outgoings({super.key, required this.total, required this.data});
 
   @override

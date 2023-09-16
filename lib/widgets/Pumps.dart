@@ -4,8 +4,6 @@ import 'package:OilEnergy_System/components/appBar.dart';
 import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:OilEnergy_System/widgets/machine_daetails.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class Machine_Pumps extends StatefulWidget {
@@ -17,8 +15,7 @@ class Machine_Pumps extends StatefulWidget {
 
 class _Machine_PumpsState extends State<Machine_Pumps> {
 
-  SidebarXController controller = SidebarXController(selectedIndex: 5, extended: true);
-  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+  SidebarXController controller = SidebarXController(selectedIndex: 6, extended: true);
   DateTime today_date = DateTime.now();
   bool isLoading = false;
   List data = [];
