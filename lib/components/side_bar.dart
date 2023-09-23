@@ -127,7 +127,7 @@ class _NavbarState extends State<Navbar> {
         ),
         SidebarXItem(
             icon: Icons.person_pin,
-            label: ' الموظفين ',
+            label: ' الموظفين و العمال ',
             onTap: (){
               Navigator.pushReplacementNamed(context, '/employees');
             }

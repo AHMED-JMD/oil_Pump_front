@@ -106,7 +106,7 @@ class _EmployeesState extends State<Employees> {
                               colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.difference),
                             )
                         ),
-                        child: Center(child: Text('الموظفين', style: TextStyle(fontSize: 26, color: Colors.white), textAlign: TextAlign.center,)),
+                        child: Center(child: Text('الموظفين و العمال', style: TextStyle(fontSize: 26, color: Colors.white), textAlign: TextAlign.center,)),
                       ),
                       SizedBox(height: 80,),
                       Column(

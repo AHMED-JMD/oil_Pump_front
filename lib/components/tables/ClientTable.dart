@@ -479,7 +479,7 @@ class ExampleSource extends AdvancedDataTableSource<Clients> {
       NextPageRequest pageRequest) async {
 
 print(filtered);
-      await Future.delayed(Duration(milliseconds: 700));
+      await Future.delayed(Duration(milliseconds: 300));
       return RemoteDataSourceDetails(
         clients.length,
         (clients as List<dynamic>)

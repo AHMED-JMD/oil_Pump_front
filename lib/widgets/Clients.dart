@@ -7,6 +7,7 @@ import 'package:OilEnergy_System/components/tables/ClientTable.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sidebarx/sidebarx.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 
 class Clients extends StatefulWidget {
@@ -22,6 +23,7 @@ class _ClientsState extends State<Clients> {
   bool isLoading = false;
   List clients = [];
   List<String> clients_names = [];
+  String? name;
 
   @override
   void initState() {
@@ -128,13 +130,26 @@ class _ClientsState extends State<Clients> {
                                               padding: const EdgeInsets.only(top: 8.0, right: 20),
                                               child: Container(
                                                 width: MediaQuery.of(context).size.width/3.2,
-                                                child: FormBuilderTextField(
-                                                  name: 'name',
-                                                  decoration: InputDecoration(
-                                                      labelText: 'ابحث عن الاسم',
+                                                height: 60,
+                                                child: TypeAheadField(
+                                                  textFieldConfiguration: TextFieldConfiguration(
+                                                      autofocus: false,
+                                                      decoration: InputDecoration(
+                                                        label: Text('ابحث عن الاسم'),
+                                                      )
                                                   ),
-                                                  validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                                                ),
+                                                  suggestionsCallback: (pattern) async {
+                                                    return clients_names.where((option) => option.toLowerCase().contains(pattern.toLowerCase()));
+                                                  },
+                                                  itemBuilder: (context, suggestion) {
+                                                    return ListTile(
+                                                      title: Text(suggestion),
+                                                    );
+                                                  },
+                                                  onSuggestionSelected: (suggestion) {
+                                                    name = suggestion;
+                                                  },
+                                                )
                                               ),
                                             ),
                                             SizedBox(width: 10,),
@@ -143,7 +158,9 @@ class _ClientsState extends State<Clients> {
                                               onPressed: (){
                                                 if(_formKey.currentState!.saveAndValidate()){
                                                     //send to server
-                                                  _OnSubmit(_formKey.currentState!.value);
+                                                  Map data = {};
+                                                  data['name'] = name;
+                                                  _OnSubmit(data);
                                                   setState(() {
                                                     clients = [];
                                                   });

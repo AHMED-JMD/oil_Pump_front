@@ -60,7 +60,7 @@ class _ClientDetailsState extends State<ClientDetails> {
     //send to server
     final auth = await SharedServices.LoginDetails();
     final response = await API_Daily.client_Trans(datas, auth.token);
-    print(response);
+
     if(response != false){
       setState(() {
         isLoading = false;
@@ -71,7 +71,6 @@ class _ClientDetailsState extends State<ClientDetails> {
 
   @override
   Widget build(BuildContext context) {
-
     return  Scaffold(
       appBar: APPBAR(context),
       body: Directionality(

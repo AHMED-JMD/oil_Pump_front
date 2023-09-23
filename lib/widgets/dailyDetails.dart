@@ -13,7 +13,7 @@ import 'package:OilEnergy_System/components/tables/reading_table.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class DailyDetails extends StatefulWidget {
-  final DateTime date;
+  final date;
   DailyDetails({super.key, required this.date});
 
   @override

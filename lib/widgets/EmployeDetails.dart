@@ -60,8 +60,8 @@ class _EmployeeDetailState extends State<EmployeeDetail> {
 
     //send to server
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Daily.client_Trans(datas, auth.token);
-    print(response);
+    final response = await API_Daily.emp_Trans(datas, auth.token);
+
     if(response != false){
       setState(() {
         isLoading = false;
@@ -78,7 +78,7 @@ class _EmployeeDetailState extends State<EmployeeDetail> {
     //send to server
     final auth = await SharedServices.LoginDetails();
     final response = await API_Emp.UpdateEmp(data, auth.token);
-    print(response);
+
     if(response != false){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
