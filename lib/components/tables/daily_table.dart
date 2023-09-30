@@ -1,9 +1,12 @@
+import 'package:OilEnergy_System/API/client.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/daily.dart';
 import 'package:OilEnergy_System/SharedService.dart';
 import 'package:OilEnergy_System/models/daily_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
 
 class DailyTable extends StatefulWidget {
@@ -25,11 +28,15 @@ class _DailyTableState extends State<DailyTable> {
   var sortAsc = true;
   late final source = ExampleSource(daily_data: daily_data);
   final _searchController = TextEditingController();
-  bool isLoading = false;
+   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
+   List clients = [];
+   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    getClients();
     _searchController.text = '';
   }
 
@@ -75,6 +82,58 @@ class _DailyTableState extends State<DailyTable> {
       );
     }
   }
+    //get all clients
+   Future getClients() async {
+     setState(() {
+       isLoading = true;
+     });
+
+     //send to server
+     final auth = await SharedServices.LoginDetails();
+     final response = await API_Client.getClients(auth.token);
+
+     if(response != false){
+       setState(() {
+         isLoading = false;
+         clients = response;
+       });
+     }
+   }
+   //update clients
+   Future updateClient(data) async{
+     setState(() {
+       isLoading = true;
+     });
+
+     //send response to server
+     final auth = await SharedServices.LoginDetails();
+     final response = await API_Client.EditClient(data, auth.token);
+
+     if(response != false){
+       setState(() {
+         isLoading = false;
+       });
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(
+           content: Text('تم التعديل بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17, color: Colors.white),),
+           backgroundColor: Colors.green,
+         ),
+       );
+       await Future.delayed(Duration(milliseconds: 600));
+       Navigator.pushReplacementNamed(context, '/dailys');
+     }else{
+       setState(() {
+         isLoading = false;
+       });
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(
+           content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17, color: Colors.white),),
+           backgroundColor: Colors.red,
+         ),
+       );
+     }
+
+   }
   //-------------------------------------------
 
   //delete modal
@@ -113,6 +172,108 @@ class _DailyTableState extends State<DailyTable> {
       },
     );
   }
+  //cash trans
+   void _CashTransact(BuildContext context) {
+     showDialog(
+       context: context,
+       builder: (BuildContext context) {
+         return Directionality(
+           textDirection: TextDirection.rtl,
+           child: SimpleDialog(
+             title: Text('معاملة نقدية'),
+             children:[
+               Padding(
+                 padding: const EdgeInsets.all(20.0),
+                 child: FormBuilder(
+                   key: _formKey,
+                   child: Column(
+                     children: [
+                       FormBuilderDropdown(
+                           name: 'emp_id',
+                           decoration: InputDecoration(labelText: 'اختر العميل'),
+                           validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                           items: clients
+                               .map((client) =>
+                               DropdownMenuItem(
+                                 value: client['emp_id'],
+                                 child: Text('${client['name']}'),
+                               )).toList()
+                       ),
+                       FormBuilderDropdown(
+                           name: 'edit_type',
+                           decoration: InputDecoration(labelText: 'نوع التعديل'),
+                           validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                           items: ['ايراد', 'خصم',]
+                               .map((value) =>
+                               DropdownMenuItem(
+                                 value: value,
+                                 child: Text(value),
+                               )).toList()
+                       ),
+                       FormBuilderTextField(
+                         name: 'amount',
+                         decoration: InputDecoration(labelText: 'المبلغ'),
+                         validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                       ),
+                       FormBuilderDateTimePicker(
+                         name: 'date',
+                         decoration: InputDecoration(
+                             labelText: 'التاريخ',
+                             suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
+                         ),
+                         validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                         initialDate: DateTime.now(),
+                         inputType: InputType.date,
+                       ),
+                       FormBuilderTextField(
+                         name: 'comment',
+                         decoration: InputDecoration(
+                             labelText: 'التعليق',
+                             suffixIcon: Icon(Icons.comment, color: Colors.blueAccent,)
+                         ),
+                         validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                       ),
+                       Padding(
+                         padding: const EdgeInsets.only(bottom: 8.0, top: 30),
+                         child: Center(
+                           child: SizedBox(
+                             height: 30,
+                             width: 70,
+                             child: TextButton(
+                               style: TextButton.styleFrom(
+                                 backgroundColor: Colors.blueAccent,
+                                 primary: Colors.white,
+                               ),
+                               child: Text('خصم'),
+                               onPressed: (){
+                                 if(_formKey.currentState!.saveAndValidate()){
+                                   Map data = {};
+                                   data['emp_id'] = _formKey.currentState!.value['emp_id'];
+                                   data['edit_type'] = _formKey.currentState!.value['edit_type'];
+                                   data['amount'] = _formKey.currentState!.value['amount'];
+                                   data['date'] = _formKey.currentState!.value['date'].toIso8601String();
+                                   data['comment'] = _formKey.currentState!.value['comment'];
+
+                                   //server
+                                   updateClient(data);
+                                   Navigator.of(context).pop();
+                                 }
+
+                               },
+                             ),
+                           ),
+                         ),
+                       ),
+                     ],
+                   ),
+                 ),
+               ),
+             ],
+           ),
+         );
+       },
+     );
+   }
 
 
   @override
@@ -173,12 +334,18 @@ class _DailyTableState extends State<DailyTable> {
                             ),
                             label: Text(''),
                           ),
-                          SizedBox(width: 3,),
+                          ElevatedButton(
+                              onPressed: (){
+                                _CashTransact(context);
+                              } ,
+                              child: Text('معاملة نقدية')
+                          ),
+                          SizedBox(width: 13,),
                           ElevatedButton(
                               onPressed: (){
                                 Navigator.pushNamed(context, '/add_daily');
                               } ,
-                              child: Text('معاملة جديدة')
+                              child: Text('معاملة وقود')
                           ),
                           SizedBox(width: 5,),
                         ],
@@ -235,7 +402,13 @@ class _DailyTableState extends State<DailyTable> {
                             ),
                             label: Text(''),
                           ),
-                          SizedBox(width: 3,),
+                          ElevatedButton(
+                              onPressed: (){
+                                _CashTransact(context);
+                              } ,
+                              child: Text('معاملة نقدية')
+                          ),
+                          SizedBox(width: 13,),
                           ElevatedButton(
                               onPressed: (){
                                 Navigator.pushNamed(context, '/add_daily');

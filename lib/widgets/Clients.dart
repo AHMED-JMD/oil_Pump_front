@@ -136,7 +136,7 @@ class _ClientsState extends State<Clients> {
                                                       autofocus: false,
                                                       decoration: InputDecoration(
                                                         label: Text('ابحث عن الاسم'),
-                                                      )
+                                                      ),
                                                   ),
                                                   suggestionsCallback: (pattern) async {
                                                     return clients_names.where((option) => option.toLowerCase().contains(pattern.toLowerCase()));

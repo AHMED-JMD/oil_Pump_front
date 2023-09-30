@@ -1,3 +1,4 @@
+import 'package:OilEnergy_System/components/Print.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/client.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -189,7 +190,7 @@ class _ClientsTableState extends State<ClientsTable> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: SimpleDialog(
-            title: Text('تعديل الحساب'),
+            title: Text('معاملة نقدية'),
             children:[
               Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -199,7 +200,7 @@ class _ClientsTableState extends State<ClientsTable> {
                   children: [
                     FormBuilderDropdown(
                         name: 'emp_id',
-                        decoration: InputDecoration(labelText: 'اختر الموظف'),
+                        decoration: InputDecoration(labelText: 'اختر العميل'),
                         validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
                         items: clients
                         .map((client) =>
@@ -240,6 +241,7 @@ class _ClientsTableState extends State<ClientsTable> {
                           labelText: 'التعليق',
                           suffixIcon: Icon(Icons.comment, color: Colors.blueAccent,)
                       ),
+                      initialValue: 'نقدا',
                       validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                     ),
                     Padding(
@@ -311,14 +313,14 @@ class _ClientsTableState extends State<ClientsTable> {
                                     onPressed: (){
                                       Navigator.pushNamed(context, '/add_daily');
                                     },
-                                    child: Text('معاملة جديدة')
+                                    child: Text('معاملة وقود')
                                 ),
                                 SizedBox(width: 10,),
                               ElevatedButton(
                                   onPressed: (){
                                     _EditAccount(context);
                                   },
-                                  child: Text('تعديل حساب')
+                                  child: Text('معاملة نقدية')
                               ),
                               SizedBox(width: 5,),
                               ElevatedButton(
@@ -327,6 +329,16 @@ class _ClientsTableState extends State<ClientsTable> {
                                   } ,
                                   child: Text('+ اضافة عميل')
                               ),
+                                SizedBox(width: 13,),
+                                ElevatedButton(
+                                    onPressed: (){
+                                      PrintPage();
+                                    },
+                                    style : ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.grey[500]
+                                    ),
+                                    child: Text('طباعة')
+                                ),
                             ],
                           );
                     }else{

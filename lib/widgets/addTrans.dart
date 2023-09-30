@@ -26,7 +26,7 @@ class _AddDailyState extends State<AddDaily> {
   String? gas_type;
   String? gas_amount;
   String? price;
-  String? comment;
+  String? comment = 'خصم جازولين';
   List clients = [];
 
   @override
@@ -200,6 +200,7 @@ class _AddDailyState extends State<AddDaily> {
                                           onChanged: (val) {
                                             comment = val; // Print the text value write into TextField
                                           },
+                                          initialValue: "خصم جازولين",
                                           validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                         ), // Add another text field
                                     SizedBox(height: 40,),
@@ -223,7 +224,7 @@ class _AddDailyState extends State<AddDaily> {
                                             data['gas_amount'] = gas_amount;
                                             data['price'] = price;
                                             data['date'] = nw_date!.toIso8601String();
-                                            data['comment'] = comment;
+                                            data['comment'] = _formKey.currentState!.value['comment'];
 
                                             //------
                                              _OnSubmit(data);

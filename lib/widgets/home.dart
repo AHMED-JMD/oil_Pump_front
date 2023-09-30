@@ -83,6 +83,7 @@ class _HomePageState extends State<HomePage> {
                                   labelText: 'الاسم',
                                   icon: Icon(Icons.person),
                               ),
+                              initialValue: 'ahmed eissa',
                               validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                             ),
                             SizedBox(height: 20,),

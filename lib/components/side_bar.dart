@@ -113,7 +113,7 @@ class _NavbarState extends State<Navbar> {
         ),
         SidebarXItem(
             icon: Icons.gas_meter,
-            label: ' الوقود ',
+            label: ' بئر الوقود ',
             onTap: (){
               Navigator.pushReplacementNamed(context, '/gasolines');
             }
@@ -134,7 +134,7 @@ class _NavbarState extends State<Navbar> {
         ),
         SidebarXItem(
             icon: Icons.local_gas_station,
-            label: ' مكنات الوقود ',
+            label: ' عدادات الوقود ',
             onTap: (){
               Navigator.pushReplacementNamed(context, '/machines');
             }

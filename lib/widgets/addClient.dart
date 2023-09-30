@@ -131,6 +131,7 @@ class _AddClientState extends State<AddClient> {
                                           ),
                                           maxLines: 5,
                                           minLines: 1,
+                                          initialValue: 'حساب جديد',
                                           // onChanged: (val) {
                                           //   print(val); // Print the text value write into TextField
                                           // },
