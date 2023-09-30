@@ -34,6 +34,9 @@ void main() async{
     _defaultHome = MainPage();
   }
 
+  //set default date for entire app
+  await SharedServices.SetDate(DateTime.now());
+
   runApp(const MyApp());
 }
 

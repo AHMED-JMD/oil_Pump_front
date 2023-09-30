@@ -4,6 +4,8 @@ import 'package:OilEnergy_System/components/appBar.dart';
 import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:OilEnergy_System/widgets/machine_daetails.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class Machine_Pumps extends StatefulWidget {
@@ -16,9 +18,13 @@ class Machine_Pumps extends StatefulWidget {
 class _Machine_PumpsState extends State<Machine_Pumps> {
 
   SidebarXController controller = SidebarXController(selectedIndex: 6, extended: true);
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
   DateTime today_date = DateTime.now();
   bool isLoading = false;
   List data = [];
+  int benz_price = 0;
+  int gas_price = 0;
 
   @override
   void initState() {
@@ -30,6 +36,7 @@ class _Machine_PumpsState extends State<Machine_Pumps> {
   Future getAllPumps() async{
     setState(() {
       isLoading = true;
+      data = [];
     });
 
     //call server
@@ -39,8 +46,38 @@ class _Machine_PumpsState extends State<Machine_Pumps> {
     setState(() {
       isLoading = false;
       data = response['pumps'];
+      benz_price = response['benz_price'];
+      gas_price = response['gas_price'];
     });
   }
+  //update price
+  Future update_price(data) async{
+    setState(() {
+      isLoading = true;
+    });
+
+    //call server
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Pump.Update_Price(data, auth.token);
+
+    response != false ? ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('تم تعديل السعر', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+        backgroundColor: Colors.green,
+      ),
+    )
+        :
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+          backgroundColor: Colors.red,
+        )
+    );
+
+    //refresh page
+    getAllPumps();
+  }
+
   Future deletePump (pumpId) async {
     setState(() {
       isLoading = true;
@@ -183,23 +220,76 @@ class _Machine_PumpsState extends State<Machine_Pumps> {
                     Padding(
                       padding: const EdgeInsets.only(top: 20.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Container(
-                            width: MediaQuery.of(context).size.width/2,
+                            width: MediaQuery.of(context).size.width/6,
                             height: 50,
                             child: ElevatedButton.icon(
                                 onPressed: (){
                                   Navigator.pushReplacementNamed(context, '/add_machine');
                                 },
                                 icon: Icon(Icons.add),
-                                label: Text('اضافة مكنة', style: TextStyle(fontSize: 18),)
+                                label: Text('اضافة عداد', style: TextStyle(fontSize: 18),)
+                            ),
+                          ),
+                          FormBuilder(
+                            key: _formKey,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                    height:70,
+                                    width: 200,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Center(
+                                      child: FormBuilderTextField(
+                                        name: 'benz_price',
+                                        decoration: InputDecoration(labelText: 'سعر لتر البنزين'),
+                                        initialValue: benz_price.toString(),
+                                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                      ),
+                                    )
+                                ),
+                                SizedBox(width: 15,),
+                                Container(
+                                  height:70,
+                                  width: 200,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12)
+                                  ),
+                                  child: Center(
+                                    child: FormBuilderTextField(
+                                      name: 'gas_price',
+                                      decoration: InputDecoration(labelText: 'سعر لتر الجازولين'),
+                                      initialValue: gas_price.toString(),
+                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 20,),
+                                ElevatedButton(
+                                    onPressed: (){
+                                      if(_formKey.currentState!.saveAndValidate()){
+                                        //call backend function
+                                        update_price(_formKey.currentState!.value);
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        minimumSize: Size(100, 50),
+                                        backgroundColor: Colors.blueGrey
+                                    ),
+                                    child: Text('تعديل'),
+                                )
+                              ],
                             ),
                           ),
                         ],
                       )
                     ),
-                    SizedBox(height: 30,),
+                    SizedBox(height: 40,),
                     LayoutBuilder(
                         builder: (BuildContext context, BoxConstraints constraints ){
                           if(constraints.maxWidth > 800){

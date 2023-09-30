@@ -130,4 +130,25 @@ class API_Pump {
       print(e);
     }
   }
+  //update price
+  static Future Update_Price (data, token) async {
+    try{
+      Map<String,String> requestHeaders = {
+        'Content-Type' : 'application/json',
+        'x-auth-token' : '$token'
+      };
+
+      final url = Uri.parse('http://localhost:5000/pump/update_price');
+      Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
+
+      if(response.statusCode == 200){
+        final data = jsonDecode(response.body);
+        return data;
+      }else{
+        return false;
+      }
+    }catch(e){
+      print(e);
+    }
+  }
 }

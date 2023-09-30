@@ -39,4 +39,26 @@ class SharedServices {
 
     Navigator.pushReplacementNamed(context, '/login');
   }
+
+  //----------------get the date of the dailys------------
+  static Future SetDate(DateTime? date) async{
+    APICacheDBModel CachedDb = APICacheDBModel(
+        key: 'date',
+        syncData: (date!.toIso8601String())
+    );
+    await APICacheManager().addCacheData(CachedDb);
+  }
+
+  //get date
+  static Future GetDate() async {
+    var isKeyExist = await APICacheManager().isAPICacheKeyExist('date');
+
+    if(isKeyExist){
+      var cachedData = await APICacheManager().getCacheData('date');
+
+      return cachedData.syncData;
+    }else{
+      return loginResponseJson('');
+    }
+  }
 }

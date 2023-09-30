@@ -25,7 +25,6 @@ class _DailysState extends State<Dailys> {
 
   bool isLoading = false;
   bool nw_daily = false;
-  DateTime? today_date = DateTime.now();
   // late String formattedDate = formatDate(today_date);
   List readings = [];
   String? selectedPump;
@@ -64,10 +63,11 @@ class _DailysState extends State<Dailys> {
       isLoading = true;
       daily_data = [];
     });
-    //send to server
 
+    //send to server
     final datas = {};
-    datas['date'] = today_date!.toIso8601String();
+    final today_date = await SharedServices.GetDate();
+    datas['date'] = today_date;
     final auth = await SharedServices.LoginDetails();
     API_Daily.get_Trans(datas, auth.token).then((response){
       setState(() {
@@ -85,7 +85,9 @@ class _DailysState extends State<Dailys> {
 
     //call server
     Map date = {};
-    date['date'] = today_date!.toIso8601String();
+    final today_date = await SharedServices.GetDate();
+
+    date['date'] = today_date;
     date['total_pumps'] = total_benz + total_gas;
     date['total_dailys'] = total_dailys;
     date['total_outgs'] = total_outgs;
@@ -144,8 +146,10 @@ class _DailysState extends State<Dailys> {
     });
 
     //call server
+    final today_date = await SharedServices.GetDate();
+
     Map datas = {};
-    datas['date'] = today_date!.toIso8601String();
+    datas['date'] = today_date;
     final auth = await SharedServices.LoginDetails();
     final response = await API_Reading.GetReading(datas, auth.token);
 
@@ -164,9 +168,11 @@ class _DailysState extends State<Dailys> {
       isLoading = false;
       outg_data = [];
     });
+
     //post to server
+    final today_date = await SharedServices.GetDate();
     final datas = {};
-    datas['date'] = today_date!.toIso8601String();
+    datas['date'] = today_date;
 
     final auth = await SharedServices.LoginDetails();
     final response = await API_OutG.Get_OutG(datas, auth.token);
@@ -373,13 +379,14 @@ class _DailysState extends State<Dailys> {
                                 style: ElevatedButton.styleFrom(
                                     textStyle: TextStyle(fontSize: 18)
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   if (_formKey.currentState!.saveAndValidate()) {
                                     var data = {};
+                                    final today_date = await SharedServices.GetDate();
                                     data['pump_id'] = machine['pumpPumpId'];
                                     data['reading'] = _formKey.currentState!.value['reading'];
                                     data['nw_reading'] = _formKey.currentState!.value['nw_read'];
-                                    data['date'] = today_date!.toIso8601String();
+                                    data['date'] = today_date;
 
                                     //call backend------------
                                     updateReading(data);
@@ -547,9 +554,9 @@ class _DailysState extends State<Dailys> {
                                   labelText: 'التاريخ',
                                   suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
                               ),
-                              onChanged: (value){
+                              onChanged: (value) async {
+                                await SharedServices.SetDate(value);
                                 setState(() {
-                                  today_date = value;
                                   getAllReadings();
                                   getDailys();
                                   get_OutG();
@@ -558,7 +565,6 @@ class _DailysState extends State<Dailys> {
                               },
                               validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                               initialDate: DateTime.now(),
-                              initialValue: DateTime.now(),
                               inputType: InputType.date,
                             ),
                           ),
