@@ -1,4 +1,5 @@
 import 'package:OilEnergy_System/API/client.dart';
+import 'package:OilEnergy_System/widgets/trans_details.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/daily.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -26,7 +27,7 @@ class _DailyTableState extends State<DailyTable> {
   var rowsPerPage = 10;
   var sortIndex = 0;
   var sortAsc = true;
-  late final source = ExampleSource(daily_data: daily_data);
+  late final source = ExampleSource(daily_data: daily_data, context: context);
   final _searchController = TextEditingController();
    final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
@@ -466,6 +467,9 @@ class _DailyTableState extends State<DailyTable> {
                 DataColumn(
                   label: const Text('التاريخ'),
                 ),
+                DataColumn(
+                  label: const Text('عرض/ تعديل'),
+                ),
               ],
             ),
             SizedBox(height: 12,),
@@ -503,7 +507,8 @@ class _DailyTableState extends State<DailyTable> {
 //class of data models and Rows
 class ExampleSource extends AdvancedDataTableSource<Daily> {
   List daily_data;
-  ExampleSource({ required this.daily_data});
+  final BuildContext context;
+  ExampleSource({ required this.daily_data, required this.context});
 
   String lastSearchTerm = '';
 
@@ -538,6 +543,18 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
       ),
           DataCell(
             Text(currentRowData.date),
+          ),
+          DataCell(
+            Center(
+              child: InkWell(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => TransDetails(tran_id: currentRowData.tranId,))
+                    );
+                  },
+                  child: Icon(Icons.remove_red_eye, color: Colors.grey[500],size: 25,)
+              ),
+            ),
           ),
     ]);
   }

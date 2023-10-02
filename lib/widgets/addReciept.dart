@@ -25,6 +25,7 @@ class _AddRecieptState extends State<AddReciept> {
   String? car_plate;
   String? fuel_type;
   String? amount;
+  String? shortage = '0';
   DateTime? ship_date;
   DateTime? arrive_date;
 
@@ -151,6 +152,18 @@ class _AddRecieptState extends State<AddReciept> {
                             },
                             validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                           ),
+                          FormBuilderTextField(
+                            name: "shortage",
+                            decoration: InputDecoration(
+                                labelText: 'عجز الوقود',
+                                suffixIcon: Icon(Icons.gas_meter_outlined, color: Colors.blueAccent,)
+                            ),
+                            initialValue: '0',
+                            onChanged: (val){
+                              shortage = val;
+                            },
+                            validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                          ),
                           FormBuilderDateTimePicker(
                             name: 'ship_date',
                             decoration: InputDecoration(
@@ -192,6 +205,7 @@ class _AddRecieptState extends State<AddReciept> {
                                   data['car_plate'] = car_plate;
                                   data['fuel_type'] = fuel_type;
                                   data['amount'] = amount;
+                                  data['shortage'] = shortage;
                                   data['ship_date'] = ship_date!.toIso8601String();
                                   data['arrive_date'] = arrive_date!.toIso8601String();
 

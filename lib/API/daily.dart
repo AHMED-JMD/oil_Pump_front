@@ -134,6 +134,27 @@ class API_Daily {
     }
 }
 
+  //update client account
+  static Future<dynamic> UpdateTrans (data, token) async {
+    try{
+      Map<String,String> requestHeaders = {
+        'Content-Type' : 'application/json',
+        'x-auth-token' : '$token'
+      };
+
+      final url = Uri.parse('http://localhost:5000/transaction/update');
+      Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
+
+      if(response.statusCode == 200){
+        return true;
+      }else{
+        return response.body;
+      }
+    }catch (e) {
+      print(e);
+    }
+  }
+
 //delete transaction from server
   static Future Delete_Trans (data, token) async {
     try{
@@ -164,6 +185,28 @@ class API_Daily {
       };
 
       final url = Uri.parse('http://localhost:5000/transaction/get-one');
+      Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
+
+      if(response.statusCode == 200){
+        final data = jsonDecode(response.body);
+        return data;
+      }else{
+        return false;
+      }
+    }catch (e){
+      print(e);
+    }
+  }
+
+  //get one transaction by Id
+  static Future Get_byId (data, token) async {
+    try{
+      Map<String,String> requestHeaders = {
+        'Content-Type' : 'application/json',
+        'x-auth-token' : '$token'
+      };
+
+      final url = Uri.parse('http://localhost:5000/transaction/get_byId');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){

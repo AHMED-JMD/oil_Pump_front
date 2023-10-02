@@ -23,6 +23,8 @@ class _ClientDetailsState extends State<ClientDetails> {
 
   SidebarXController controller = SidebarXController(selectedIndex: 2, extended: true);
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+  final GlobalKey<FormBuilderState> _SecondKey = GlobalKey<FormBuilderState>();
+
 
   bool isLoading = false;
   Map client = {};
@@ -68,6 +70,30 @@ class _ClientDetailsState extends State<ClientDetails> {
       });
     }
   }
+  //handle update data
+  Future _UpdateClient(data) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    //send to server
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Client.UpdateCLient(data, auth.token);
+    print(response);
+    if(response != false){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('تم التعديل بنجاح بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+          backgroundColor: Colors.green,
+        ),
+      );
+      setState(() {
+        client = {};
+      });
+      //call get emp again
+      getClient();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,144 +109,183 @@ class _ClientDetailsState extends State<ClientDetails> {
                 children:[
                   Column(
                     children: [
+                      client.isNotEmpty ?
                       Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width/1.3,
-                        height: 290,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(12)
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                             Row(
-                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                               children: [
-                                 Container(
-                                   height:70,
-                                   width: 500,
-                                     decoration: BoxDecoration(
-                                       color: Colors.blueGrey,
-                                       borderRadius: BorderRadius.circular(12)
-                                     ),
-                                     child: Center(
-                                       child: Row(
-                                         mainAxisAlignment: MainAxisAlignment.center,
-                                         children: [
-                                           Icon(
-                                             Icons.person,
-                                             color: Colors.black,
-                                           ),
-                                           Text(
-                                             '  الاسم : ${client['name']}',
-                                             style: TextStyle(color: Colors.white, fontSize: 19),
-                                           ),
-                                         ],
-                                       ),
-                                     )
-                                 ),
-                                 Container(
-                                   height:70,
-                                   width: 300,
-                                     decoration: BoxDecoration(
-                                         color: Colors.blueGrey,
-                                         borderRadius: BorderRadius.circular(12)
-                                     ),
-                                     child: Center(
-                                         child: Row(
-                                           mainAxisAlignment: MainAxisAlignment.center,
-                                           children: [
-                                             Icon(Icons.place, color: Colors.black,),
-                                             Text(' العنوان : ${client['address']}', style: TextStyle(color: Colors.white, fontSize: 19),),
-                                           ],
-                                         )
-                                     ),
-                                 ),
-                               ],
-                             ),
-                            SizedBox(height: 20,),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        padding: const EdgeInsets.all(20.0),
+                        child: FormBuilder(
+                          key: _SecondKey,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width/1.3,
+                            height: 470,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.grey[300]
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                  height:70,
-                                  width: 280,
-                                    decoration: BoxDecoration(
-                                        color: Colors.blueGrey,
-                                        borderRadius: BorderRadius.circular(12)
+                                Text('البيانات الاساسية', style: TextStyle(fontSize: 22),),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Container(
+                                        height:70,
+                                        width: 300,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Center(
+                                          child: FormBuilderTextField(
+                                            name: 'name',
+                                            decoration: InputDecoration(labelText: 'الاسم'),
+                                            initialValue: client['name']!= null ? client['name'].toString(): '',
+                                          ),
+                                        )
                                     ),
-                                    child: Center(
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.phone_android, color: Colors.black,),
-                                            Text(' رقم الهاتف : 0${client['phoneNum']}', style: TextStyle(color: Colors.white, fontSize: 19),),
-                                          ],
-                                        )),
+                                    Container(
+                                      height:70,
+                                      width: 300,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12)
+                                      ),
+                                      child: Center(
+                                        child: FormBuilderTextField(
+                                          name: 'address',
+                                          decoration: InputDecoration(labelText: 'العنوان'),
+                                          initialValue: client['address']!= null ? client['address'].toString(): '',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
+                                SizedBox(height: 20,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Container(
+                                      height:70,
+                                      width: 280,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12)
+                                      ),
+                                      child: Center(
+                                        child: FormBuilderTextField(
+                                          name: 'phoneNum',
+                                          decoration: InputDecoration(labelText: 'رقم الهاتف'),
+                                          initialValue: client['phoneNum'] != null ? '0${client['phoneNum']}': '',
+                                        ),
+                                      ),
+                                    ),
 
-                                Container(
-                                  height:70,
-                                  width: 300,
-                                  decoration: BoxDecoration(
-                                      color: Colors.blueAccent,
-                                      borderRadius: BorderRadius.circular(12)
-                                  ),
-                                  child: Center(
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.monetization_on, color: Colors.black,),
-                                          Text('  اجمالي الحساب : ${client['account']}', style: TextStyle(color: Colors.white, fontSize: 19),),
-                                        ],
-                                      )),
+                                    Container(
+                                      height:70,
+                                      width: 300,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12)
+                                      ),
+                                      child: Center(
+                                          child: FormBuilderTextField(
+                                            name: 'account',
+                                            decoration: InputDecoration(
+                                                labelText: 'الحساب الحالي',
+                                                filled: true,
+                                                fillColor: Colors.lightBlue
+                                            ),
+                                            initialValue: client['account'] != null ? client['account'].toString(): '',
+                                          )
+                                      ),
+                                    ),
+                                  ],
                                 ),
+                                SizedBox(height: 20,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Container(
+                                      height:70,
+                                      width: 280,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12)
+                                      ),
+                                      child: Center(
+                                        child: FormBuilderTextField(
+                                          name: 'benz_amount',
+                                          decoration: InputDecoration(
+                                              labelText: 'البنزين باللتر',
+                                              filled: true,
+                                              fillColor: Colors.redAccent
+                                          ),
+                                          initialValue: client['benz_amount'] != null ? client['benz_amount'].toString(): '',
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      height:70,
+                                      width: 300,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12)
+                                      ),
+                                      child: Center(
+                                          child: FormBuilderTextField(
+                                            name: 'gas_amount',
+                                            decoration: InputDecoration(
+                                              labelText: 'الجاز باللتر',
+                                              filled: true,
+                                              fillColor: Colors.greenAccent
+                                            ),
+                                            initialValue: client['gas_amount'] != null ? client['gas_amount'].toString(): '',
+                                          )
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Container(
+                                      height:70,
+                                      width: 450,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12)
+                                      ),
+                                      child: Center(
+                                          child: FormBuilderTextField(
+                                            name: 'comment',
+                                            decoration: InputDecoration(labelText: 'التعليق'),
+                                            initialValue: client['comment'] != null ?client['comment'].toString() : '',
+                                          )
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20,),
+                                ElevatedButton(
+                                    onPressed: (){
+                                      if(_SecondKey.currentState!.saveAndValidate()){
+                                        final data = {};
+                                        data['emp_id'] = client['emp_id'];
+                                        data['name'] = _SecondKey.currentState!.value['name'];
+                                        data['address'] = _SecondKey.currentState!.value['address'];
+                                        data['phoneNum'] = _SecondKey.currentState!.value['phoneNum'];
+                                        data['account'] = _SecondKey.currentState!.value['account'];
+                                        data['benz_amount'] = _SecondKey.currentState!.value['benz_amount'];
+                                        data['gas_amount'] = _SecondKey.currentState!.value['gas_amount'];
+                                        data['comment'] = _SecondKey.currentState!.value['comment'];
+                                        //call server
+                                        _UpdateClient(data);
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        minimumSize: Size(100, 40)
+                                    ),
+                                    child: Text('تحديث')
+                                )
                               ],
                             ),
-                            SizedBox(height: 20,),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Container(
-                                  height:70,
-                                  width: 220,
-                                  decoration: BoxDecoration(
-                                      color: Colors.greenAccent,
-                                      borderRadius: BorderRadius.circular(12)
-                                  ),
-                                  child: Center(
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.gas_meter_outlined, color: Colors.black,),
-                                          Text('  الجاز باللتر : ${client['gas_amount']}', style: TextStyle(color: Colors.white, fontSize: 19),),
-                                        ],
-                                      )),
-                                ),
-                                Container(
-                                  height:70,
-                                  width: 220,
-                                  decoration: BoxDecoration(
-                                      color: Colors.redAccent,
-                                      borderRadius: BorderRadius.circular(12)
-                                  ),
-                                  child: Center(
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.gas_meter_outlined, color: Colors.black,),
-                                          Text('  البنزين باللتر : ${client['benz_amount']}', style: TextStyle(color: Colors.white, fontSize: 19),),
-                                        ],
-                                      )),
-                                ),
-                              ],
-                            )
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
+                      ): Text(''),
                     SizedBox(height: 50,),
                     trans.length != 0 ?Row(
                       children: [

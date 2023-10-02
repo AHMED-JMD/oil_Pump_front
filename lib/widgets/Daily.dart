@@ -25,6 +25,7 @@ class _DailysState extends State<Dailys> {
 
   bool isLoading = false;
   bool nw_daily = false;
+  String dateTime = '';
   // late String formattedDate = formatDate(today_date);
   List readings = [];
   String? selectedPump;
@@ -41,6 +42,7 @@ class _DailysState extends State<Dailys> {
   @override
   void initState() {
     super.initState();
+    Get_Date();
     getAllReadings();
     getDailys();
     get_OutG();
@@ -55,6 +57,14 @@ class _DailysState extends State<Dailys> {
 
     String formattedDate = "${dateTime.year}-${twoDigits(dateTime.month)}-${twoDigits(dateTime.day)}";
     return "$formattedDate";
+  }
+  //function to get date from cacheManager
+   void Get_Date() async {
+    String dateString = await SharedServices.GetDate();
+
+    setState(() {
+      dateTime = dateString;
+    });
   }
 
   //server side function
@@ -75,6 +85,55 @@ class _DailysState extends State<Dailys> {
         daily_data = response['trans'];
         total_dailys = response['total'];
       });
+    });
+  }
+
+  Future getAllReadings() async{
+    setState(() {
+      isLoading = true;
+    });
+
+    //call server
+    final today_date = await SharedServices.GetDate();
+
+    Map datas = {};
+    datas['date'] = today_date;
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Reading.GetReading(datas, auth.token);
+
+    setState(() {
+      isLoading = false;
+      readings = response['reading'];
+      total_benz = response['total_benz'];
+      total_gas = response['total_gas'];
+      benz_amount = response['benz_amount'];
+      gas_amount = response['gas_amount'];
+    });
+  }
+
+  Future get_OutG() async {
+    setState(() {
+      isLoading = false;
+      outg_data = [];
+    });
+
+    //post to server
+    final today_date = await SharedServices.GetDate();
+    final datas = {};
+    datas['date'] = today_date;
+
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_OutG.Get_OutG(datas, auth.token);
+
+    response != false ?
+    setState(() {
+      isLoading = false;
+      outg_data = response['outgoing'];
+      total_outgs = response['total'];
+    }) :
+    setState(() {
+      isLoading = false;
+      outg_data = [];
     });
   }
 
@@ -138,55 +197,6 @@ class _DailysState extends State<Dailys> {
         );
       },
     );
-  }
-
-  Future getAllReadings() async{
-    setState(() {
-      isLoading = true;
-    });
-
-    //call server
-    final today_date = await SharedServices.GetDate();
-
-    Map datas = {};
-    datas['date'] = today_date;
-    final auth = await SharedServices.LoginDetails();
-    final response = await API_Reading.GetReading(datas, auth.token);
-
-    setState(() {
-      isLoading = false;
-      readings = response['reading'];
-      total_benz = response['total_benz'];
-      total_gas = response['total_gas'];
-      benz_amount = response['benz_amount'];
-      gas_amount = response['gas_amount'];
-    });
-  }
-
-  Future get_OutG() async {
-    setState(() {
-      isLoading = false;
-      outg_data = [];
-    });
-
-    //post to server
-    final today_date = await SharedServices.GetDate();
-    final datas = {};
-    datas['date'] = today_date;
-
-    final auth = await SharedServices.LoginDetails();
-    final response = await API_OutG.Get_OutG(datas, auth.token);
-
-    response != false ?
-    setState(() {
-      isLoading = false;
-      outg_data = response['outgoing'];
-      total_outgs = response['total'];
-    }) :
-    setState(() {
-      isLoading = false;
-      outg_data = [];
-    });
   }
 
   Future addOutgoing (data) async {
@@ -545,6 +555,7 @@ class _DailysState extends State<Dailys> {
                   children:[Column(
                     children: [
                           SizedBox(height: 10,),
+                          dateTime != '' ?
                           Container(
                             width: MediaQuery.of(context).size.width/3,
                             height: 70,
@@ -557,17 +568,18 @@ class _DailysState extends State<Dailys> {
                               onChanged: (value) async {
                                 await SharedServices.SetDate(value);
                                 setState(() {
+                                  Get_Date();
                                   getAllReadings();
                                   getDailys();
                                   get_OutG();
                                 });
-
                               },
                               validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                               initialDate: DateTime.now(),
+                              initialValue: dateTime != '' ? DateTime.parse(dateTime): DateTime.now(),
                               inputType: InputType.date,
                             ),
-                          ),
+                          ) : Text(dateTime),
                           SizedBox(height: 30,),
                           LayoutBuilder(
                             builder: (BuildContext context, BoxConstraints constraints ){

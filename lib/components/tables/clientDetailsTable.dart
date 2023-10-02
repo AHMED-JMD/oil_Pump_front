@@ -120,6 +120,31 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
         child: Column(
           children: [
             SizedBox(height: 20,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton.icon(
+                  onPressed: (){
+                    _deleteModal(context);
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.blue,
+                  ),
+                  label: Text(''),
+                ),
+                // SizedBox(width: 13,),
+                // ElevatedButton(
+                //     onPressed: (){
+                //       Navigator.pushNamed(context, '/add_daily');
+                //     } ,
+                //     child: Text('معاملة جديدة')
+                // ),
+                SizedBox(width: 5,),
+              ],
+            ),
+            SizedBox(height: 20,),
+
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
