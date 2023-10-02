@@ -50,7 +50,7 @@ class _MainPageState extends State<MainPage> {
 
   }
   //get user
-  getUser () async{
+  getUser () async {
     final auth = await SharedServices.LoginDetails();
     setState(() {
       user = auth.user.username;

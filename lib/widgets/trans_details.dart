@@ -204,7 +204,6 @@ class _TransDetailsState extends State<TransDetails> {
                                   ),
                                 ],
                               ),
-
                               FormBuilderDateTimePicker(
                                 name: 'date',
                                 decoration: InputDecoration(
