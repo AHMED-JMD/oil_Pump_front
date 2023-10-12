@@ -1,4 +1,5 @@
 import 'package:OilEnergy_System/API/reading.dart';
+import 'package:OilEnergy_System/API/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/daily.dart';
 import 'package:OilEnergy_System/API/outgoing.dart';
@@ -8,7 +9,6 @@ import 'package:OilEnergy_System/components/outgoings.dart';
 import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:OilEnergy_System/components/tables/daily_table.dart';
 import 'package:sidebarx/sidebarx.dart';
-import 'package:OilEnergy_System/API/pump.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
@@ -44,7 +44,7 @@ class _DailysState extends State<Dailys> {
     super.initState();
     Get_Date();
     getAllReadings();
-    getDailys();
+    getTrans();
     get_OutG();
   }
 
@@ -68,7 +68,7 @@ class _DailysState extends State<Dailys> {
   }
 
   //server side function
-  Future getDailys() async {
+  Future getTrans() async {
     setState(() {
       isLoading = true;
       daily_data = [];
@@ -79,7 +79,7 @@ class _DailysState extends State<Dailys> {
     final today_date = await SharedServices.GetDate();
     datas['date'] = today_date;
     final auth = await SharedServices.LoginDetails();
-    API_Daily.get_Trans(datas, auth.token).then((response){
+    API_Trans.get_Trans(datas, auth.token).then((response){
       setState(() {
         isLoading = false;
         daily_data = response['trans'];
@@ -233,9 +233,9 @@ class _DailysState extends State<Dailys> {
     });
     //send to server
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Pump.UpdatePump(data, auth.token);
+    final response = await API_Reading.Update(data, auth.token);
 
-    response != false ?
+    response == true ?
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('تم تعديل بيانات القراءة بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
@@ -244,7 +244,7 @@ class _DailysState extends State<Dailys> {
     )  :
     ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: Text('تم تسجيل القراءة مسبقا', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
+      content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
       backgroundColor: Colors.red,
     )
     );
@@ -368,7 +368,6 @@ class _DailysState extends State<Dailys> {
                             FormBuilderTextField(
                               name: 'reading',
                               decoration: InputDecoration(labelText: 'القراءة'),
-                              readOnly: true,
                               initialValue: machine.isNotEmpty? '${machine['f_reading']}' : '',
                               validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                             ),
@@ -377,6 +376,12 @@ class _DailysState extends State<Dailys> {
                               name: 'nw_read',
                               decoration: InputDecoration(labelText: 'القراءة الجديدة'),
                               initialValue: machine.isNotEmpty? '${machine['last_reading']}' : '',
+                              validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                            ),
+                            FormBuilderTextField(
+                              name: 'returned',
+                              decoration: InputDecoration(labelText: 'راجع التنك'),
+                              initialValue: machine.isNotEmpty? '${machine['returned']}' : '',
                               validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                             ),
                             SizedBox(height: 40,),
@@ -394,8 +399,10 @@ class _DailysState extends State<Dailys> {
                                     var data = {};
                                     final today_date = await SharedServices.GetDate();
                                     data['pump_id'] = machine['pumpPumpId'];
+                                    data['reading_id'] = machine['reading_id'];
                                     data['reading'] = _formKey.currentState!.value['reading'];
                                     data['nw_reading'] = _formKey.currentState!.value['nw_read'];
+                                    data['returned'] = _formKey.currentState!.value['returned'];
                                     data['date'] = today_date;
 
                                     //call backend------------
@@ -570,7 +577,7 @@ class _DailysState extends State<Dailys> {
                                 setState(() {
                                   Get_Date();
                                   getAllReadings();
-                                  getDailys();
+                                  getTrans();
                                   get_OutG();
                                 });
                               },

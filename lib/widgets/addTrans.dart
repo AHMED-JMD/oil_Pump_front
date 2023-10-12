@@ -1,5 +1,5 @@
+import 'package:OilEnergy_System/API/transaction.dart';
 import 'package:flutter/material.dart';
-import 'package:OilEnergy_System/API/daily.dart';
 import 'package:OilEnergy_System/SharedService.dart';
 import 'package:OilEnergy_System/API/client.dart';
 import 'package:OilEnergy_System/components/appBar.dart';
@@ -48,7 +48,7 @@ class _AddDailyState extends State<AddDaily> {
 
     final auth = await SharedServices.LoginDetails();
 
-    API_Daily.Add_Trans(data, auth.token).then((response){
+    API_Trans.Add_Trans(data, auth.token).then((response){
       setState(() {
         isLoading = false;
       });

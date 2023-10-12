@@ -1,5 +1,6 @@
+import 'package:OilEnergy_System/API/transaction.dart';
+import 'package:OilEnergy_System/widgets/trans_details.dart';
 import 'package:flutter/material.dart';
-import 'package:OilEnergy_System/API/daily.dart';
 import 'package:OilEnergy_System/SharedService.dart';
 import 'package:OilEnergy_System/models/daily_data.dart';
 import 'package:advanced_datatable/datatable.dart';
@@ -21,7 +22,7 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
   var sortIndex = 0;
   var sortAsc = true;
   final _searchController = TextEditingController();
-  late final source = ExampleSource(data: trans);
+  late final source = ExampleSource(data: trans, context: context);
   bool isLoading = false;
   List data = [];
 
@@ -40,7 +41,7 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
     //send to server
     if(selectedIds.length != 0){
       final auth = await SharedServices.LoginDetails();
-      API_Daily.Delete_Trans(selectedIds, auth.token).then((response){
+      API_Trans.Delete_Trans(selectedIds, auth.token).then((response){
         setState(() {
           isLoading = false;
         });
@@ -164,10 +165,6 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
                     onSort: setSort
                 ),
                 DataColumn(
-                    label: const Text('البيان'),
-                    onSort: setSort
-                ),
-                DataColumn(
                     label: const Text('المبلغ'),
                     onSort: setSort
                 ),
@@ -185,6 +182,10 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
                 ),
                 DataColumn(
                   label: const Text('التاريخ'),
+                ),
+                DataColumn(
+                    label: const Text('عرض/ تعديل'),
+                    onSort: setSort
                 ),
               ],
             ),
@@ -204,7 +205,8 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
 //class of data models and Rows
 class ExampleSource extends AdvancedDataTableSource<Daily> {
   final data;
-  ExampleSource({required this.data});
+  final BuildContext context;
+  ExampleSource({required this.data, required this.context});
 
   String lastSearchTerm = '';
 
@@ -224,9 +226,6 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
               Text(currentRowData.name),
             ),
             DataCell(
-              Text(currentRowData.comment),
-            ),
-            DataCell(
               Text(currentRowData.amount.toString()),
             ),
             DataCell(
@@ -240,6 +239,18 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
             ),
             DataCell(
               Text(currentRowData.date),
+            ),
+            DataCell(
+              Center(
+                child: InkWell(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => TransDetails(tran_id: currentRowData.tranId,))
+                      );
+                    },
+                    child: Icon(Icons.remove_red_eye, color: Colors.grey[500],size: 25,)
+                ),
+              ),
             ),
           ]);
     }else{

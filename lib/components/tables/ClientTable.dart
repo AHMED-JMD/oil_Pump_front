@@ -301,21 +301,24 @@ class _ClientsTableState extends State<ClientsTable> {
                       return Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                              SizedBox(width: 5,),
-                              TextButton.icon(
-                                onPressed: (){
-                                  deleteModal(context);
-                                } ,
-                                icon: Icon(Icons.delete),
-                                label: Text(''),
-                              ),
+                                ElevatedButton.icon(
+                                    onPressed: (){
+                                      PrintPage();
+                                    },
+                                    icon : Icon(Icons.print, color: Colors.black54,),
+                                    style : ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.grey[500]
+                                    ),
+                                    label: Text('طباعة')
+                                ),
+                                SizedBox(width: 12,),
                                 ElevatedButton(
                                     onPressed: (){
                                       Navigator.pushNamed(context, '/add_daily');
                                     },
                                     child: Text('معاملة وقود')
                                 ),
-                                SizedBox(width: 10,),
+                                SizedBox(width: 5,),
                               ElevatedButton(
                                   onPressed: (){
                                     _EditAccount(context);
@@ -329,15 +332,13 @@ class _ClientsTableState extends State<ClientsTable> {
                                   } ,
                                   child: Text('+ اضافة عميل')
                               ),
-                                SizedBox(width: 13,),
-                                ElevatedButton(
-                                    onPressed: (){
-                                      PrintPage();
-                                    },
-                                    style : ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.grey[500]
-                                    ),
-                                    child: Text('طباعة')
+                                SizedBox(width: 3,),
+                                TextButton.icon(
+                                  onPressed: (){
+                                    deleteModal(context);
+                                  } ,
+                                  icon: Icon(Icons.delete),
+                                  label: Text(''),
                                 ),
                             ],
                           );

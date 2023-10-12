@@ -92,40 +92,6 @@ class _GasolineTableState extends State<GasolineTable> {
       );
     }
   }
-  //---gas returned
-  Future returnedGas (datas) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    //post to server
-    final auth = await SharedServices.LoginDetails();
-    final response = await API_Gas.Return_Gas(datas, auth.token);
-
-    if(response != false){
-      setState(() {
-        isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('تم اضافة الراجع بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17, color: Colors.white),),
-          backgroundColor: Colors.green,
-        ),
-      );
-      await Future.delayed(Duration(milliseconds: 600));
-      Navigator.pushReplacementNamed(context, '/gasolines');
-    }else{
-      setState(() {
-        isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17, color: Colors.white),),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
 //-------------------------------------
 
   //delete modal
@@ -164,97 +130,6 @@ class _GasolineTableState extends State<GasolineTable> {
       },
     );
   }
-//open modal
-  void _EditGas(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: SimpleDialog(
-            title: Text('راجع البئر'),
-            children:[
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: FormBuilder(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      FormBuilderDropdown(
-                          name: 'fuel_type',
-                          decoration: InputDecoration(labelText: 'نوع الوقود'),
-                          validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
-                          items: ['بنزين', 'جازولين',]
-                              .map((value) =>
-                              DropdownMenuItem(
-                                value: value,
-                                child: Text(value),
-                              )).toList()
-                      ),
-                      FormBuilderDropdown(
-                        name: 'pump_name',
-                        decoration: InputDecoration(labelText: 'اسم العداد'),
-                        items: pumps
-                            .map((pump) => DropdownMenuItem(
-                            value: pump['name'].toString(),
-                            child: Text('${pump['name']}')
-                        )).toList(),
-                      ),
-                      FormBuilderTextField(
-                        name: 'amount',
-                        decoration: InputDecoration(labelText: 'الكمية باللتر'),
-                        validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
-                      ),
-                      FormBuilderDateTimePicker(
-                        name: 'date',
-                        decoration: InputDecoration(
-                            labelText: 'التاريخ',
-                            suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
-                        ),
-                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
-                        initialDate: DateTime.now(),
-                        inputType: InputType.date,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0, top: 30),
-                        child: Center(
-                          child: SizedBox(
-                            height: 30,
-                            width: 70,
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                backgroundColor: Colors.blueAccent,
-                                primary: Colors.white,
-                              ),
-                              child: Text('خصم'),
-                              onPressed: (){
-                                if(_formKey.currentState!.saveAndValidate()){
-                                  Map data = {};
-                                  data['fuel_type'] = _formKey.currentState!.value['fuel_type'];
-                                  data['pump_name'] = _formKey.currentState!.value['pump_name'];
-                                  data['amount'] = _formKey.currentState!.value['amount'];
-                                  data['date'] = _formKey.currentState!.value['date'].toIso8601String();
-
-                                  //server
-                                  returnedGas(data);
-                                  Navigator.of(context).pop();
-                                }
-
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -269,12 +144,6 @@ class _GasolineTableState extends State<GasolineTable> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          ElevatedButton(
-                              onPressed: (){
-                                _EditGas(context);
-                              },
-                              child: Text('وقود راجع')
-                          ),
                           SizedBox(width: 5,),
                           TextButton.icon(
                             onPressed: (){
@@ -292,12 +161,6 @@ class _GasolineTableState extends State<GasolineTable> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          ElevatedButton(
-                              onPressed: (){
-                                _EditGas(context);
-                              },
-                              child: Text('وقود راجع')
-                          ),
                           SizedBox(width: 5,),
                           TextButton.icon(
                             onPressed: (){

@@ -1,6 +1,8 @@
 import 'package:http/http.dart';
 import 'dart:convert';
 
+String apiUrl = 'http://localhost:5000/api/reading';
+
 
 class API_Reading {
   //get reading
@@ -11,12 +13,52 @@ class API_Reading {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/reading/');
+      final url = Uri.parse('$apiUrl/');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
         final data = jsonDecode(response.body);
         return data;
+      }else{
+        return response.body;
+      }
+    }catch(e){
+      print(e);
+    }
+  }
+  //add reading
+  static Future AddReading(data, token)async {
+    try{
+      Map<String,String> requestHeaders = {
+        'Content-Type' : 'application/json',
+        'x-auth-token' : '$token'
+      };
+
+      final url = Uri.parse('$apiUrl/add');
+      Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
+
+      if(response.statusCode == 200){
+        return true;
+      }else{
+        return response.body;
+      }
+    }catch(e){
+      print(e);
+    }
+  }
+  //update reading
+  static Future Update(data, token)async {
+    try{
+      Map<String,String> requestHeaders = {
+        'Content-Type' : 'application/json',
+        'x-auth-token' : '$token'
+      };
+
+      final url = Uri.parse('$apiUrl/update');
+      Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
+
+      if(response.statusCode == 200){
+        return true;
       }else{
         return response.body;
       }
@@ -32,7 +74,7 @@ class API_Reading {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/reading/delete_one');
+      final url = Uri.parse('$apiUrl/delete_one');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -52,7 +94,7 @@ class API_Reading {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/reading/delete');
+      final url = Uri.parse('$apiUrl/delete');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){

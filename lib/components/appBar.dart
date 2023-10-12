@@ -22,7 +22,7 @@ const canvasColor = Color(0xFF2E2E48);
          ),
          Align(
              alignment: Alignment.topRight,
-             child: Text('نظام تشغيل محطة اويل انرجي',
+             child: Text('اويل تراك لادارة محطات الوقود',
                style: TextStyle(fontSize: 22),)
          )
        ],

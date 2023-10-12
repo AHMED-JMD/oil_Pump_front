@@ -1,6 +1,9 @@
 import 'package:http/http.dart';
 import 'dart:convert';
 
+String apiUrl = 'http://localhost:5000/api/banks';
+
+
 class API_Bank {
   //get all banks
   static Future Get_All_Banks (token) async{
@@ -10,7 +13,7 @@ class API_Bank {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/banks/');
+      final url = Uri.parse('$apiUrl');
       Response response = await get(url, headers: requestHeaders);
 
       if(response.statusCode == 200){
@@ -32,7 +35,7 @@ class API_Bank {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/banks/');
+      final url = Uri.parse('$apiUrl');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -54,7 +57,7 @@ class API_Bank {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/banks/get_one');
+      final url = Uri.parse('$apiUrl/get_one');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -76,7 +79,7 @@ class API_Bank {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/banks/append');
+      final url = Uri.parse('$apiUrl/append');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -98,7 +101,7 @@ class API_Bank {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/banks/delete');
+      final url = Uri.parse('$apiUrl/delete');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){

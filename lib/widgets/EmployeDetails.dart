@@ -1,5 +1,5 @@
-import 'package:OilEnergy_System/API/daily.dart';
 import 'package:OilEnergy_System/API/employee.dart';
+import 'package:OilEnergy_System/API/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/SharedService.dart';
 import 'package:OilEnergy_System/components/appBar.dart';
@@ -60,7 +60,7 @@ class _EmployeeDetailState extends State<EmployeeDetail> {
 
     //send to server
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Daily.emp_Trans(datas, auth.token);
+    final response = await API_Trans.emp_Trans(datas, auth.token);
 
     if(response != false){
       setState(() {

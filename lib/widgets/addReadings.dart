@@ -1,3 +1,4 @@
+import 'package:OilEnergy_System/API/reading.dart';
 import 'package:flutter/material.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -70,9 +71,9 @@ class _AddReadingState extends State<AddReading> {
     });
     //send to server
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Pump.UpdatePump(data, auth.token);
-
-    response != false ?
+    final response = await API_Reading.AddReading(data, auth.token);
+    print(response);
+    response == true ?
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('تم تعديل بيانات المكنة بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),

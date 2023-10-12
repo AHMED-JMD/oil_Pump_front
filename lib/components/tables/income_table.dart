@@ -346,7 +346,7 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
   Future<RemoteDataSourceDetails<Receipt>> getNextPage(
       NextPageRequest pageRequest) async {
     //--------------get request to server -----------
-    final url = Uri.parse('http://localhost:5000/reciept/');
+    final url = Uri.parse('http://localhost:5000/api/reciept/');
     final auth = await SharedServices.LoginDetails();
 
     Map<String,String> requestHeaders = {

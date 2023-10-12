@@ -1,7 +1,7 @@
 import 'package:OilEnergy_System/API/client.dart';
+import 'package:OilEnergy_System/API/transaction.dart';
 import 'package:OilEnergy_System/widgets/trans_details.dart';
 import 'package:flutter/material.dart';
-import 'package:OilEnergy_System/API/daily.dart';
 import 'package:OilEnergy_System/SharedService.dart';
 import 'package:OilEnergy_System/models/daily_data.dart';
 import 'package:advanced_datatable/datatable.dart';
@@ -43,14 +43,14 @@ class _DailyTableState extends State<DailyTable> {
 
   //server side Functions ------------------
   //------delete--
-  Future deleteDaily() async {
+  Future deleteTrans() async {
     setState(() {
       isLoading = true;
     });
     //send to server
     if(selectedIds.length != 0){
       final auth = await SharedServices.LoginDetails();
-      API_Daily.Delete_Trans(selectedIds, auth.token).then((response){
+      API_Trans.Delete_Trans(selectedIds, auth.token).then((response){
         setState(() {
           isLoading = false;
         });
@@ -145,8 +145,8 @@ class _DailyTableState extends State<DailyTable> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: AlertDialog(
-            title: Text('حذف اليومية'),
-            content: Text('هل انت متأكد برغبتك في حذف اليومية'),
+            title: Text('حذف المعاملة'),
+            content: Text('هل انت متأكد برغبتك في حذف المعاملة'),
             actions: [
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -160,7 +160,7 @@ class _DailyTableState extends State<DailyTable> {
                         primary: Colors.white
                       ),
                       onPressed: (){
-                        deleteDaily();
+                        deleteTrans();
                         Navigator.of(context).pop();
                       }
                     ),

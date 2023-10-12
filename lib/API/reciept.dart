@@ -1,6 +1,9 @@
 import 'package:http/http.dart';
 import 'dart:convert';
 
+String apiUrl = 'http://localhost:5000/api/reciept';
+
+
 class API_Reciept {
   static Future Add_Reciept (data, token) async{
     try{
@@ -9,7 +12,7 @@ class API_Reciept {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/reciept');
+      final url = Uri.parse('$apiUrl/');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -28,7 +31,7 @@ class API_Reciept {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/reciept/update');
+      final url = Uri.parse('$apiUrl/update');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -49,7 +52,7 @@ class API_Reciept {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/reciept/get_one');
+      final url = Uri.parse('$apiUrl/get_one');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -71,7 +74,7 @@ class API_Reciept {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/reciept/delete');
+      final url = Uri.parse('$apiUrl/delete');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){

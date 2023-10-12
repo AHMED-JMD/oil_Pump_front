@@ -1,6 +1,8 @@
 import 'package:http/http.dart';
 import 'dart:convert';
 
+String apiUrl = 'http://localhost:5000/api/pump';
+
 
 class API_Pump {
 
@@ -11,7 +13,7 @@ class API_Pump {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/pump/get');
+      final url = Uri.parse('$apiUrl/get');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -33,7 +35,7 @@ class API_Pump {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/pump/');
+      final url = Uri.parse('$apiUrl/');
       Response response = await get(url, headers: requestHeaders);
 
       if(response.statusCode == 200){
@@ -54,7 +56,7 @@ class API_Pump {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/pump/add');
+      final url = Uri.parse('$apiUrl/add');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -75,7 +77,7 @@ class API_Pump {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/pump/delete');
+      final url = Uri.parse('$apiUrl/delete');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -96,7 +98,7 @@ class API_Pump {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/pump/update');
+      final url = Uri.parse('$apiUrl/update');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -117,7 +119,7 @@ class API_Pump {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/pump/update_pump');
+      final url = Uri.parse('$apiUrl/update_pump');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -138,7 +140,7 @@ class API_Pump {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/pump/update_price');
+      final url = Uri.parse('$apiUrl/update_price');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){

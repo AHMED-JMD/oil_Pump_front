@@ -1,4 +1,4 @@
-import 'package:OilEnergy_System/API/daily.dart';
+import 'package:OilEnergy_System/API/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/client.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -21,7 +21,7 @@ class _ClientDetailsState extends State<ClientDetails> {
   final String emp_id;
   _ClientDetailsState({required this.emp_id});
 
-  SidebarXController controller = SidebarXController(selectedIndex: 2, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 4, extended: true);
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   final GlobalKey<FormBuilderState> _SecondKey = GlobalKey<FormBuilderState>();
 
@@ -61,7 +61,7 @@ class _ClientDetailsState extends State<ClientDetails> {
 
     //send to server
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Daily.client_Trans(datas, auth.token);
+    final response = await API_Trans.client_Trans(datas, auth.token);
 
     if(response != false){
       setState(() {

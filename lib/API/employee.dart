@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart';
 
+String apiUrl = 'http://localhost:5000/api/employee';
+
+
 class API_Emp {
   static Future<dynamic> AddEmp (data, token) async {
     try{
@@ -9,7 +12,7 @@ class API_Emp {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/employee/');
+      final url = Uri.parse('$apiUrl/');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -29,7 +32,7 @@ class API_Emp {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/employee/update_data');
+      final url = Uri.parse('$apiUrl/update_data');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -49,7 +52,7 @@ class API_Emp {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/employee/update');
+      final url = Uri.parse('$apiUrl/update');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -69,7 +72,7 @@ class API_Emp {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/employee/');
+      final url = Uri.parse('$apiUrl/');
       Response response = await get(url, headers: requestHeaders);
 
       if(response.statusCode == 200){
@@ -90,7 +93,7 @@ class API_Emp {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/employee/new_month');
+      final url = Uri.parse('$apiUrl/new_month');
       Response response = await get(url, headers: requestHeaders);
 
       if(response.statusCode == 200){
@@ -110,7 +113,7 @@ class API_Emp {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/employee/get-one');
+      final url = Uri.parse('$apiUrl/get-one');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -131,7 +134,7 @@ class API_Emp {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/employee/find_one');
+      final url = Uri.parse('$apiUrl/find_one');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -152,7 +155,7 @@ class API_Emp {
         'x-auth-token' : '$token'
       };
 
-      final url = Uri.parse('http://localhost:5000/employee/delete');
+      final url = Uri.parse('$apiUrl/delete');
       Response response = await post(url, headers: requestHeaders, body: jsonEncode(emp_id));
 
       if(response.statusCode == 200){

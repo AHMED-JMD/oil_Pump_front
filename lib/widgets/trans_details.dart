@@ -1,5 +1,5 @@
+import 'package:OilEnergy_System/API/transaction.dart';
 import 'package:flutter/material.dart';
-import 'package:OilEnergy_System/API/daily.dart';
 import 'package:OilEnergy_System/SharedService.dart';
 import 'package:OilEnergy_System/API/client.dart';
 import 'package:OilEnergy_System/components/appBar.dart';
@@ -48,7 +48,7 @@ class _TransDetailsState extends State<TransDetails> {
     //call backend
     final auth = await SharedServices.LoginDetails();
 
-    API_Daily.UpdateTrans(data, auth.token).then((response){
+    API_Trans.UpdateTrans(data, auth.token).then((response){
       setState(() {
         isLoading = false;
       });
@@ -96,7 +96,7 @@ class _TransDetailsState extends State<TransDetails> {
     var datas = {};
     datas['tran_id'] = tran_id;
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Daily.Get_byId(datas, auth.token);
+    final response = await API_Trans.Get_byId(datas, auth.token);
 
     if(response != false){
       setState(() {
