@@ -40,7 +40,7 @@ class _SafeState extends State<Safe> {
       // isLoading = false;
       // trans_data = response['daily_trans'][0]['transactions'];
       // outg_data = response['daily_trans'][0]['outgoings'];
-      total = response['daily_trans'][0]['amount'];
+      total = response['daily_trans'][0]['safe'];
       // daily_id = response['daily_trans'][0]['daily_id'];
       // safe_append = response['daily_trans'][0]['safe'];
       // total_outgs = response['total'];

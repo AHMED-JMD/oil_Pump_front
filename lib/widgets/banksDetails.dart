@@ -1,3 +1,4 @@
+import 'package:OilEnergy_System/API/BankTrans.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/banks.dart';
 import 'package:OilEnergy_System/API/daily.dart';
@@ -20,7 +21,7 @@ class _BanksDetailsState extends State<BanksDetails> {
   _BanksDetailsState({required this.banks_id});
 
   SidebarXController controller = SidebarXController(selectedIndex: 9, extended: true);
-  List dailys = [];
+  List BankTrans = [];
   Map bank = {};
   bool isLoading = false;
 
@@ -28,13 +29,14 @@ class _BanksDetailsState extends State<BanksDetails> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    GetDaily();
+    GetTrans();
   }
 
   //server functions
-  Future GetDaily () async{
+  Future GetTrans () async{
     setState(() {
       isLoading = true;
+      BankTrans = [];
     });
 
     //post to server
@@ -47,7 +49,7 @@ class _BanksDetailsState extends State<BanksDetails> {
     response.length != 0 ?
     setState((){
       bank = response;
-      dailys = response['dailies'];
+      BankTrans = response['BankTrans'];
       isLoading = false;
     })
       :
@@ -57,18 +59,23 @@ class _BanksDetailsState extends State<BanksDetails> {
 
   }
 
-  Future deleteDaily(daily_id) async {
+  Future deleteBankTrans(trans_id) async {
     setState(() {
       isLoading = true;
     });
     //send to server
     Map data = {};
-    data['daily_id'] = daily_id;
+    data['id'] = trans_id;
+    data['banks_id'] = banks_id;
+
     final auth = await SharedServices.LoginDetails();
-    API_Daily.Delete_Daily(data, auth.token).then((response){
+    API_BankTrans.Delete(data, auth.token).then((response){
       setState(() {
         isLoading = false;
       });
+
+      print(response);
+
       if(response == true){
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -85,18 +92,21 @@ class _BanksDetailsState extends State<BanksDetails> {
         );
       }
     });
+
+    //refresh page
+    GetTrans();
   }
 
   //modal goes here
-  void _deleteModal(BuildContext context, daily){
+  void _deleteModal(BuildContext context, bankTrans){
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: AlertDialog(
-            title: Text('حذف اليومية'),
-            content: Text(' حذف اليومية "${daily['date']}"'),
+            title: Text('حذف المعامبة'),
+            content: Text(' حذف معاملة البنك "${bankTrans['date']}"'),
             actions: [
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -110,7 +120,7 @@ class _BanksDetailsState extends State<BanksDetails> {
                             primary: Colors.white
                         ),
                         onPressed: (){
-                          deleteDaily(daily['daily_id']);
+                          deleteBankTrans(bankTrans['id']);
                           Navigator.of(context).pop();
                         }
                     ),
@@ -159,12 +169,12 @@ class _BanksDetailsState extends State<BanksDetails> {
                       ),
                     ),
                     SizedBox(height: 90,),
-                    dailys.length != 0 ?
+                    BankTrans.length != 0 ?
                     Container(
                       height: 400,
                       width: MediaQuery.of(context).size.width/1.3,
                       child: ListView.builder(
-                        itemCount: dailys.length,
+                        itemCount: BankTrans.length,
                         itemBuilder: (context, index){
                           return Padding(
                             padding: EdgeInsets.all(4),
@@ -175,30 +185,27 @@ class _BanksDetailsState extends State<BanksDetails> {
                                     padding: const EdgeInsets.all(2.0),
                                     child: ListTile(
                                         leading: Icon(Icons.view_agenda),
-                                        title: Text(' المبلغ :  ${dailys[index]['amount']} جنيه', style: TextStyle(fontSize: 18)),
-                                        subtitle: Text(' التاريخ : ${dailys[index]['date'].toString()}', style: TextStyle(fontWeight: FontWeight.bold),),
+                                        title: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Text(' المبلغ :  ${BankTrans[index]['amount']} جنيه', style: TextStyle(fontSize: 18)),
+                                            Text(' التعليق :  ${BankTrans[index]['comment']} ', style: TextStyle(fontSize: 18)),
+
+                                          ],
+                                        ),
+                                        subtitle: Padding(
+                                          padding: const EdgeInsets.only(top: 10.0),
+                                          child: Center(child: Text(' التاريخ : ${BankTrans[index]['date'].toString()}', style: TextStyle(fontWeight: FontWeight.bold),)),
+                                        ),
                                         trailing: SizedBox(
                                           width: 200,
                                           child: Row(
                                               mainAxisAlignment: MainAxisAlignment.end,
                                               children:[
-                                                TextButton.icon(
-                                                  onPressed: (){
-                                                    Navigator.push(context, MaterialPageRoute(
-                                                        builder: (context) => DailyDetails(date: dailys[index]['date'])
-                                                    ));
-                                                  },
-                                                  style: TextButton.styleFrom(
-                                                      backgroundColor: Colors.grey[200],
-                                                      minimumSize: Size(60, 45)
-                                                  ),
-                                                  icon: Icon(Icons.mode_edit, color: Colors.blue),
-                                                  label: Text('التفاصيل', style: TextStyle(color: Colors.black),),
-                                                ),
                                                 SizedBox(width: 5,),
                                                 TextButton.icon(
                                                     onPressed: (){
-                                                      _deleteModal(context, dailys[index]);
+                                                      _deleteModal(context, BankTrans[index]);
                                                     },
                                                     icon: Icon(Icons.delete_forever, color: Colors.red,),
                                                     label: Text('')

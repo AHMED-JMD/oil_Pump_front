@@ -1,3 +1,4 @@
+import 'package:OilEnergy_System/API/BankTrans.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -67,7 +68,7 @@ class _DailyDetailsState extends State<DailyDetails> {
       outg_data = response['daily_trans'][0]['outgoings'];
       total = response['daily_trans'][0]['amount'];
       daily_id = response['daily_trans'][0]['daily_id'];
-      safe_append = response['daily_trans'][0]['amount'];
+      safe_append = response['daily_trans'][0]['safe'];
       // total_outgs = response['total'];
     });
   }
@@ -111,7 +112,7 @@ class _DailyDetailsState extends State<DailyDetails> {
     });
     // post to server
     final auth = await SharedServices.LoginDetails();
-    final response = await API_Bank.Append_Banks(data,auth.token);
+    final response = await API_BankTrans.Add(data,auth.token);
 
     setState(() {
       isLoading = false;
@@ -169,7 +170,6 @@ class _DailyDetailsState extends State<DailyDetails> {
                         decoration: InputDecoration(
                             labelText: 'المبلغ المتاح',
                         ),
-                        readOnly: true,
                         initialValue: safe_append.toString(),
                         validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                       ),
@@ -179,6 +179,15 @@ class _DailyDetailsState extends State<DailyDetails> {
                         validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
                         inputType: InputType.date,
                         initialValue: DateTime.now(),
+                      ),
+                      FormBuilderTextField(
+                        name: 'comment',
+                        decoration: InputDecoration(
+                          labelText: 'البيان',
+                        ),
+
+                        initialValue: 'توريد نقدي/شيك',
+                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                       ),
                       SizedBox(height: 20,),
                       Padding(
@@ -196,8 +205,11 @@ class _DailyDetailsState extends State<DailyDetails> {
                                 if(_formKey.currentState!.saveAndValidate()){
                                   //send to server ---
                                   final data = {};
-                                   data['banks_id'] = banks_id;
+                                   data['bank_id'] = banks_id;
                                    data['daily_id'] = daily_id;
+                                   data['amount'] = _formKey.currentState!.value['amount'];
+                                   data['date'] = _formKey.currentState!.value['date'].toIso8601String();
+                                   data['comment'] = _formKey.currentState!.value['comment'];
 
                                    appendDaily(data);
                                   Navigator.of(context).pop();
