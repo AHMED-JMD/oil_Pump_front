@@ -312,7 +312,6 @@ class _EmployeeDetailState extends State<EmployeeDetail> {
                                                         }
                                                       },
                                                       style: TextButton.styleFrom(
-                                                          primary: Colors.black,
                                                           minimumSize: Size(50, 50)
                                                       ),
                                                       icon: Icon(Icons.search, size: 30,),

@@ -135,9 +135,9 @@ class _AddEmployeeState extends State<AddEmployee> {
                                     width: 300,
                                     height: 50,
                                     child: ElevatedButton(
-                                        child: Text('ارسال'),
+                                        child: Text('ارسال', style: TextStyle(color: Colors.white, fontSize: 18),),
                                         style: ElevatedButton.styleFrom(
-                                            textStyle: TextStyle(fontSize: 18)
+                                            backgroundColor: Colors.blue
                                         ),
                                         onPressed: () {
                                           if (_formKey.currentState!.saveAndValidate()) {

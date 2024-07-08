@@ -110,9 +110,9 @@ class _AddMachineState extends State<AddMachine> {
                                     width: 100,
                                     height: 40,
                                     child: ElevatedButton(
-                                      child: Text('ارسال'),
+                                      child: Text('ارسال', style: TextStyle(color: Colors.white)),
                                       style: ElevatedButton.styleFrom(
-                                          textStyle: TextStyle(fontSize: 18)
+                                          backgroundColor: Colors.blue
                                       ),
                                       onPressed: () {
                                         if (_formKey.currentState!.saveAndValidate()) {

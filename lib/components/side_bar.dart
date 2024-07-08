@@ -126,10 +126,10 @@ class _NavbarState extends State<Navbar> {
             }
         ),
         SidebarXItem(
-            icon: Icons.person_pin,
-            label: ' الموظفين و العمال ',
+            icon: Icons.local_shipping,
+            label: ' الشحن و التفريغ ',
             onTap: (){
-              Navigator.pushReplacementNamed(context, '/employees');
+              Navigator.pushReplacementNamed(context, '/incomes');
             }
         ),
         SidebarXItem(
@@ -140,17 +140,10 @@ class _NavbarState extends State<Navbar> {
             }
         ),
         SidebarXItem(
-            icon: Icons.local_shipping,
-            label: ' الشحن و التفريغ ',
+            icon: Icons.person_pin,
+            label: ' الموظفين و العمال ',
             onTap: (){
-              Navigator.pushReplacementNamed(context, '/incomes');
-            }
-        ),
-        SidebarXItem(
-            icon: Icons.safety_check_outlined,
-            label: ' الخزنة اليومية ',
-            onTap: (){
-              Navigator.pushReplacementNamed(context, '/safe');
+              Navigator.pushReplacementNamed(context, '/employees');
             }
         ),
         SidebarXItem(

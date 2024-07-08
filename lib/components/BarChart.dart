@@ -68,17 +68,10 @@ class _DailyBarChartState extends State<DailyBarChart> {
                         left: BorderSide(width: 1),
                         bottom: BorderSide(width: 1),
                       )),
-                  maxY: 8000000,
                   groupsSpace: 40,
                   barTouchData: BarTouchData(enabled: true),
                     titlesData: FlTitlesData(
-                      topTitles: AxisTitles(
-                      //     sideTitles: SideTitles(
-                      //   showTitles: true,
-                      //   getTitlesWidget: (double value) =>
-                      //     daily_data.firstWhere((element) => element.dailyId == value.toInt()).date
-                      // )
-                      ),
+                      topTitles: AxisTitles(),
 
                     ),
                     barGroups: daily_data.map((daily) =>

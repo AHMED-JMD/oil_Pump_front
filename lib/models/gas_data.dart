@@ -2,7 +2,7 @@ class Gas {
   late final String gasId;
   late final String status;
   late final String fuelType;
-  late final int total;
+  late final total;
   late final String date;
   late final String? comment;
   late final String createdAt;

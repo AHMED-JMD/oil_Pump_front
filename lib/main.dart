@@ -10,7 +10,6 @@ import 'package:OilEnergy_System/widgets/Clients.dart';
 import 'package:OilEnergy_System/widgets/Gasoline.dart';
 import 'package:OilEnergy_System/widgets/Income.dart';
 import 'package:OilEnergy_System/widgets/MainPage.dart';
-import 'package:OilEnergy_System/widgets/Safe.dart';
 import 'package:OilEnergy_System/widgets/addTrans.dart';
 import 'package:OilEnergy_System/widgets/addClient.dart';
 import 'package:OilEnergy_System/widgets/addMachine.dart';
@@ -66,7 +65,6 @@ class MyApp extends StatelessWidget {
         '/incomes' : (context) => Incomes(),
         '/add_reciept' : (context) => AddReciept(),
         '/banks' : (context) => Banks(),
-        '/safe' : (context) => Safe(),
       },
     );
   }

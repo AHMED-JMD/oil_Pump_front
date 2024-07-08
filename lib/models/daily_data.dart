@@ -17,8 +17,8 @@ class Daily {
   late final String name;
   late final String type;
   late final String gas_type;
-  late final int amount;
-  late final int gas_amount;
+  late final amount;
+  late final gas_amount;
   late final String comment;
   late final String date;
   late final String createdAt;

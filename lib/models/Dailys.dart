@@ -10,8 +10,8 @@ class DailyData {
   });
   late final String dailyId;
   late final String date;
-  late final int amount;
-  late final int safe;
+  late final amount;
+  late final safe;
   late final String createdAt;
   late final String updatedAt;
   late final Null bankBanksId;

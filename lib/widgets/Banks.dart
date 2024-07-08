@@ -1,3 +1,4 @@
+import 'package:OilEnergy_System/components/MoneyFormatter.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/banks.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -70,7 +71,7 @@ class _BanksState extends State<Banks> {
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.all(12.0),
-                                    child: Text('$total', style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),),
+                                    child: Text('${myFormat(total)}', style: TextStyle(fontSize: 22, color: Colors.black, fontWeight: FontWeight.bold),),
                                   )),
                             ],
                           ),

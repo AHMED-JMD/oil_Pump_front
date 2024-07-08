@@ -1,3 +1,4 @@
+import 'package:OilEnergy_System/components/MoneyFormatter.dart';
 import 'package:OilEnergy_System/components/Print.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/client.dart';
@@ -162,12 +163,12 @@ class _ClientsTableState extends State<ClientsTable> {
                 child: Center(
                   child: SizedBox(
                     height: 30,
+                    width: 100,
                     child: TextButton(
                       style: TextButton.styleFrom(
                           backgroundColor: Colors.redAccent,
-                          primary: Colors.white,
                       ),
-                      child: Text('حذف'),
+                      child: Text('حذف', style: TextStyle(color: Colors.white),),
                       onPressed: (){
                         deleteClient();
                         Navigator.of(context).pop();
@@ -249,13 +250,12 @@ class _ClientsTableState extends State<ClientsTable> {
                       child: Center(
                         child: SizedBox(
                           height: 30,
-                          width: 70,
+                          width: 100,
                           child: TextButton(
                             style: TextButton.styleFrom(
                               backgroundColor: Colors.blueAccent,
-                              primary: Colors.white,
                             ),
-                            child: Text('خصم'),
+                            child: Text('خصم', style: TextStyle(color: Colors.white),),
                             onPressed: (){
                               if(_formKey.currentState!.saveAndValidate()){
                                 Map data = {};
@@ -309,36 +309,45 @@ class _ClientsTableState extends State<ClientsTable> {
                                     style : ElevatedButton.styleFrom(
                                         backgroundColor: Colors.grey[500]
                                     ),
-                                    label: Text('طباعة')
+                                    label: Text('طباعة', style: TextStyle(color: Colors.white),)
                                 ),
                                 SizedBox(width: 12,),
                                 ElevatedButton(
                                     onPressed: (){
                                       Navigator.pushNamed(context, '/add_daily');
                                     },
-                                    child: Text('معاملة وقود')
+                                    style : ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue,
+                                    ),
+                                    child: Text('معاملة وقود', style: TextStyle(color: Colors.white),)
                                 ),
                                 SizedBox(width: 5,),
                               ElevatedButton(
                                   onPressed: (){
                                     _EditAccount(context);
                                   },
-                                  child: Text('معاملة نقدية')
+                                  style : ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue
+                                  ),
+                                  child: Text('معاملة نقدية', style: TextStyle(color: Colors.white),)
                               ),
                               SizedBox(width: 5,),
-                              ElevatedButton(
+                              ElevatedButton.icon(
                                   onPressed: (){
                                     Navigator.pushNamed(context, '/add_client');
-                                  } ,
-                                  child: Text('+ اضافة عميل')
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue
+                                  ),
+                                  icon: Icon(Icons.add, color: Colors.white,),
+                                  label: Text('اضافة عميل', style: TextStyle(color: Colors.white),)
                               ),
                                 SizedBox(width: 3,),
-                                TextButton.icon(
+                                IconButton(
                                   onPressed: (){
                                     deleteModal(context);
                                   } ,
-                                  icon: Icon(Icons.delete),
-                                  label: Text(''),
+                                  icon: Icon(Icons.delete, color: Colors.redAccent,),
                                 ),
                             ],
                           );
@@ -350,25 +359,31 @@ class _ClientsTableState extends State<ClientsTable> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               SizedBox(width: 5,),
-                              TextButton.icon(
+                              IconButton(
                                 onPressed: (){
                                   deleteModal(context);
                                 } ,
-                                icon: Icon(Icons.delete),
-                                label: Text(''),
+                                icon: Icon(Icons.delete, color: Colors.redAccent,),
                               ),
                               ElevatedButton(
                                   onPressed: (){
                                     _EditAccount(context);
                                   },
-                                  child: Text('تعديل حساب')
+                                  style : ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue
+                                  ),
+                                  child: Text('تعديل حساب', style: TextStyle(color: Colors.white),)
                               ),
                               SizedBox(width: 5,),
-                              ElevatedButton(
+                              ElevatedButton.icon(
                                   onPressed: (){
                                     Navigator.pushNamed(context, '/add_employee');
-                                  } ,
-                                  child: Text('+ اضافة عميل')
+                                  },
+                                  style : ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue
+                                  ),
+                                  icon: Icon(Icons.add, color: Colors.white,),
+                                  label: Text('اضافة عميل', style: TextStyle(color: Colors.white),)
                               ),
                             ],
                           ),
@@ -447,13 +462,18 @@ class ExampleSource extends AdvancedDataTableSource<Clients> {
         Text(currentRowData.phoneNum.toString()),
       ),
       DataCell(
-        Text('${currentRowData.benz_amount.toString()} لتر'),
+        Text('${myFormat(currentRowData.benz_amount)} لتر'),
       ),
       DataCell(
-        Text('${currentRowData.gas_amount.toString()} لتر'),
+        Text('${myFormat(currentRowData.gas_amount)} لتر'),
       ),
           DataCell(
-            Text(currentRowData.account.toString()),
+            Text('${myFormat(currentRowData.account)}',
+              style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: currentRowData.account > 0 ? Colors.green : Colors.redAccent
+              ),
+            ),
           ),
           DataCell(
             Center(

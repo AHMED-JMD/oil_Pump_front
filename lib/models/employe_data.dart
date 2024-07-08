@@ -10,9 +10,9 @@ class Employee {
   });
   late final int id;
   late final String name;
-  late final int phoneNum;
+  late final phoneNum;
   late final String Ssn;
-  late final int salary;
+  late final salary;
   late final String createdAt;
   late final String updatedAt;
 

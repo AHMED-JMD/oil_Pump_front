@@ -44,6 +44,50 @@ class API_Reciept {
     }
   }
 
+  //get all
+  static Future GetAll (token) async{
+    try{
+      Map<String,String> requestHeaders = {
+        'Content-Type' : 'application/json',
+        'x-auth-token' : '$token'
+      };
+
+      final url = Uri.parse('$apiUrl/');
+      Response response = await get(url, headers: requestHeaders,);
+
+      if(response.statusCode == 200){
+        final data = jsonDecode(response.body);
+
+        return data;
+      }else{
+        return false;
+      }
+    }catch (e){
+      print(e);
+    }
+  }
+  //search in dates
+  static Future Search (token, data) async{
+    try{
+      Map<String,String> requestHeaders = {
+        'Content-Type' : 'application/json',
+        'x-auth-token' : '$token'
+      };
+
+      final url = Uri.parse('$apiUrl/search');
+      Response response = await post(url, headers: requestHeaders, body: jsonEncode(data));
+
+      if(response.statusCode == 200){
+        final data = jsonDecode(response.body);
+
+        return data;
+      }else{
+        return false;
+      }
+    }catch (e){
+      print(e);
+    }
+  }
   //get one receipt by id
   static Future GetById (data, token) async{
     try{

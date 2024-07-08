@@ -2,10 +2,10 @@ class Clients {
   late final String empId;
   late final String name;
   late final String address;
-  late final int phoneNum;
-  late final int account;
-  late final int gas_amount;
-  late final int benz_amount;
+  late final phoneNum;
+  late final account;
+  late final gas_amount;
+  late final benz_amount;
   late final String comment;
   late final String createdAt;
   late final String updatedAt;

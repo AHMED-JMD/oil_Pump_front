@@ -1,11 +1,9 @@
 import 'package:OilEnergy_System/API/BankTrans.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/banks.dart';
-import 'package:OilEnergy_System/API/daily.dart';
 import 'package:OilEnergy_System/SharedService.dart';
 import 'package:OilEnergy_System/components/appBar.dart';
 import 'package:OilEnergy_System/components/side_bar.dart';
-import 'package:OilEnergy_System/widgets/dailyDetails.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class BanksDetails extends StatefulWidget {
@@ -117,7 +115,6 @@ class _BanksDetailsState extends State<BanksDetails> {
                         child: Text('حذف'),
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.redAccent,
-                            primary: Colors.white
                         ),
                         onPressed: (){
                           deleteBankTrans(bankTrans['id']);

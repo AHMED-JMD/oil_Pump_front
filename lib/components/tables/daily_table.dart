@@ -1,5 +1,6 @@
 import 'package:OilEnergy_System/API/client.dart';
 import 'package:OilEnergy_System/API/transaction.dart';
+import 'package:OilEnergy_System/components/MoneyFormatter.dart';
 import 'package:OilEnergy_System/widgets/trans_details.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -157,7 +158,6 @@ class _DailyTableState extends State<DailyTable> {
                       child: Text('حذف'),
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.redAccent,
-                        primary: Colors.white
                       ),
                       onPressed: (){
                         deleteTrans();
@@ -239,13 +239,12 @@ class _DailyTableState extends State<DailyTable> {
                          child: Center(
                            child: SizedBox(
                              height: 30,
-                             width: 70,
+                             width: 100,
                              child: TextButton(
                                style: TextButton.styleFrom(
                                  backgroundColor: Colors.blueAccent,
-                                 primary: Colors.white,
                                ),
-                               child: Text('خصم'),
+                               child: Text('خصم', style: TextStyle(color: Colors.white),),
                                onPressed: (){
                                  if(_formKey.currentState!.saveAndValidate()){
                                    Map data = {};
@@ -338,15 +337,21 @@ class _DailyTableState extends State<DailyTable> {
                           ElevatedButton(
                               onPressed: (){
                                 _CashTransact(context);
-                              } ,
-                              child: Text('معاملة نقدية')
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue
+                              ),
+                              child: Text('معاملة نقدية', style: TextStyle(color: Colors.white),)
                           ),
                           SizedBox(width: 13,),
                           ElevatedButton(
                               onPressed: (){
                                 Navigator.pushNamed(context, '/add_daily');
-                              } ,
-                              child: Text('معاملة وقود')
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue
+                              ),
+                              child: Text('معاملة وقود', style: TextStyle(color: Colors.white),)
                           ),
                           SizedBox(width: 5,),
                         ],
@@ -406,15 +411,21 @@ class _DailyTableState extends State<DailyTable> {
                           ElevatedButton(
                               onPressed: (){
                                 _CashTransact(context);
-                              } ,
-                              child: Text('معاملة نقدية')
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue
+                              ),
+                              child: Text('معاملة نقدية', style: TextStyle(color: Colors.white),)
                           ),
                           SizedBox(width: 13,),
                           ElevatedButton(
                               onPressed: (){
                                 Navigator.pushNamed(context, '/add_daily');
-                              } ,
-                              child: Text('معاملة جديدة')
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue
+                              ),
+                              child: Text('معاملة جديدة', style: TextStyle(color: Colors.white),)
                           ),
                           SizedBox(width: 5,),
                         ],
@@ -482,7 +493,7 @@ class _DailyTableState extends State<DailyTable> {
                       fontSize: 21
                   ),
                 ),
-                Text('$total',
+                Text('${myFormat(total)}',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 21,
@@ -530,7 +541,7 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
         Text(currentRowData.comment),
       ),
       DataCell(
-        Text(currentRowData.amount.toString()),
+        Text('${myFormat(currentRowData.amount)}', style: TextStyle(fontWeight: FontWeight.w900),),
       ),
       DataCell(
         Text(currentRowData.type),

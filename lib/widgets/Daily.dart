@@ -1,5 +1,6 @@
 import 'package:OilEnergy_System/API/reading.dart';
 import 'package:OilEnergy_System/API/transaction.dart';
+import 'package:OilEnergy_System/components/MoneyFormatter.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/daily.dart';
 import 'package:OilEnergy_System/API/outgoing.dart';
@@ -11,6 +12,7 @@ import 'package:OilEnergy_System/components/tables/daily_table.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+
 
 class Dailys extends StatefulWidget {
   const Dailys({super.key});
@@ -302,11 +304,11 @@ class _DailysState extends State<Dailys> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(' ${data['last_reading']}', style: TextStyle(fontSize: 18)),
-                    Text(' ${data['f_reading']}', style: TextStyle(fontSize: 18)),
+                    Text(' ${myFormat(data['last_reading'])}', style: TextStyle(fontSize: 18)),
+                    Text(' ${myFormat(data['f_reading'])}', style: TextStyle(fontSize: 18)),
                     Text('راجع التنك: ${data['returned']}', style: TextStyle(fontSize: 18)),
                     Text('عدد اللترات : ${data['amount']}'),
-                    Text('القيمة : ${data['value']}', style: TextStyle(fontSize: 18),),
+                    Text('القيمة : ${myFormat(data['value'])}', style: TextStyle(fontSize: 18),),
                     SizedBox(height: 10,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -318,7 +320,7 @@ class _DailysState extends State<Dailys> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black54
                             ),
-                            child: Text('تعديل البيانات')
+                            child: Text('تعديل البيانات', style: TextStyle(color: Colors.white),)
                         ),
                         SizedBox(width: 5,),
                         InkWell(
@@ -390,9 +392,9 @@ class _DailysState extends State<Dailys> {
                               width: 100,
                               height: 40,
                               child: ElevatedButton(
-                                child: Text('ارسال'),
+                                child: Text('ارسال', style: TextStyle(fontSize: 18, color: Colors.white)),
                                 style: ElevatedButton.styleFrom(
-                                    textStyle: TextStyle(fontSize: 18)
+                                    backgroundColor: Colors.blue
                                 ),
                                 onPressed: () async {
                                   if (_formKey.currentState!.saveAndValidate()) {
@@ -420,9 +422,9 @@ class _DailysState extends State<Dailys> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         TextButton.icon(
-                          icon: Icon(Icons.close),
+                          icon: Icon(Icons.close, color: Colors.redAccent,),
                           onPressed: () => Navigator.pop(context),
-                          label: Text('الغاء'),
+                          label: Text('الغاء', style: TextStyle(color: Colors.red[900]),),
                         ),
                       ],
                     ),
@@ -450,11 +452,11 @@ class _DailysState extends State<Dailys> {
                 child: Center(
                   child: SizedBox(
                     height: 30,
+                    width: 100,
                     child: TextButton(
-                        child: Text('حذف'),
+                        child: Text('حذف', style: TextStyle(color: Colors.white),),
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.redAccent,
-                            primary: Colors.white
                         ),
                         onPressed: (){
                           deleteReading(data['reading_id']);
@@ -509,12 +511,12 @@ class _DailysState extends State<Dailys> {
                         child: Center(
                           child: SizedBox(
                             height: 30,
+                            width: 100,
                             child: TextButton(
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.blueAccent,
-                                primary: Colors.white,
                               ),
-                              child: Text('اضافة'),
+                              child: Text('اضافة', style: TextStyle(color: Colors.white),),
                               onPressed: (){
                                 if(_formKey.currentState!.saveAndValidate()){
                                   //send to server ---
@@ -600,7 +602,7 @@ class _DailysState extends State<Dailys> {
                                         childAspectRatio: 0.75,
                                       ),
                                       itemBuilder: (context, index) =>
-                                          Pumps(context, readings[index], 430.0)
+                                          Pumps(context, readings[index], 430.0),
                                     );
                               }else{
                                 return GridView.builder(
@@ -629,14 +631,14 @@ class _DailysState extends State<Dailys> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
-                                      Text('عدد اللترات = ${gas_amount}',
+                                      Text('عدد اللترات = ${myFormat(gas_amount)}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 21,
                                             color: Colors.green
                                         ),
                                       ),
-                                      Text('المبلغ = ${total_gas}',
+                                      Text('المبلغ = ${myFormat(total_gas)}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 21,
@@ -654,14 +656,14 @@ class _DailysState extends State<Dailys> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
-                                      Text('عدد اللترات = ${benz_amount}',
+                                      Text('عدد اللترات = ${myFormat(benz_amount)}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 21,
                                             color: Colors.red
                                         ),
                                       ),
-                                      Text('المبلغ = ${total_benz}',
+                                      Text('المبلغ = ${myFormat(total_benz)}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 21,
@@ -682,7 +684,7 @@ class _DailysState extends State<Dailys> {
                                         fontSize: 21
                                     ),
                                   ),
-                                  Text('= ${total_benz + total_gas}',
+                                  Text('= ${myFormat(total_benz + total_gas)}',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 21,
@@ -700,8 +702,11 @@ class _DailysState extends State<Dailys> {
                           onPressed: (){
                             Navigator.pushReplacementNamed(context, '/add_reading');
                           },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                        ),
                           icon: Icon(Icons.add, size: 30,),
-                          label: Text('قراءة جديدة'),
+                          label: Text('قراءة جديدة', style: TextStyle(color: Colors.white),),
                       ),
                       SizedBox(height: 150,),
                       Container(
@@ -745,9 +750,10 @@ class _DailysState extends State<Dailys> {
                                 _outgoingModel(context);
                               },
                               style: ElevatedButton.styleFrom(
-                                minimumSize: Size(50, 40)
+                                minimumSize: Size(50, 40),
+                                backgroundColor: Colors.blue
                               ),
-                              child: Text('اضافة منصرف'))
+                              child: Text('اضافة منصرف', style: TextStyle(color: Colors.white),))
                         ],
                       ),
                       SizedBox(height: 10,),
@@ -770,7 +776,10 @@ class _DailysState extends State<Dailys> {
                             onPressed: (){
                               addDaily();
                             },
-                            child: Text('حفظ اليومية', style: TextStyle(fontSize: 18),)
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue
+                            ),
+                            child: Text('حفظ اليومية', style: TextStyle(fontSize: 18, color: Colors.white),)
                         ),
                       ),
                       SizedBox(height: 25,),

@@ -5,8 +5,8 @@ class Receipt {
   late final String driver;
   late final String carPlate;
   late final String fuelType;
-  late final int shortage;
-  late final int amount;
+  late final shortage;
+  late final amount;
   late final String arrive_date;
   late final String ship_date;
   late final String createdAt;

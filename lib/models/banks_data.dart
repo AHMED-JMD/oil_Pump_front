@@ -9,7 +9,7 @@ class Banks {
   });
   late final String banks_id;
   late final String bank_name;
-  late final int amount;
+  late final amount;
   late final String date;
   late final String createdAt;
   late final String updatedAt;

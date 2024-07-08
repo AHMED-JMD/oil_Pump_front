@@ -17,7 +17,6 @@ class API_auth {
 
       Map<String, dynamic> datas = jsonDecode(response.body);
       if(response.statusCode == 200){
-
         SharedServices.SetLoginDetails(loginResponseJson(response.body));
         return true;
       }else{

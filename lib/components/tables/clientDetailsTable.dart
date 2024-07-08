@@ -94,7 +94,6 @@ class _ClientDetailsTableState extends State<ClientDetailsTable> {
                         child: Text('حذف'),
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.redAccent,
-                            primary: Colors.white
                         ),
                         onPressed: (){
                           deleteDaily();

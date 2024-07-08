@@ -1,3 +1,4 @@
+import 'package:OilEnergy_System/components/MoneyFormatter.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/outgoing.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -73,7 +74,6 @@ class _OutgoingsState extends State<Outgoings> {
                         child: Text('حذف'),
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.redAccent,
-                            primary: Colors.white
                         ),
                         onPressed: (){
                           delete_OutG(data['outg_id']);
@@ -106,7 +106,7 @@ class _OutgoingsState extends State<Outgoings> {
                         fontSize: 21
                     ),
                   ),
-                  Text('$total',
+                  Text('${myFormat(total)}',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 21,

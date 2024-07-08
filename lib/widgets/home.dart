@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
+  bool hidePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -92,9 +93,17 @@ class _HomePageState extends State<HomePage> {
                               decoration: InputDecoration(
                                 labelText: 'كلمة السر',
                                 icon: Icon(Icons.password),
+                                  suffixIcon: IconButton(
+                                      onPressed: (){
+                                        setState(() {
+                                          hidePassword = !hidePassword;
+                                        });
+                                      },
+                                      icon: Icon(hidePassword ? Icons.visibility : Icons.visibility_off)
+                                  ),
                                 focusColor: Colors.deepPurple
                               ),
-                              obscureText: true,
+                              obscureText: hidePassword,
                               validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                             ),
                             SizedBox(height: 30,),

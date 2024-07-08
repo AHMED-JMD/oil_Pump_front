@@ -1,12 +1,11 @@
 import 'package:OilEnergy_System/API/pump.dart';
+import 'package:OilEnergy_System/components/MoneyFormatter.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/gas.dart';
 import 'package:OilEnergy_System/SharedService.dart';
 import 'package:OilEnergy_System/models/gas_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 
 class GasolineTable extends StatefulWidget {
   final List data;
@@ -22,7 +21,6 @@ class _GasolineTableState extends State<GasolineTable> {
 
   var rowsPerPage = 10;
   late final source = ExampleSource(data: data);
-  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   final _searchController = TextEditingController();
 
   bool isLoading = false;
@@ -110,11 +108,11 @@ class _GasolineTableState extends State<GasolineTable> {
                 child: Center(
                   child: SizedBox(
                     height: 30,
+                    width: 100,
                     child: TextButton(
-                        child: Text('حذف'),
+                        child: Text('حذف', style: TextStyle(color: Colors.white),),
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.redAccent,
-                            primary: Colors.white
                         ),
                         onPressed: (){
                           deleteGas();
@@ -145,12 +143,12 @@ class _GasolineTableState extends State<GasolineTable> {
                     mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           SizedBox(width: 5,),
-                          TextButton.icon(
+                          IconButton(
                             onPressed: (){
                               _deleteModal(context);
                             } ,
                             icon: Icon(Icons.delete),
-                            label: Text(''),
+                            color: Colors.redAccent,
                           ),
                         ],
                       );
@@ -162,12 +160,11 @@ class _GasolineTableState extends State<GasolineTable> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           SizedBox(width: 5,),
-                          TextButton.icon(
+                          IconButton(
                             onPressed: (){
                               _deleteModal(context);
                             } ,
-                            icon: Icon(Icons.delete),
-                            label: Text(''),
+                            icon: Icon(Icons.delete, color: Colors.redAccent,),
                           ),
                           SizedBox(width: 3,),
                         ],
@@ -250,8 +247,9 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
         ),
       ),
       DataCell(
-        Text(currentRowData.total.toString(),
+        Text('${myFormat(currentRowData.total)}',
           style: TextStyle(
+            fontWeight: FontWeight.w900,
             color: currentRowData.status == 'تفريغ' ?Colors.green : Colors.red,
           ),
         ),

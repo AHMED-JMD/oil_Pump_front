@@ -212,9 +212,9 @@ class _AddRecieptState extends State<AddReciept> {
                                   _OnSubmit(data);
                                 }
                               },
-                              child: Text('ارسال'),
+                              child: Text('ارسال', style: TextStyle(color: Colors.white)),
                               style: ElevatedButton.styleFrom(
-                                textStyle: TextStyle(fontSize: 18)
+                                backgroundColor: Colors.blue
                               ),
                             ),
                           )

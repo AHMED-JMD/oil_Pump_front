@@ -98,7 +98,6 @@ class _ReadingTableState extends State<ReadingTable> {
                         child: Text('حذف'),
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.redAccent,
-                            primary: Colors.white
                         ),
                         onPressed: (){
                           deleteReading();

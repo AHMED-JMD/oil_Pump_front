@@ -198,7 +198,6 @@ class _DailyDetailsState extends State<DailyDetails> {
                             child: TextButton(
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.blueAccent,
-                                primary: Colors.white,
                               ),
                               child: Text('اضافة'),
                               onPressed: (){

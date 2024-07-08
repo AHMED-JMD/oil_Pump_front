@@ -1,4 +1,5 @@
 import 'package:OilEnergy_System/API/employee.dart';
+import 'package:OilEnergy_System/components/MoneyFormatter.dart';
 import 'package:OilEnergy_System/models/employe_data.dart';
 import 'package:OilEnergy_System/widgets/EmployeDetails.dart';
 import 'package:flutter/material.dart';
@@ -190,12 +191,12 @@ class _EmployeeTableState extends State<EmployeeTable> {
                 child: Center(
                   child: SizedBox(
                     height: 30,
+                    width: 100,
                     child: TextButton(
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.redAccent,
-                        primary: Colors.white,
                       ),
-                      child: Text('حذف'),
+                      child: Text('حذف', style: TextStyle(color: Colors.white),),
                       onPressed: (){
                         deleteEmp();
                         Navigator.of(context).pop();
@@ -257,13 +258,12 @@ class _EmployeeTableState extends State<EmployeeTable> {
                         child: Center(
                           child: SizedBox(
                             height: 30,
-                            width: 70,
+                            width: 100,
                             child: TextButton(
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.blueAccent,
-                                primary: Colors.white,
                               ),
-                              child: Text('خصم'),
+                              child: Text('خصم', style: TextStyle(color: Colors.white),),
                               onPressed: (){
                                 if(_formKey.currentState!.saveAndValidate()){
                                   Map data = {};
@@ -307,12 +307,12 @@ class _EmployeeTableState extends State<EmployeeTable> {
                 child: Center(
                   child: SizedBox(
                     height: 30,
+                    width: 100,
                     child: TextButton(
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.green,
-                        primary: Colors.white,
                       ),
-                      child: Text('تفعيل'),
+                      child: Text('تفعيل', style: TextStyle(color: Colors.white),),
                       onPressed: (){
                         new_month();
                         Navigator.of(context).pop();
@@ -344,33 +344,42 @@ class _EmployeeTableState extends State<EmployeeTable> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       SizedBox(width: 5,),
-                      TextButton.icon(
+                      IconButton(
                         onPressed: (){
                           deleteModal(context);
                         } ,
-                        icon: Icon(Icons.delete),
-                        label: Text(''),
+                        icon: Icon(Icons.delete, color: Colors.redAccent,),
                       ),
                       SizedBox(width: 10,),
                       ElevatedButton(
                           onPressed: (){
                             New_month(context);
                           },
-                          child: Text('شهر جديد')
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue
+                          ),
+                          child: Text('شهر جديد', style: TextStyle(color: Colors.white),)
                       ),
                       SizedBox(width: 10,),
                       ElevatedButton(
                           onPressed: (){
                             _EditAccount(context);
                           },
-                          child: Text('خصم المرتب')
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue
+                          ),
+                          child: Text('خصم المرتب', style: TextStyle(color: Colors.white),)
                       ),
                       SizedBox(width: 5,),
-                      ElevatedButton(
+                      ElevatedButton.icon(
                           onPressed: (){
                             Navigator.pushNamed(context, '/add_employes');
-                          } ,
-                          child: Text('+ اضافة موظف')
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue
+                          ),
+                          icon: Icon(Icons.add, color: Colors.white),
+                          label: Text('اضافة موظف', style: TextStyle(color: Colors.white),)
                       ),
                     ],
                   );
@@ -382,32 +391,41 @@ class _EmployeeTableState extends State<EmployeeTable> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           SizedBox(width: 5,),
-                          TextButton.icon(
+                          IconButton(
                             onPressed: (){
                               deleteModal(context);
                             } ,
-                            icon: Icon(Icons.delete),
-                            label: Text(''),
+                            icon: Icon(Icons.delete, color: Colors.redAccent),
                           ),
                           ElevatedButton(
                               onPressed: (){
                                 New_month(context);
                               },
-                              child: Text('شهر جديد')
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue
+                              ),
+                              child: Text('شهر جديد', style: TextStyle(color: Colors.white))
                           ),
                           SizedBox(width: 10,),
                           ElevatedButton(
                               onPressed: (){
                                 _EditAccount(context);
                               },
-                              child: Text('خصم المرتب')
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue
+                              ),
+                              child: Text('خصم المرتب', style: TextStyle(color: Colors.white))
                           ),
                           SizedBox(width: 5,),
-                          ElevatedButton(
+                          ElevatedButton.icon(
                               onPressed: (){
                                 Navigator.pushNamed(context, '/add_employes');
                               },
-                              child: Text('+ اضافة موظف')
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue
+                              ),
+                              icon: Icon(Icons.add, color: Colors.white),
+                              label: Text('اضافة موظف', style: TextStyle(color: Colors.white))
                           ),
                         ],
                       ),
@@ -480,7 +498,12 @@ class ExampleSource extends AdvancedDataTableSource<Employee> {
             Text(currentRowData.phoneNum.toString()),
           ),
           DataCell(
-            Text(currentRowData.salary.toString()),
+            Text('${myFormat(currentRowData.salary)}',
+              style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: currentRowData.salary > 0 ? Colors.green : Colors.redAccent
+              ),
+            ),
           ),
           DataCell(
             InkWell(

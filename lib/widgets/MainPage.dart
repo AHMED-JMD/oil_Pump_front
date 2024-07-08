@@ -1,3 +1,4 @@
+import 'package:OilEnergy_System/components/MoneyFormatter.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/gas.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -70,22 +71,22 @@ class _MainPageState extends State<MainPage> {
              ListView(
               children:[
                 SizedBox(height: 5,),
-                // Container(
-                //   color: Colors.grey[200],
-                //   height: 80,
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                //     children: [
-                //       Text(' مرحبا بك مجددا : ${user}', style: TextStyle(
-                //         fontSize: 25, color: Colors.deepPurpleAccent
-                //       ),),
-                //       Text('${DateTime.now()}', style: TextStyle(
-                //           fontSize: 22
-                //       ))
-                //     ],
-                //   ),
-                // ),
-                //  SizedBox(height: 50,),
+                Container(
+                  color: Colors.grey[200],
+                  height: 60,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(' المستخدم : ${user}', style: TextStyle(
+                        fontSize: 20, color: Colors.deepPurpleAccent
+                      ),),
+                      Text('${DateTime.now().day} / ${DateTime.now().month} / ${DateTime.now().year} (${DateTime.now().hour > 6 ? "PM" : "AM"} ${DateTime.now().hour}:${DateTime.now().minute} )', style: TextStyle(
+                          fontSize: 19
+                      ))
+                    ],
+                  ),
+                ),
+                 SizedBox(height: 50,),
                 SizedBox(
                     width: MediaQuery.of(context).size.width/2,
                     child: DailyBarChart()
@@ -114,7 +115,7 @@ class _MainPageState extends State<MainPage> {
                           )
                       ),
                       child: Center(
-                        child: Text(' بئر الجازولين = $avail_gas لتر', style: TextStyle(
+                        child: Text(' بئر الجازولين = ${myFormat(avail_gas)} لتر', style: TextStyle(
                             fontSize: 22,
                             color: Colors.black
                           ),
@@ -133,7 +134,7 @@ class _MainPageState extends State<MainPage> {
                         )
                       ),
                       child: Center(
-                        child: Text(' بئر البنزين = $avail_benz لتر', style: TextStyle(
+                        child: Text(' بئر البنزين = ${myFormat(avail_benz)} لتر', style: TextStyle(
                             fontSize: 22,
                             color: Colors.black
                         ),

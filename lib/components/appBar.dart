@@ -13,17 +13,14 @@ const canvasColor = Color(0xFF2E2E48);
                  onPressed: (){
                    SharedServices.logout(context);
                  },
-                 style: TextButton.styleFrom(
-                   primary: Colors.white
-                 ),
-                 icon: Icon(Icons.logout),
-                 label: Text('تسجيل الخروج',style: TextStyle(fontSize: 18),)
+                 icon: const Icon(Icons.logout, color: Colors.white),
+                 label: Text('تسجيل الخروج',style: TextStyle(fontSize: 18, color: Colors.white),)
              )
          ),
          Align(
              alignment: Alignment.topRight,
              child: Text('اويل تراك لادارة محطات الوقود',
-               style: TextStyle(fontSize: 22),)
+               style: TextStyle(fontSize: 22, color: Colors.white),)
          )
        ],
      ),

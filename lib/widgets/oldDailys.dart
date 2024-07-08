@@ -1,6 +1,6 @@
+import 'package:OilEnergy_System/components/MoneyFormatter.dart';
+import 'package:OilEnergy_System/components/SearchInDates.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:OilEnergy_System/API/daily.dart';
 import 'package:OilEnergy_System/SharedService.dart';
 import 'package:OilEnergy_System/components/appBar.dart';
@@ -16,8 +16,8 @@ class OldDailys extends StatefulWidget {
 }
 
 class _OldDailysState extends State<OldDailys> {
-  SidebarXController controller = SidebarXController(selectedIndex: 1, extended: true);
-  GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+  SidebarXController controller =
+      SidebarXController(selectedIndex: 1, extended: true);
 
   bool isLoading = false;
   List dailys = [];
@@ -27,8 +27,6 @@ class _OldDailysState extends State<OldDailys> {
   int total_outgs = 0;
   int total_dailys = 0;
   DateTime? date = DateTime.now();
-  DateTime? start_date = DateTime.now();
-  DateTime? end_date = DateTime.now();
 
   @override
   void initState() {
@@ -36,7 +34,7 @@ class _OldDailysState extends State<OldDailys> {
     super.initState();
   }
   //server side function
-  Future GetDaily (datas) async{
+  Future GetDaily(datas) async {
     setState(() {
       isLoading = true;
     });
@@ -45,22 +43,25 @@ class _OldDailysState extends State<OldDailys> {
     final auth = await SharedServices.LoginDetails();
     final response = await API_Daily.Get_One_Daily(datas, auth.token);
 
-    response.length != 0 ?
-        setState((){
-          dailys = response['daily_trans'];
-          total = response['total'];
-          isLoading = false;
-        })
+    response.length != 0
+        ? setState(() {
+            dailys = response['daily_trans'];
+            total = response['total'];
+            isLoading = false;
+          })
         : ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('عفوا لا يوجد يومية في هذا اليوم', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
-        backgroundColor: Colors.red,
-      ),
-    );
-
+            SnackBar(
+              content: Text(
+                'عفوا لا يوجد يومية في هذا اليوم',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 17),
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
   }
 
-  Future GetAllDaily () async{
+  Future GetAllDaily() async {
     setState(() {
       isLoading = true;
     });
@@ -85,34 +86,43 @@ class _OldDailysState extends State<OldDailys> {
     data['daily_id'] = daily_id;
     data['date'] = date!.toIso8601String();
 
-      final auth = await SharedServices.LoginDetails();
-      API_Daily.Delete_Daily(data, auth.token).then((response)async {
-        setState(() {
-          isLoading = false;
-        });
-        if(response == true){
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('تم حذف اليومية بنجاح', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
-              backgroundColor: Colors.red,
-            ),
-          );
-          await Future.delayed(Duration(milliseconds: 600));
-          Navigator.pushReplacementNamed(context, '/old_daily');
-        }else{
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('$response', textAlign: TextAlign.center, style: TextStyle(fontSize: 17),),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+    final auth = await SharedServices.LoginDetails();
+    API_Daily.Delete_Daily(data, auth.token).then((response) async {
+      setState(() {
+        isLoading = false;
       });
+      if (response == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'تم حذف اليومية بنجاح',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 17),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        await Future.delayed(Duration(milliseconds: 600));
+        Navigator.pushReplacementNamed(context, '/old_daily');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '$response',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 17),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    });
   }
   //-----------------------
 
+
   //model widgets
-  void _deleteModal(BuildContext context, daily){
+  void _deleteModal(BuildContext context, daily) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -127,17 +137,16 @@ class _OldDailysState extends State<OldDailys> {
                 child: Center(
                   child: SizedBox(
                     height: 30,
+                    width: 100,
                     child: TextButton(
-                        child: Text('حذف'),
+                        child: Text('حذف', style: TextStyle(color: Colors.white),),
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.redAccent,
-                            primary: Colors.white
                         ),
-                        onPressed: (){
+                        onPressed: () {
                           deleteDaily(daily['daily_id']);
                           Navigator.of(context).pop();
-                        }
-                    ),
+                        }),
                   ),
                 ),
               ),
@@ -158,375 +167,154 @@ class _OldDailysState extends State<OldDailys> {
           children: [
             Navbar(controller: controller),
             Expanded(
-              child: ListView(
-                children:[Column(
+              child: ListView(children: [
+                Column(
                   children: [
                     Container(
                       width: MediaQuery.of(context).size.width,
                       height: 200,
                       decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage('assets/Curve_Line.png'),
-                            fit: BoxFit.cover,
-                            colorFilter: ColorFilter.mode(Colors.blueAccent, BlendMode.difference),
-                          )
-                      ),
+                        image: AssetImage('assets/Curve_Line.png'),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                            Colors.blueAccent, BlendMode.difference),
+                      )),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('اليوميات السابقة',
-                                style: TextStyle(fontSize: 26, color: Colors.white),
-                                textAlign: TextAlign.center,
+                          Text(
+                            'اليوميات السابقة',
+                            style: TextStyle(fontSize: 26, color: Colors.white),
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(height: 70,),
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: FormBuilder(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              LayoutBuilder(
-                                  builder: (BuildContext context, BoxConstraints constraints){
-                                    if(constraints.maxWidth > 700){
-                                      return Row(
-                                        children: [
-                                          Text('من : ', style: TextStyle(fontSize: 17),),
-                                          SizedBox(width: 10,),
-                                          Container(
-                                            width: 200,
-                                            child: FormBuilderDateTimePicker(
-                                              name: "start_date",
-                                              onChanged: (value){
-                                                setState(() {
-                                                  start_date = value;
-                                                });
-                                              },
-                                              decoration: InputDecoration(
-                                                  labelText: "البداية",
-                                                  // border: OutlineInputBorder(
-                                                  //   borderSide: BorderSide(
-                                                  //     color: Colors.black,
-                                                  //     width: 5,
-                                                  //   ),
-                                                  //   borderRadius: BorderRadius.circular(5.0),
-                                                  // ),
-                                                  suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
-                                              ),
-                                              validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
-                                              initialDate: DateTime.now(),
-                                              inputType: InputType.date,
-                                            ),
-                                          ),
-                                          SizedBox(width: 20,),
-                                          Text('الى : ', style: TextStyle(fontSize: 17),),
-                                          SizedBox(width: 10,),
-                                          Container(
-                                            width: 200,
-                                            child: FormBuilderDateTimePicker(
-                                              name: "end_date",
-                                              onChanged: (value){
-                                                setState(() {
-                                                  end_date = value;
-                                                });
-                                              },
-                                              decoration: InputDecoration(
-                                                  labelText: "النهاية",
-                                                  // border: OutlineInputBorder(
-                                                  //   borderSide: BorderSide(
-                                                  //     color: Colors.black,
-                                                  //     width: 5,
-                                                  //   ),
-                                                  //   borderRadius: BorderRadius.circular(5.0),
-                                                  // ),
-                                                  suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
-                                              ),
-                                              validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
-                                              initialDate: DateTime.now(),
-                                              inputType: InputType.date,
-                                            ),
-                                          ),
-                                          SizedBox(width: 20,),
-                                          // Add a submit button
-                                          SizedBox(
-                                            width: 100,
-                                            height: 50,
-                                            child: ElevatedButton(
-                                              child: Text('ارسال'),
-                                              style: ElevatedButton.styleFrom(
-                                                  primary: Colors.blueGrey,
-                                                  textStyle: TextStyle(fontSize: 18)
-                                              ),
-                                              onPressed: () {
-                                                if (_formKey.currentState!.saveAndValidate()) {
-                                                  //call to backend
-                                                  Map datas = {};
-                                                  datas['start_date'] = start_date!.toIso8601String();
-                                                  datas['end_date'] = end_date!.toIso8601String();
-
-                                                  // function
-                                                  GetDaily(datas);
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    } else {
-                                      if(constraints.maxWidth> 500){
-                                        return Row(
-                                          children: [
-                                            Text('من : ', style: TextStyle(fontSize: 17),),
-                                            SizedBox(width: 10,),
-                                            Container(
-                                              width: 130,
-                                              child: FormBuilderDateTimePicker(
-                                                name: "start_date",
-                                                onChanged: (value){
-                                                  setState(() {
-                                                    start_date = value;
-                                                  });
-                                                },
-                                                decoration: InputDecoration(
-                                                    labelText: "البداية",
-                                                    // border: OutlineInputBorder(
-                                                    //   borderSide: BorderSide(
-                                                    //     color: Colors.black,
-                                                    //     width: 5,
-                                                    //   ),
-                                                    //   borderRadius: BorderRadius.circular(5.0),
-                                                    // ),
-                                                    suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
-                                                ),
-                                                validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
-                                                initialDate: DateTime.now(),
-                                                inputType: InputType.date,
-                                              ),
-                                            ),
-                                            SizedBox(width: 10,),
-                                            Text('الى : ', style: TextStyle(fontSize: 17),),
-                                            SizedBox(width: 10,),
-                                            Container(
-                                              width: 130,
-                                              child: FormBuilderDateTimePicker(
-                                                name: "end_date",
-                                                onChanged: (value){
-                                                  setState(() {
-                                                    end_date = value;
-                                                  });
-                                                },
-                                                decoration: InputDecoration(
-                                                    labelText: "النهاية",
-                                                    // border: OutlineInputBorder(
-                                                    //   borderSide: BorderSide(
-                                                    //     color: Colors.black,
-                                                    //     width: 5,
-                                                    //   ),
-                                                    //   borderRadius: BorderRadius.circular(5.0),
-                                                    // ),
-                                                    suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
-                                                ),
-                                                validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
-                                                initialDate: DateTime.now(),
-                                                inputType: InputType.date,
-                                              ),
-                                            ),
-                                            SizedBox(width: 10,),
-                                            // Add a submit button
-                                            SizedBox(
-                                              width: 80,
-                                              height: 50,
-                                              child: ElevatedButton(
-                                                child: Text('ارسال'),
-                                                style: ElevatedButton.styleFrom(
-                                                    primary: Colors.blueGrey,
-                                                    textStyle: TextStyle(fontSize: 18)
-                                                ),
-                                                onPressed: () {
-                                                  if (_formKey.currentState!.saveAndValidate()) {
-                                                    //call to backend
-                                                    Map datas = {};
-                                                    datas['start_date'] = start_date!.toIso8601String();
-                                                    datas['end_date'] = end_date!.toIso8601String();
-
-                                                    // function
-                                                    GetDaily(datas);
-                                                  }
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      }else{
-                                        return Column(
-                                          children: [
-                                            Text('من : ', style: TextStyle(fontSize: 17),),
-                                            Container(
-                                              width: 200,
-                                              child: FormBuilderDateTimePicker(
-                                                name: "start_date",
-                                                onChanged: (value){
-                                                  setState(() {
-                                                    start_date = value;
-                                                  });
-                                                },
-                                                decoration: InputDecoration(
-                                                    labelText: "البداية",
-                                                    // border: OutlineInputBorder(
-                                                    //   borderSide: BorderSide(
-                                                    //     color: Colors.black,
-                                                    //     width: 5,
-                                                    //   ),
-                                                    //   borderRadius: BorderRadius.circular(5.0),
-                                                    // ),
-                                                    suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
-                                                ),
-                                                validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
-                                                initialDate: DateTime.now(),
-                                                inputType: InputType.date,
-                                              ),
-                                            ),
-                                            SizedBox(height: 10,),
-                                            Text('الى : ', style: TextStyle(fontSize: 17),),
-                                            Container(
-                                              width: 200,
-                                              child: FormBuilderDateTimePicker(
-                                                name: "end_date",
-                                                onChanged: (value){
-                                                  setState(() {
-                                                    end_date = value;
-                                                  });
-                                                },
-                                                decoration: InputDecoration(
-                                                    labelText: "النهاية",
-                                                    // border: OutlineInputBorder(
-                                                    //   borderSide: BorderSide(
-                                                    //     color: Colors.black,
-                                                    //     width: 5,
-                                                    //   ),
-                                                    //   borderRadius: BorderRadius.circular(5.0),
-                                                    // ),
-                                                    suffixIcon: Icon(Icons.calendar_month, color: Colors.blueAccent,)
-                                                ),
-                                                validator: FormBuilderValidators.required(errorText: "الرجاء اختيار تاريخ محدد"),
-                                                initialDate: DateTime.now(),
-                                                inputType: InputType.date,
-                                              ),
-                                            ),
-                                            SizedBox(height: 10,),
-                                            // Add a submit button
-                                            SizedBox(
-                                              width: 80,
-                                              height: 50,
-                                              child: ElevatedButton(
-                                                child: Text('ارسال'),
-                                                style: ElevatedButton.styleFrom(
-                                                    primary: Colors.blueGrey,
-                                                    textStyle: TextStyle(fontSize: 18)
-                                                ),
-                                                onPressed: () {
-                                                  if (_formKey.currentState!.saveAndValidate()) {
-                                                    //call to backend
-                                                    Map datas = {};
-                                                    datas['start_date'] = start_date!.toIso8601String();
-                                                    datas['end_date'] = end_date!.toIso8601String();
-
-                                                    // function
-                                                    GetDaily(datas);
-                                                  }
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      }
-                                    }
-                                  }
-                              )
-                                ],
-                              )
-                            ),
-                          ),
-                    SizedBox(height: 20,),
-                    Container(
-                      child: Text('اجمالي قيمة اليوميات: $total', style: TextStyle(fontSize: 18),),
+                    SizedBox(
+                      height: 70,
                     ),
-                    SizedBox(height: 40,),
-                    dailys.length != 0 ?
+                    SearchDates(Search: GetDaily),
+                    SizedBox(
+                      height: 20,
+                    ),
                     Container(
-                      height: 400,
-                      width: MediaQuery.of(context).size.width/1.3,
-                      child: ListView.builder(
-                        itemCount: dailys.length,
-                        itemBuilder: (context, index){
-                          return Padding(
-                              padding: EdgeInsets.all(4),
-                              child: Card(
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(2.0),
-                                      child: ListTile(
-                                        leading: Icon(Icons.view_agenda),
-                                        title: Text(' المبلغ :  ${dailys[index]['amount']} جنيه', style: TextStyle(fontSize: 18)),
-                                        subtitle: Text(' التاريخ : ${dailys[index]['date'].toString()}', style: TextStyle(fontWeight: FontWeight.bold),),
-                                        trailing: SizedBox(
-                                          width: 200,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.end,
-                                            children:[
-                                              TextButton.icon(
-                                                onPressed: (){
-                                                  Navigator.push(context, MaterialPageRoute(
-                                                      builder: (context) => DailyDetails(date: dailys[index]['date'])
-                                                  ));
-                                                },
-                                                style: TextButton.styleFrom(
-                                                    backgroundColor: Colors.grey[200],
-                                                    minimumSize: Size(60, 45)
-                                                ),
-                                                icon: Icon(Icons.mode_edit, color: Colors.blue),
-                                                label: Text('التفاصيل', style: TextStyle(color: Colors.black),),
-                                              ),
-                                              SizedBox(width: 5,),
-                                              TextButton.icon(
-                                                  onPressed: (){
-                                                    _deleteModal(context, dailys[index]);
-                                                  },
-                                                  icon: Icon(Icons.delete_forever, color: Colors.red,),
-                                                  label: Text('')
-                                              )
-                                            ]
-                                          ),
-                                        )
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                          );
-                        },
+                      padding: EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[700],
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    ): Center(
-                        child: Container(
-                            width: 280,
-                            height: 50,
-                            decoration: BoxDecoration(
-                                color: Colors.blueAccent,
-                                borderRadius: BorderRadius.circular(12)
+                      child: Text(
+                        ' اجمالي قيمة اليوميات = (${myFormat(total)})',
+                        style: TextStyle(fontSize: 21, color: Colors.white),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    dailys.length != 0
+                        ? Container(
+                            height: 400,
+                            width: MediaQuery.of(context).size.width / 1.3,
+                            child: ListView.builder(
+                              itemCount: dailys.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: EdgeInsets.all(4),
+                                  child: Card(
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: ListTile(
+                                              leading: Icon(Icons.view_agenda),
+                                              title: Text(
+                                                  ' المبلغ :  ${myFormat((dailys[index]['amount']))} جنيه',
+                                                  style:
+                                                      TextStyle(fontSize: 18)),
+                                              subtitle: Text(
+                                                ' التاريخ : ${dailys[index]['date'].toString()}',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              trailing: SizedBox(
+                                                width: 200,
+                                                child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      TextButton.icon(
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (context) =>
+                                                                      DailyDetails(
+                                                                          date: dailys[index]
+                                                                              [
+                                                                              'date'])));
+                                                        },
+                                                        style: TextButton
+                                                            .styleFrom(
+                                                                backgroundColor:
+                                                                    Colors.grey[
+                                                                        200],
+                                                                minimumSize:
+                                                                    Size(60,
+                                                                        45)),
+                                                        icon: Icon(
+                                                            Icons.mode_edit,
+                                                            color: Colors.blue),
+                                                        label: Text(
+                                                          'التفاصيل',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      TextButton.icon(
+                                                          onPressed: () {
+                                                            _deleteModal(
+                                                                context,
+                                                                dailys[index]);
+                                                          },
+                                                          icon: Icon(
+                                                            Icons
+                                                                .delete_forever,
+                                                            color: Colors.red,
+                                                          ),
+                                                          label: Text(''))
+                                                    ]),
+                                              )),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
-                            child: Center(
-                                child: Text('لا يوجد يوميات سابقة',textAlign: TextAlign.center, style: TextStyle(fontSize: 18, color: Colors.white),)
-                            )
-                        )
-                    )
+                          )
+                        : Center(
+                            child: Container(
+                                width: 280,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                    color: Colors.blueAccent,
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Center(
+                                    child: Text(
+                                  'لا يوجد يوميات سابقة',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
+                                ))))
                   ],
                 ),
-                ]
-              ),
+              ]),
             ),
           ],
         ),

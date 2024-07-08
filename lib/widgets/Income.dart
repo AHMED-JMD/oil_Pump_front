@@ -4,6 +4,7 @@ import 'package:OilEnergy_System/components/side_bar.dart';
 import 'package:OilEnergy_System/components/tables/income_table.dart';
 import 'package:sidebarx/sidebarx.dart';
 
+
 class Incomes extends StatefulWidget {
   const Incomes({super.key});
 
@@ -12,7 +13,15 @@ class Incomes extends StatefulWidget {
 }
 
 class _IncomesState extends State<Incomes> {
-  SidebarXController controller = SidebarXController(selectedIndex: 7, extended: true);
+  SidebarXController controller = SidebarXController(selectedIndex: 5, extended: true);
+
+  bool isLoading = false;
+  List data = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +54,7 @@ class _IncomesState extends State<Incomes> {
                     SizedBox(height: 70,),
                     Container(
                       color: Colors.grey.shade100,
-                      child: IncomeTable()
+                      child: IncomeTable(),
                   ),
               ]
                 )

@@ -1,3 +1,4 @@
+import 'package:OilEnergy_System/components/MoneyFormatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -126,11 +127,11 @@ class _BanksTableState extends State<BanksTable> {
                 child: Center(
                   child: SizedBox(
                     height: 30,
+                    width: 100,
                     child: TextButton(
-                        child: Text('حذف'),
+                        child: Text('حذف', style: TextStyle(color: Colors.white),),
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.redAccent,
-                            primary: Colors.white
                         ),
                         onPressed: (){
                           deleteBank();
@@ -154,7 +155,7 @@ class _BanksTableState extends State<BanksTable> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: SimpleDialog(
-            title: Text('منصرف جديد'),
+            title: Text('حساب ينك جديد', textAlign: TextAlign.center),
             children:[
               Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -184,13 +185,13 @@ class _BanksTableState extends State<BanksTable> {
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Center(
                           child: SizedBox(
-                            height: 30,
+                            height: 40,
+                            width: 100,
                             child: TextButton(
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.blueAccent,
-                                primary: Colors.white,
                               ),
-                              child: Text('اضافة'),
+                              child: Text('اضافة', style: TextStyle(color: Colors.white),),
                               onPressed: (){
                                 if(_formKey.currentState!.saveAndValidate()){
                                   //send to server ---
@@ -238,19 +239,21 @@ class _BanksTableState extends State<BanksTable> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           SizedBox(width: 5,),
-                          TextButton.icon(
+                          IconButton(
                             onPressed: (){
                               _deleteModal(context);
                             } ,
-                            icon: Icon(Icons.delete),
-                            label: Text(''),
+                            icon: Icon(Icons.delete, color: Colors.redAccent,),
                           ),
                           ElevatedButton.icon(
                             onPressed: (){
                               _addBankModal(context);
-                            } ,
-                            icon: Icon(Icons.add),
-                            label: Text('حساب بنك جديد'),
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue
+                            ),
+                            icon: Icon(Icons.add, color: Colors.white,),
+                            label: Text('حساب بنك جديد', style: TextStyle(color: Colors.white),),
                           ),
                         ],
                       );
@@ -262,19 +265,21 @@ class _BanksTableState extends State<BanksTable> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           SizedBox(width: 5,),
-                          TextButton.icon(
+                          IconButton(
                             onPressed: (){
                               _deleteModal(context);
                             } ,
-                            icon: Icon(Icons.delete),
-                            label: Text(''),
+                            icon: Icon(Icons.delete, color: Colors.redAccent,),
                           ),
                           ElevatedButton.icon(
                             onPressed: (){
                               _addBankModal(context);
-                            } ,
-                            icon: Icon(Icons.add),
-                            label: Text('حساب بنك جديد'),
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                            ),
+                            icon: Icon(Icons.add, color: Colors.white,),
+                            label: Text('حساب بنك جديد', style: TextStyle(color: Colors.white),),
                           ),
                         ],
                       ),
@@ -341,7 +346,7 @@ class ExampleSource extends AdvancedDataTableSource<Banks> {
               Text(currentRowData.bank_name,)
           ),
           DataCell(
-            Text(currentRowData.amount.toString(),),
+            Text("${myFormat(currentRowData.amount)}", style: TextStyle(fontWeight: FontWeight.w800),),
           ),
           DataCell(
             Text(currentRowData.date,),

@@ -17,7 +17,7 @@ class Pump {
   late final String pumpId;
   late final String type;
   late final String name;
-  late final int reading;
+  late final reading;
   late final String createdAt;
   late final String updatedAt;
   late final Null dailyDailyId;

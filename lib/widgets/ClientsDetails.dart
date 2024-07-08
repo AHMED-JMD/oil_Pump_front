@@ -359,7 +359,6 @@ class _ClientDetailsState extends State<ClientDetails> {
                                                     }
                                                   },
                                                   style: TextButton.styleFrom(
-                                                    primary: Colors.black,
                                                     minimumSize: Size(50, 50)
                                                   ),
                                                   icon: Icon(Icons.search, size: 30,),

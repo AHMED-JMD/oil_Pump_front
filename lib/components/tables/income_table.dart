@@ -1,16 +1,15 @@
+import 'package:OilEnergy_System/components/MoneyFormatter.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/reciept.dart';
 import 'package:OilEnergy_System/SharedService.dart';
 import 'package:OilEnergy_System/models/income_data.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:http/http.dart';
-import 'dart:convert';
 
 import 'package:OilEnergy_System/widgets/receiptDetails.dart';
 
 class IncomeTable extends StatefulWidget {
-  IncomeTable({Key? key}) : super(key: key);
+  IncomeTable({Key? key,}) : super(key: key);
 
   @override
   State<IncomeTable> createState() => _IncomeTableState();
@@ -20,15 +19,52 @@ class _IncomeTableState extends State<IncomeTable> {
   var rowsPerPage = 10;
   bool isLoading = false;
   final _searchController = TextEditingController();
-  var source;
+  List data = [];
+
+  late var source = ExampleSource(context: context, data: data);
+  DateTime now = DateTime.now();
 
   @override
   void initState() {
     super.initState();
+    GetAll();
     _searchController.text = '';
+  }
+
+  Future GetAll() async {
     setState(() {
-      source = ExampleSource(context: context);
+      isLoading = true;
     });
+
+    //send to server
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Reciept.GetAll(auth.token);
+
+    if(response != false){
+      setState(() {
+        isLoading = false;
+        data = response;
+      });
+    }
+  }
+  Future Search(datas) async {
+    setState(() {
+      isLoading = true;
+      data = [];
+      source = ExampleSource(context: context, data: []);
+    });
+
+    //send to server
+    final auth = await SharedServices.LoginDetails();
+    final response = await API_Reciept.Search(auth.token, datas);
+
+    if(response != false){
+      setState(() {
+        isLoading = false;
+        data = response;
+        source = ExampleSource(context: context, data: response);
+      });
+    }
   }
 
   //modal open
@@ -45,12 +81,12 @@ class _IncomeTableState extends State<IncomeTable> {
               Center(
                 child: SizedBox(
                   height: 30,
+                  width: 100,
                   child: TextButton(
                     style: TextButton.styleFrom(
-                      primary: Colors.white,
                       backgroundColor: Colors.red
                     ),
-                    child: Text('حذف'),
+                    child: Text('حذف', style: TextStyle(color: Colors.white),),
                     onPressed: (){
                       deleteReciept();
                       Navigator.of(context).pop();
@@ -107,6 +143,13 @@ class _IncomeTableState extends State<IncomeTable> {
     }
   }
 
+  String numCheck (int number) {
+    if(number < 10){
+      return '0$number';
+    }else{
+      return '$number';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,23 +195,80 @@ class _IncomeTableState extends State<IncomeTable> {
                                 source.filterServerSide(_searchController.text),
                             icon: const Icon(Icons.search),
                           ),
+                          SizedBox(width: 40,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                width: 130,
+                                child: DropdownButtonFormField(
+                                    decoration: InputDecoration(
+                                        labelText: 'الفترة',
+                                        suffixIcon: Icon(Icons.date_range_outlined, color: Colors.blue,),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                        )
+                                    ),
+                                    items: [
+                                      DropdownMenuItem(child: Text('شهر'), value: 'month',),
+                                      DropdownMenuItem(child: Text('اسبوع'), value: 'week',),
+                                      DropdownMenuItem(child: Text('يوم'), value: 'day',),
+                                    ],
+                                    onChanged: (val){
+                                      if(val == 'month'){
+                                        //custom start date to get data from beginning of the month till now
+                                        String startDate = '${now.year}-${numCheck(now.month)}-01';
+                                        String endDate = '${now.year}-${numCheck(now.month)}-${numCheck(now.day)}';
+                                        //call server
+                                        Map thedata = {};
+                                        thedata['start_date'] = startDate;
+                                        thedata['end_date'] = endDate;
+                                        // call server
+                                        Search(thedata);
+
+                                      } else if(val == 'week'){
+                                        //custom start date for week
+                                        DateTime startDate = now.subtract(Duration(days: 7));
+                                        //call server
+                                        Map thedata = {};
+                                        thedata['start_date'] = startDate.toIso8601String();
+                                        thedata['end_date'] = now.toIso8601String();
+                                        // call server
+                                        Search(thedata);
+                                      }else {
+                                        //call server
+                                        Map thedata = {};
+                                        thedata['start_date'] = now.toIso8601String();
+                                        thedata['end_date'] = now.toIso8601String();
+                                        // call server
+                                        Search(thedata);
+                                      }
+                                    }
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                       Row(
                         children: [
-                          TextButton.icon(
+                          IconButton(
                             onPressed: (){
                               _openModal(context);
                             } ,
-                            icon: Icon(Icons.delete),
-                            label: Text(''),
+                            icon: Icon(Icons.delete, color: Colors.redAccent,),
+                            tooltip: 'جذف الايصال',
                           ),
                           SizedBox(width: 5,),
-                          ElevatedButton(
+                          ElevatedButton.icon(
                               onPressed: (){
                                 Navigator.pushReplacementNamed(context, '/add_reciept');
-                              } ,
-                              child: Text('+ ايصال جديد')
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue
+                              ),
+                              icon: Icon(Icons.add, color: Colors.white,),
+                              label: Text('ايصال جديد', style: TextStyle(color: Colors.white),)
                           ),
                           SizedBox(width: 5,),
                         ],
@@ -209,25 +309,82 @@ class _IncomeTableState extends State<IncomeTable> {
                                 source.filterServerSide(_searchController.text),
                             icon: const Icon(Icons.search),
                           ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                width: 130,
+                                child: DropdownButtonFormField(
+                                    decoration: InputDecoration(
+                                        labelText: 'الفترة',
+                                        suffixIcon: Icon(Icons.date_range_outlined, color: Colors.blue,),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                        )
+                                    ),
+                                    items: [
+                                      DropdownMenuItem(child: Text('شهر'), value: 'month',),
+                                      DropdownMenuItem(child: Text('اسبوع'), value: 'week',),
+                                      DropdownMenuItem(child: Text('يوم'), value: 'day',),
+                                    ],
+                                    onChanged: (val){
+                                      if(val == 'month'){
+                                        //custom start date to get data from beginning of the month till now
+                                        String startDate = '${now.year}-${numCheck(now.month)}-01';
+                                        String endDate = '${now.year}-${numCheck(now.month)}-${numCheck(now.day)}';
+                                        //call server
+                                        Map thedata = {};
+                                        thedata['start_date'] = startDate;
+                                        thedata['end_date'] = endDate;
+                                        // call server
+                                        Search(thedata);
+
+                                      } else if(val == 'week'){
+                                        //custom start date for week
+                                        DateTime startDate = now.subtract(Duration(days: 7));
+                                        //call server
+                                        Map thedata = {};
+                                        thedata['start_date'] = startDate.toIso8601String();
+                                        thedata['end_date'] = now.toIso8601String();
+                                        // call server
+                                        Search(thedata);
+
+                                      }else {
+                                        //call server
+                                        Map thedata = {};
+                                        thedata['start_date'] = now.toIso8601String();
+                                        thedata['end_date'] = now.toIso8601String();
+                                        // call server
+                                        Search(thedata);
+
+                                      }
+                                    }
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                       SizedBox(height: 20,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          TextButton.icon(
+                          IconButton(
                             onPressed: (){
                               _openModal(context);
                             } ,
-                            icon: Icon(Icons.delete),
-                            label: Text(''),
+                            icon: Icon(Icons.delete, color: Colors.redAccent),
                           ),
                           SizedBox(width: 5,),
-                          ElevatedButton(
+                          ElevatedButton.icon(
                               onPressed: (){
                                 Navigator.pushReplacementNamed(context, '/add_reciept');
-                              } ,
-                              child: Text('+ ايصال جديد')
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue
+                              ),
+                              icon: Icon(Icons.add,),
+                              label: Text('ايصال جديد', style: TextStyle(color: Colors.white),)
                           ),
                           SizedBox(width: 5,),
                         ],
@@ -238,6 +395,7 @@ class _IncomeTableState extends State<IncomeTable> {
                 }
               },
             ),
+            data.length !=0 ?
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
@@ -272,6 +430,8 @@ class _IncomeTableState extends State<IncomeTable> {
                 ),
 
               ],
+            ) : Center(
+                child: CircularProgressIndicator()
             ),
           ],
         ),
@@ -283,7 +443,8 @@ class _IncomeTableState extends State<IncomeTable> {
 class ExampleSource extends AdvancedDataTableSource<Receipt> {
   String lastSearchTerm = '';
   final BuildContext context;
-  ExampleSource({required this.context});
+  final List data;
+  ExampleSource({required this.context, required this.data});
 
   @override
   DataRow? getRow(int index) {
@@ -303,7 +464,7 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
         Text(currentRowData.fuelType),
       ),
       DataCell(
-        Text(currentRowData.amount.toString()),
+        Text("${myFormat(currentRowData.amount)}", style: TextStyle(fontWeight: FontWeight.w800)),
       ),
           DataCell(
             Text(currentRowData.shortage.toString()),
@@ -318,7 +479,7 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
                     Navigator.push(context, MaterialPageRoute(
                         builder: (context) => ReceiptDetails(reciept_id: currentRowData.recieptId,) ));
                   },
-                  child: Icon(Icons.remove_red_eye, color: Colors.grey[500],)
+                  child: Icon(Icons.remove_red_eye,)
               ),
             ),
           ),
@@ -346,34 +507,17 @@ class ExampleSource extends AdvancedDataTableSource<Receipt> {
   Future<RemoteDataSourceDetails<Receipt>> getNextPage(
       NextPageRequest pageRequest) async {
     //--------------get request to server -----------
-    final url = Uri.parse('http://localhost:5000/api/reciept/');
-    final auth = await SharedServices.LoginDetails();
-
-    Map<String,String> requestHeaders = {
-      'Content-Type' : 'application/json',
-      'x-auth-token' : '${auth.token}'
-    };
-
-    Response response = await get(url, headers:  requestHeaders);
-
-    if(response.statusCode == 200){
-      final data = jsonDecode(response.body);
-
-      await Future.delayed(Duration(milliseconds: 700));
-      return RemoteDataSourceDetails(
-        data.length,
-        (data as List<dynamic>)
-            .map((json) => Receipt.fromJson(json))
-            .skip(pageRequest.offset)
-            .take(pageRequest.pageSize)
-            .toList(),
-        filteredRows: lastSearchTerm.isNotEmpty
-            ? (data as List<dynamic>).length
-            : null,
-      );
-    }else{
-      throw Exception('Unable to query remote server');
-    }
+    return RemoteDataSourceDetails(
+      data.length,
+      (data as List<dynamic>)
+          .map((json) => Receipt.fromJson(json))
+          .skip(pageRequest.offset)
+          .take(pageRequest.pageSize)
+          .toList(),
+      filteredRows: lastSearchTerm.isNotEmpty
+          ? (data as List<dynamic>).length
+          : null,
+    );
   }
 }
 //selected ids

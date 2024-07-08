@@ -145,9 +145,9 @@ class _Machine_DetailState extends State<Machine_Detail> {
                               width: 100,
                               height: 40,
                               child: ElevatedButton(
-                                child: Text('تعديل'),
+                                child: Text('تعديل', style: TextStyle(fontSize: 18, color: Colors.white),),
                                 style: ElevatedButton.styleFrom(
-                                    textStyle: TextStyle(fontSize: 18)
+                                    backgroundColor: Colors.blue
                                 ),
                                 onPressed: () {
                                   if (_formKey.currentState!.saveAndValidate()) {

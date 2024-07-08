@@ -147,7 +147,7 @@ class _Machine_PumpsState extends State<Machine_Pumps> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black54
                       ),
-                      child: Text('تعديل البيانات')
+                      child: Text('تعديل البيانات', style: TextStyle(color: Colors.white),)
                   ),
                   SizedBox(width: 10,),
                   InkWell(
@@ -182,11 +182,11 @@ class _Machine_PumpsState extends State<Machine_Pumps> {
                 child: Center(
                   child: SizedBox(
                     height: 30,
+                    width: 100,
                     child: TextButton(
-                        child: Text('حذف'),
+                        child: Text('حذف', style: TextStyle(color: Colors.white),),
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.redAccent,
-                            primary: Colors.white
                         ),
                         onPressed: (){
                           deletePump(data['pump_id']);
@@ -229,8 +229,11 @@ class _Machine_PumpsState extends State<Machine_Pumps> {
                                 onPressed: (){
                                   Navigator.pushReplacementNamed(context, '/add_machine');
                                 },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue
+                                ),
                                 icon: Icon(Icons.add),
-                                label: Text('اضافة عداد', style: TextStyle(fontSize: 18),)
+                                label: Text('اضافة عداد', style: TextStyle(fontSize: 18, color: Colors.white),)
                             ),
                           ),
                           FormBuilder(
@@ -281,7 +284,7 @@ class _Machine_PumpsState extends State<Machine_Pumps> {
                                         minimumSize: Size(100, 50),
                                         backgroundColor: Colors.blueGrey
                                     ),
-                                    child: Text('تعديل'),
+                                    child: Text('تعديل', style: TextStyle(color: Colors.white),),
                                 )
                               ],
                             ),
