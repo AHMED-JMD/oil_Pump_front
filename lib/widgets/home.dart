@@ -116,7 +116,6 @@ class _HomePageState extends State<HomePage> {
                                     setState(() {
                                       isLoading = true;
                                     });
-
                                     //call to server
                                     final data = _formKey.currentState!.value;
                                     API_auth.Login(data).then((response){
@@ -125,7 +124,6 @@ class _HomePageState extends State<HomePage> {
                                       });
 
                                       if(response == true){
-
                                         Navigator.pushReplacementNamed(context, '/home');
                                       }
                                       else{
@@ -139,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                                     });
                                   }
                                 },
-                                child: Text('ارسال'),
+                                child: Text('ارسال', style: TextStyle(color: Colors.white),),
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.deepPurple,
                                     textStyle: TextStyle(fontSize: 18)

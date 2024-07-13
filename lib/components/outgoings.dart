@@ -1,4 +1,4 @@
-import 'package:OilEnergy_System/components/MoneyFormatter.dart';
+import 'package:OilEnergy_System/components/formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/outgoing.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -106,7 +106,7 @@ class _OutgoingsState extends State<Outgoings> {
                         fontSize: 21
                     ),
                   ),
-                  Text('${myFormat(total)}',
+                  Text('${numberFormat(total)}',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 21,

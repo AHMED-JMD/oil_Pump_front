@@ -1,4 +1,5 @@
 import 'package:OilEnergy_System/API/transaction.dart';
+import 'package:OilEnergy_System/components/printing/client_trans.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/client.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -116,7 +117,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                           key: _SecondKey,
                           child: Container(
                             width: MediaQuery.of(context).size.width/1.3,
-                            height: 470,
+                            height: 475,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
                                 color: Colors.grey[300]
@@ -124,7 +125,17 @@ class _ClientDetailsState extends State<ClientDetails> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('البيانات الاساسية', style: TextStyle(fontSize: 22),),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text('البيانات الاساسية', style: TextStyle(fontSize: 22),),
+                                    Container(
+                                        // width: 300,
+                                        // height: 400,
+                                        child: PrintClient(client: client, client_trans: trans)
+                                    ),
+                                  ],
+                                ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
@@ -138,7 +149,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                                           child: FormBuilderTextField(
                                             name: 'name',
                                             decoration: InputDecoration(labelText: 'الاسم'),
-                                            initialValue: client['name']!= null ? client['name'].toString(): '',
+                                            initialValue: client['name']!= null ? client['name'].toString() : '',
                                           ),
                                         )
                                     ),
@@ -277,9 +288,10 @@ class _ClientDetailsState extends State<ClientDetails> {
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(
-                                        minimumSize: Size(100, 40)
+                                        minimumSize: Size(200, 40),
+                                        backgroundColor: Colors.blue
                                     ),
-                                    child: Text('تحديث')
+                                    child: Text('تحديث', style: TextStyle(color: Colors.white),)
                                 )
                               ],
                             ),

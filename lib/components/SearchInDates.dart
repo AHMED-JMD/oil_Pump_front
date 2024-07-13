@@ -1,3 +1,4 @@
+import 'package:OilEnergy_System/components/formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -15,14 +16,6 @@ class _SearchDatesState extends State<SearchDates> {
   DateTime? start_date;
   DateTime? end_date;
   DateTime now = DateTime.now();
-
-  String numCheck (int number) {
-    if(number < 10){
-      return '0$number';
-    }else{
-      return '$number';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,8 +144,8 @@ class _SearchDatesState extends State<SearchDates> {
                                 onChanged: (val){
                                   if(val == 'month'){
                                     //custom start date to get data from beginning of the month till now
-                                    String startDate = '${now.year}-${numCheck(now.month)}-01';
-                                    String endDate = '${now.year}-${numCheck(now.month)}-${numCheck(now.day)}';
+                                    String startDate = '${now.year}-${timeFormat(now.month)}-01';
+                                    String endDate = '${now.year}-${timeFormat(now.month)}-${timeFormat(now.day)}';
                                     //call server
                                     Map data = {};
                                     data['start_date'] = startDate;
@@ -299,8 +292,8 @@ class _SearchDatesState extends State<SearchDates> {
                                   onChanged: (val){
                                     if(val == 'month'){
                                       //custom start date to get data from beginning of the month till now
-                                      String startDate = '${now.year}-${numCheck(now.month)}-01';
-                                      String endDate = '${now.year}-${numCheck(now.month)}-${numCheck(now.day)}';
+                                      String startDate = '${now.year}-${timeFormat(now.month)}-01';
+                                      String endDate = '${now.year}-${timeFormat(now.month)}-${timeFormat(now.day)}';
                                       //call server
                                       Map data = {};
                                       data['start_date'] = startDate;
@@ -440,8 +433,8 @@ class _SearchDatesState extends State<SearchDates> {
                                   onChanged: (val){
                                     if(val == 'month'){
                                       //custom start date to get data from beginning of the month till now
-                                      String startDate = '${now.year}-${numCheck(now.month)}-01';
-                                      String endDate = '${now.year}-${numCheck(now.month)}-${numCheck(now.day)}';
+                                      String startDate = '${now.year}-${timeFormat(now.month)}-01';
+                                      String endDate = '${now.year}-${timeFormat(now.month)}-${timeFormat(now.day)}';
                                       //call server
                                       Map data = {};
                                       data['start_date'] = startDate;

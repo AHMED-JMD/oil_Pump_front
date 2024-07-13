@@ -1,4 +1,4 @@
-import 'package:OilEnergy_System/components/MoneyFormatter.dart';
+import 'package:OilEnergy_System/components/formatters.dart';
 import 'package:OilEnergy_System/components/SearchInDates.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/daily.dart';
@@ -205,7 +205,7 @@ class _OldDailysState extends State<OldDailys> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        ' اجمالي قيمة اليوميات = (${myFormat(total)})',
+                        ' اجمالي قيمة اليوميات = (${numberFormat(total)})',
                         style: TextStyle(fontSize: 21, color: Colors.white),
                       ),
                     ),
@@ -229,7 +229,7 @@ class _OldDailysState extends State<OldDailys> {
                                           child: ListTile(
                                               leading: Icon(Icons.view_agenda),
                                               title: Text(
-                                                  ' المبلغ :  ${myFormat((dailys[index]['amount']))} جنيه',
+                                                  ' المبلغ :  ${numberFormat((dailys[index]['amount']))} جنيه',
                                                   style:
                                                       TextStyle(fontSize: 18)),
                                               subtitle: Text(

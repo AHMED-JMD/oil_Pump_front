@@ -1,5 +1,4 @@
-import 'package:OilEnergy_System/components/MoneyFormatter.dart';
-import 'package:OilEnergy_System/components/Print.dart';
+import 'package:OilEnergy_System/components/formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/client.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -22,6 +21,7 @@ class ClientsTable extends StatefulWidget {
 
 class _ClientsTableState extends State<ClientsTable> {
   List clients;
+  String? name;
   _ClientsTableState({required this.clients});
 
   bool isLoading = false;
@@ -185,6 +185,8 @@ class _ClientsTableState extends State<ClientsTable> {
   }
   //open modal
   void _EditAccount(BuildContext context) {
+    List<String> client_names = getNames(clients);
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -199,17 +201,25 @@ class _ClientsTableState extends State<ClientsTable> {
                  key: _formKey,
                  child: Column(
                   children: [
-                    FormBuilderDropdown(
-                        name: 'emp_id',
-                        decoration: InputDecoration(labelText: 'اختر العميل'),
-                        validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
-                        items: clients
-                        .map((client) =>
-                            DropdownMenuItem(
-                              value: client['emp_id'],
-                              child: Text('${client['name']}'),
-                            )).toList()
-                        ),
+                    Autocomplete<String>(
+                      optionsBuilder: (clientvalue){
+                        if(clientvalue.text == ''){
+                          return const Iterable<String>.empty();
+                        } else{
+                          return client_names.where((String name) => name.contains(clientvalue.text.toLowerCase()));
+                        }
+                      },
+                      fieldViewBuilder: (context, _controller, fieldFocus, value){
+                        return TextFormField(
+                          controller: _controller,
+                          focusNode: fieldFocus,
+                          decoration: InputDecoration(labelText: 'ابحث عن عميل'),
+                        );
+                      },
+                      onSelected: (value){
+                        name = value;
+                      },
+                    ),
                     FormBuilderDropdown(
                         name: 'edit_type',
                         decoration: InputDecoration(labelText: 'نوع التعديل'),
@@ -259,7 +269,7 @@ class _ClientsTableState extends State<ClientsTable> {
                             onPressed: (){
                               if(_formKey.currentState!.saveAndValidate()){
                                 Map data = {};
-                                data['emp_id'] = _formKey.currentState!.value['emp_id'];
+                                data['name'] = name;
                                 data['edit_type'] = _formKey.currentState!.value['edit_type'];
                                 data['amount'] = _formKey.currentState!.value['amount'];
                                 data['date'] = _formKey.currentState!.value['date'].toIso8601String();
@@ -286,6 +296,16 @@ class _ClientsTableState extends State<ClientsTable> {
     );
   }
 
+  List<String> getNames (List Clients) {
+    List<String> client_names = [];
+
+    Clients.forEach((client) {
+      client_names.add(client['name']);
+    });
+
+    return client_names;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -301,17 +321,6 @@ class _ClientsTableState extends State<ClientsTable> {
                       return Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                ElevatedButton.icon(
-                                    onPressed: (){
-                                      PrintPage();
-                                    },
-                                    icon : Icon(Icons.print, color: Colors.black54,),
-                                    style : ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.grey[500]
-                                    ),
-                                    label: Text('طباعة', style: TextStyle(color: Colors.white),)
-                                ),
-                                SizedBox(width: 12,),
                                 ElevatedButton(
                                     onPressed: (){
                                       Navigator.pushNamed(context, '/add_daily');
@@ -462,13 +471,13 @@ class ExampleSource extends AdvancedDataTableSource<Clients> {
         Text(currentRowData.phoneNum.toString()),
       ),
       DataCell(
-        Text('${myFormat(currentRowData.benz_amount)} لتر'),
+        Text('${numberFormat(currentRowData.benz_amount)} لتر'),
       ),
       DataCell(
-        Text('${myFormat(currentRowData.gas_amount)} لتر'),
+        Text('${numberFormat(currentRowData.gas_amount)} لتر'),
       ),
           DataCell(
-            Text('${myFormat(currentRowData.account)}',
+            Text('${numberFormat(currentRowData.account)}',
               style: TextStyle(
                   fontWeight: FontWeight.w900,
                   color: currentRowData.account > 0 ? Colors.green : Colors.redAccent
@@ -511,8 +520,7 @@ class ExampleSource extends AdvancedDataTableSource<Clients> {
   Future<RemoteDataSourceDetails<Clients>> getNextPage(
       NextPageRequest pageRequest) async {
 
-print(filtered);
-      await Future.delayed(Duration(milliseconds: 300));
+      await Future.delayed(Duration(milliseconds: 200));
       return RemoteDataSourceDetails(
         clients.length,
         (clients as List<dynamic>)

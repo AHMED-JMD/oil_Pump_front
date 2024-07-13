@@ -1,4 +1,4 @@
-import 'package:OilEnergy_System/components/MoneyFormatter.dart';
+import 'package:OilEnergy_System/components/formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/gas.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -90,13 +90,6 @@ class _GasolinesState extends State<Gasolines> {
     }
   }
 
-  String numCheck (int number) {
-    if(number < 10){
-      return '0$number';
-    }else{
-      return '$number';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -217,8 +210,8 @@ class _GasolinesState extends State<Gasolines> {
                                                         onChanged: (val){
                                                           if(val == 'month'){
                                                             //custom start date to get data from beginning of the month till now
-                                                            String startDate = '${now.year}-${numCheck(now.month)}-01';
-                                                            String endDate = '${now.year}-${numCheck(now.month)}-${numCheck(now.day)}';
+                                                            String startDate = '${now.year}-${timeFormat(now.month)}-01';
+                                                            String endDate = '${now.year}-${timeFormat(now.month)}-${timeFormat(now.day)}';
                                                             //call server
                                                             Map thedata = {};
                                                             thedata['start_date'] = startDate;
@@ -270,11 +263,11 @@ class _GasolinesState extends State<Gasolines> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Text('متبقي بئر البنزين = ${myFormat(avail_benz)} لتر',
+                                      Text('متبقي بئر البنزين = ${numberFormat(avail_benz)} لتر',
                                         style: TextStyle(fontWeight: FontWeight.w700, fontSize: 19),
                                       ),
                                       SizedBox(width: 35,),
-                                      Text('متبقي بئر الجازولين = ${myFormat(avail_gas)} لتر',
+                                      Text('متبقي بئر الجازولين = ${numberFormat(avail_gas)} لتر',
                                         style: TextStyle(fontWeight: FontWeight.w700, fontSize: 19),
                                       ),
                                     ],
@@ -372,8 +365,8 @@ class _GasolinesState extends State<Gasolines> {
                                         onChanged: (val){
                                           if(val == 'month'){
                                             //custom start date to get data from beginning of the month till now
-                                            String startDate = '${now.year}-${numCheck(now.month)}-01';
-                                            String endDate = '${now.year}-${numCheck(now.month)}-${numCheck(now.day)}';
+                                            String startDate = '${now.year}-${timeFormat(now.month)}-01';
+                                            String endDate = '${now.year}-${timeFormat(now.month)}-${timeFormat(now.day)}';
                                             //call server
                                             Map thedata = {};
                                             thedata['start_date'] = startDate;

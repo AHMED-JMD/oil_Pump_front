@@ -1,4 +1,4 @@
-import 'package:OilEnergy_System/components/MoneyFormatter.dart';
+import 'package:OilEnergy_System/components/formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -346,7 +346,7 @@ class ExampleSource extends AdvancedDataTableSource<Banks> {
               Text(currentRowData.bank_name,)
           ),
           DataCell(
-            Text("${myFormat(currentRowData.amount)}", style: TextStyle(fontWeight: FontWeight.w800),),
+            Text("${numberFormat(currentRowData.amount)}", style: TextStyle(fontWeight: FontWeight.w800),),
           ),
           DataCell(
             Text(currentRowData.date,),

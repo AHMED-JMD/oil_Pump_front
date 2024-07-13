@@ -97,6 +97,9 @@ flutter:
     - family: Cairo
       fonts:
         - asset: assets/fonts/Cairo-SemiBold.ttf
+    - family: HacenTunisia
+      fonts:
+        - asset: assets/fonts/HacenTunisia.ttf
 
   #   - family: Trajan Pro
   #     fonts:

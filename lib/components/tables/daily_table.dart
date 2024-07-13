@@ -1,7 +1,9 @@
 import 'package:OilEnergy_System/API/client.dart';
 import 'package:OilEnergy_System/API/transaction.dart';
-import 'package:OilEnergy_System/components/MoneyFormatter.dart';
+import 'package:OilEnergy_System/components/formatters.dart';
+import 'package:OilEnergy_System/components/printing/client_reciept.dart';
 import 'package:OilEnergy_System/widgets/trans_details.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/SharedService.dart';
 import 'package:OilEnergy_System/models/daily_data.dart';
@@ -33,6 +35,7 @@ class _DailyTableState extends State<DailyTable> {
    final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
    List clients = [];
+   String? name;
    bool isLoading = false;
 
   @override
@@ -155,7 +158,7 @@ class _DailyTableState extends State<DailyTable> {
                   child: SizedBox(
                     height: 30,
                     child: TextButton(
-                      child: Text('حذف'),
+                      child: Text('حذف', style: TextStyle(color: Colors.white),),
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.redAccent,
                       ),
@@ -175,6 +178,8 @@ class _DailyTableState extends State<DailyTable> {
   }
   //cash trans
    void _CashTransact(BuildContext context) {
+     List<String> client_names = getNames(clients);
+
      showDialog(
        context: context,
        builder: (BuildContext context) {
@@ -189,16 +194,26 @@ class _DailyTableState extends State<DailyTable> {
                    key: _formKey,
                    child: Column(
                      children: [
-                       FormBuilderDropdown(
-                           name: 'emp_id',
-                           decoration: InputDecoration(labelText: 'اختر العميل'),
-                           validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
-                           items: clients
-                               .map((client) =>
-                               DropdownMenuItem(
-                                 value: client['emp_id'],
-                                 child: Text('${client['name']}'),
-                               )).toList()
+                       Autocomplete<String>(
+                         optionsBuilder: (TextEditingValue clientValue){
+                           if(clientValue.text == ''){
+                             return const Iterable<String>.empty();
+                           }
+
+                           return client_names.where((String name){
+                             return name.contains(clientValue.text.toLowerCase());
+                           });
+                         },
+                         fieldViewBuilder: (context, _controller, fieldFocus, submittedName){
+                           return TextFormField(
+                             controller: _controller,
+                             focusNode: fieldFocus,
+                             decoration: InputDecoration(labelText: 'ابحث عن عميل'),
+                           );
+                         },
+                         onSelected: (value){
+                           name = value;
+                         },
                        ),
                        FormBuilderDropdown(
                            name: 'edit_type',
@@ -248,7 +263,7 @@ class _DailyTableState extends State<DailyTable> {
                                onPressed: (){
                                  if(_formKey.currentState!.saveAndValidate()){
                                    Map data = {};
-                                   data['emp_id'] = _formKey.currentState!.value['emp_id'];
+                                   data['name'] = name;
                                    data['edit_type'] = _formKey.currentState!.value['edit_type'];
                                    data['amount'] = _formKey.currentState!.value['amount'];
                                    data['date'] = _formKey.currentState!.value['date'].toIso8601String();
@@ -275,6 +290,15 @@ class _DailyTableState extends State<DailyTable> {
      );
    }
 
+   List<String> getNames (List Clients) {
+     List<String> client_names = [];
+
+     Clients.forEach((client) {
+       client_names.add(client['name']);
+     });
+
+     return client_names;
+   }
 
   @override
   Widget build(BuildContext context) {
@@ -479,7 +503,7 @@ class _DailyTableState extends State<DailyTable> {
                   label: const Text('التاريخ'),
                 ),
                 DataColumn(
-                  label: const Text('عرض/ تعديل'),
+                  label: const Text(''),
                 ),
               ],
             ),
@@ -493,7 +517,7 @@ class _DailyTableState extends State<DailyTable> {
                       fontSize: 21
                   ),
                 ),
-                Text('${myFormat(total)}',
+                Text('${numberFormat(total)}',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 21,
@@ -541,7 +565,7 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
         Text(currentRowData.comment),
       ),
       DataCell(
-        Text('${myFormat(currentRowData.amount)}', style: TextStyle(fontWeight: FontWeight.w900),),
+        Text('${numberFormat(currentRowData.amount)}', style: TextStyle(fontWeight: FontWeight.w900),),
       ),
       DataCell(
         Text(currentRowData.type),
@@ -556,15 +580,19 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
             Text(currentRowData.date),
           ),
           DataCell(
-            Center(
-              child: InkWell(
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => TransDetails(tran_id: currentRowData.tranId,))
-                    );
-                  },
-                  child: Icon(Icons.remove_red_eye, color: Colors.grey[500],size: 25,)
-              ),
+            Row(
+              children: [
+                IconButton(
+                    onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => TransDetails(tran_id: currentRowData.tranId,))
+                      );
+                    },
+                    icon: Icon(Icons.remove_red_eye, color: Colors.grey[500],size: 25,),
+                  tooltip: 'تعديل / عرض',
+                ),
+                PrintClientReciept(transact: currentRowData)
+              ]
             ),
           ),
     ]);
@@ -591,7 +619,8 @@ class ExampleSource extends AdvancedDataTableSource<Daily> {
   Future<RemoteDataSourceDetails<Daily>> getNextPage(
       NextPageRequest pageRequest) async {
     //--------------get request to server -----------
-      await Future.delayed(Duration(milliseconds: 700));
+      await Future.delayed(Duration(milliseconds: 200));
+
       return RemoteDataSourceDetails(
         daily_data.length,
         (daily_data as List<dynamic>)

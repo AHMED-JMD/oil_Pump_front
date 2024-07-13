@@ -23,7 +23,7 @@ class API_BankTrans {
         return false;
       }
     }catch (e){
-      print(e);
+      rethrow;
     }
   }
   //add banks
@@ -45,7 +45,7 @@ class API_BankTrans {
         return false;
       }
     }catch (e){
-      print(e);
+      rethrow;
     }
   }
   //find one one bank
@@ -67,7 +67,7 @@ class API_BankTrans {
         return false;
       }
     }catch (e){
-      print(e);
+      rethrow;
     }
   }
   //delete one bank
@@ -87,7 +87,7 @@ class API_BankTrans {
         return response.body;
       }
     }catch (e){
-      print(e);
+      rethrow ;
     }
   }
 

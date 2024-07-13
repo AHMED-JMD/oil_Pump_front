@@ -21,7 +21,7 @@ class _AddDailyState extends State<AddDaily> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
   DateTime? nw_date;
-  String? emp_id;
+  String? name;
   String? type;
   String? gas_type;
   String? gas_amount;
@@ -84,9 +84,20 @@ class _AddDailyState extends State<AddDaily> {
       });
   }
 
+  List<String> getNames (List Clients) {
+    List<String> client_names = [];
+
+    Clients.forEach((client) {
+      client_names.add(client['name']);
+    });
+
+    return client_names;
+  }
 
   @override
   Widget build(BuildContext context) {
+    List<String> client_names = getNames(clients);
+
     return Scaffold(
         appBar: APPBAR(context),
         body: Directionality(
@@ -115,18 +126,26 @@ class _AddDailyState extends State<AddDaily> {
                                       backgroundColor: Colors.grey.shade300,
                                     ),
                                     // Add a text field
-                                    FormBuilderDropdown(
-                                      name: 'name',
-                                      decoration: InputDecoration(labelText: 'اختر العميل'),
-                                      onChanged: (val) {
-                                        emp_id = val; // Print the text value write into TextField
+                                    Autocomplete<String>(
+                                        optionsBuilder: (TextEditingValue clientValue){
+                                          if(clientValue.text == ''){
+                                            return const Iterable<String>.empty();
+                                          }
+                                          
+                                          return client_names.where((String name){
+                                            return name.contains(clientValue.text.toLowerCase());
+                                          });
+                                        },
+                                      fieldViewBuilder: (context, _controller, fieldFocus, submittedName){
+                                          return TextFormField(
+                                            controller: _controller,
+                                            focusNode: fieldFocus,
+                                            decoration: InputDecoration(labelText: 'ابحث عن عميل'),
+                                          );
                                       },
-                                      items: clients
-                                       .map((client) => DropdownMenuItem(
-                                          value: client['emp_id'].toString(),
-                                          child: Text('${client['name']}')
-                                      )).toList(),
-                                      validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                                      onSelected: (value){
+                                          name = value;
+                                      },
                                     ),
                                     FormBuilderDropdown(
                                       name: 'type',
@@ -218,7 +237,7 @@ class _AddDailyState extends State<AddDaily> {
                                             //call to backend
                                             nw_date = _formKey.currentState!.value['date'];
                                             Map data = {};
-                                            data['emp_id'] = emp_id;
+                                            data['name'] = name;
                                             data['type'] = type;
                                             data['gas_type'] = gas_type;
                                             data['gas_amount'] = gas_amount;

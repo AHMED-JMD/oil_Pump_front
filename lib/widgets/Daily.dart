@@ -1,6 +1,6 @@
 import 'package:OilEnergy_System/API/reading.dart';
 import 'package:OilEnergy_System/API/transaction.dart';
-import 'package:OilEnergy_System/components/MoneyFormatter.dart';
+import 'package:OilEnergy_System/components/formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/daily.dart';
 import 'package:OilEnergy_System/API/outgoing.dart';
@@ -304,11 +304,11 @@ class _DailysState extends State<Dailys> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(' ${myFormat(data['last_reading'])}', style: TextStyle(fontSize: 18)),
-                    Text(' ${myFormat(data['f_reading'])}', style: TextStyle(fontSize: 18)),
+                    Text(' ${numberFormat(data['last_reading'])}', style: TextStyle(fontSize: 18)),
+                    Text(' ${numberFormat(data['f_reading'])}', style: TextStyle(fontSize: 18)),
                     Text('راجع التنك: ${data['returned']}', style: TextStyle(fontSize: 18)),
                     Text('عدد اللترات : ${data['amount']}'),
-                    Text('القيمة : ${myFormat(data['value'])}', style: TextStyle(fontSize: 18),),
+                    Text('القيمة : ${numberFormat(data['value'])}', style: TextStyle(fontSize: 18),),
                     SizedBox(height: 10,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -631,14 +631,14 @@ class _DailysState extends State<Dailys> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
-                                      Text('عدد اللترات = ${myFormat(gas_amount)}',
+                                      Text('عدد اللترات = ${numberFormat(gas_amount)}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 21,
                                             color: Colors.green
                                         ),
                                       ),
-                                      Text('المبلغ = ${myFormat(total_gas)}',
+                                      Text('المبلغ = ${numberFormat(total_gas)}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 21,
@@ -656,14 +656,14 @@ class _DailysState extends State<Dailys> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
-                                      Text('عدد اللترات = ${myFormat(benz_amount)}',
+                                      Text('عدد اللترات = ${numberFormat(benz_amount)}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 21,
                                             color: Colors.red
                                         ),
                                       ),
-                                      Text('المبلغ = ${myFormat(total_benz)}',
+                                      Text('المبلغ = ${numberFormat(total_benz)}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 21,
@@ -684,7 +684,7 @@ class _DailysState extends State<Dailys> {
                                         fontSize: 21
                                     ),
                                   ),
-                                  Text('= ${myFormat(total_benz + total_gas)}',
+                                  Text('= ${numberFormat(total_benz + total_gas)}',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 21,

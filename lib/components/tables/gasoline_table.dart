@@ -1,5 +1,5 @@
 import 'package:OilEnergy_System/API/pump.dart';
-import 'package:OilEnergy_System/components/MoneyFormatter.dart';
+import 'package:OilEnergy_System/components/formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/gas.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -247,7 +247,7 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
         ),
       ),
       DataCell(
-        Text('${myFormat(currentRowData.total)}',
+        Text('${numberFormat(currentRowData.total)}',
           style: TextStyle(
             fontWeight: FontWeight.w900,
             color: currentRowData.status == 'تفريغ' ?Colors.green : Colors.red,
@@ -290,7 +290,7 @@ class ExampleSource extends AdvancedDataTableSource<Gas> {
   Future<RemoteDataSourceDetails<Gas>> getNextPage(
       NextPageRequest pageRequest) async {
 
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(Duration(milliseconds: 200));
       return RemoteDataSourceDetails(
         data.length,
         (data as List<dynamic>)

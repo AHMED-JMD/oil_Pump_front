@@ -1,4 +1,4 @@
-import 'package:OilEnergy_System/components/MoneyFormatter.dart';
+import 'package:OilEnergy_System/components/formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:OilEnergy_System/API/gas.dart';
 import 'package:OilEnergy_System/SharedService.dart';
@@ -80,9 +80,12 @@ class _MainPageState extends State<MainPage> {
                       Text(' المستخدم : ${user}', style: TextStyle(
                         fontSize: 20, color: Colors.deepPurpleAccent
                       ),),
-                      Text('${DateTime.now().day} / ${DateTime.now().month} / ${DateTime.now().year} (${DateTime.now().hour > 6 ? "PM" : "AM"} ${DateTime.now().hour}:${DateTime.now().minute} )', style: TextStyle(
-                          fontSize: 19
-                      ))
+                      Text(
+                          '${timeFormat(DateTime.now().day)} / ${timeFormat(DateTime.now().month)} / ${DateTime.now().year} (${DateTime.now().hour > 12 ? "PM" : "AM"} ${timeFormat(DateTime.now().hour)}:${timeFormat(DateTime.now().minute)} )',
+                          style: TextStyle(
+                            fontSize: 19
+                          ),
+                      )
                     ],
                   ),
                 ),
@@ -115,7 +118,7 @@ class _MainPageState extends State<MainPage> {
                           )
                       ),
                       child: Center(
-                        child: Text(' بئر الجازولين = ${myFormat(avail_gas)} لتر', style: TextStyle(
+                        child: Text(' بئر الجازولين = ${numberFormat(avail_gas)} لتر', style: TextStyle(
                             fontSize: 22,
                             color: Colors.black
                           ),
@@ -134,7 +137,7 @@ class _MainPageState extends State<MainPage> {
                         )
                       ),
                       child: Center(
-                        child: Text(' بئر البنزين = ${myFormat(avail_benz)} لتر', style: TextStyle(
+                        child: Text(' بئر البنزين = ${numberFormat(avail_benz)} لتر', style: TextStyle(
                             fontSize: 22,
                             color: Colors.black
                         ),

@@ -1,4 +1,5 @@
 import 'package:OilEnergy_System/API/BankTrans.dart';
+import 'package:OilEnergy_System/components/printing/daily.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -255,6 +256,10 @@ class _DailyDetailsState extends State<DailyDetails> {
                                 Text(' المبلغ الكلي : $total', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
                               ],
                             ),
+                            SizedBox(height: 10,),
+                            Center(
+                              child: PrintDaily(readings: readings, trans: trans_data, outGs: outg_data, total: total,),
+                            ),
                             SizedBox(height: 60,),
                             readings.length !=0 ?
                             Container(
@@ -306,7 +311,10 @@ class _DailyDetailsState extends State<DailyDetails> {
                                 onPressed: (){
                                   _appendModal(context);
                                 },
-                                child: Text('توريد اليومية', style: TextStyle(fontSize: 22),),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue
+                                ),
+                                child: Text('توريد اليومية', style: TextStyle(fontSize: 22, color: Colors.white),),
                               ),
                             ),
                             SizedBox(height: 40,),

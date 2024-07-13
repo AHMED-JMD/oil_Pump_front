@@ -1,5 +1,5 @@
 import 'package:OilEnergy_System/API/employee.dart';
-import 'package:OilEnergy_System/components/MoneyFormatter.dart';
+import 'package:OilEnergy_System/components/formatters.dart';
 import 'package:OilEnergy_System/models/employe_data.dart';
 import 'package:OilEnergy_System/widgets/EmployeDetails.dart';
 import 'package:flutter/material.dart';
@@ -498,7 +498,7 @@ class ExampleSource extends AdvancedDataTableSource<Employee> {
             Text(currentRowData.phoneNum.toString()),
           ),
           DataCell(
-            Text('${myFormat(currentRowData.salary)}',
+            Text('${numberFormat(currentRowData.salary)}',
               style: TextStyle(
                   fontWeight: FontWeight.w900,
                   color: currentRowData.salary > 0 ? Colors.green : Colors.redAccent

@@ -1,3 +1,4 @@
+import 'package:OilEnergy_System/components/printing/reciept.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -12,13 +13,10 @@ class ReceiptDetails extends StatefulWidget {
   ReceiptDetails({super.key, required this.reciept_id});
 
   @override
-  State<ReceiptDetails> createState() => _ReceiptDetailsState(reciept_id: reciept_id);
+  State<ReceiptDetails> createState() => _ReceiptDetailsState();
 }
 
 class _ReceiptDetailsState extends State<ReceiptDetails> {
-  String reciept_id;
-  _ReceiptDetailsState({required this.reciept_id});
-
   SidebarXController controller = SidebarXController(selectedIndex: 7, extended: true);
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
@@ -48,7 +46,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
 
     //send to server
     var datas = {};
-    datas['reciept_id'] = reciept_id;
+    datas['reciept_id'] = widget.reciept_id;
     final auth = await SharedServices.LoginDetails();
     final response = await API_Reciept.GetById(datas, auth.token);
 
@@ -114,6 +112,11 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                       padding: const EdgeInsets.all(40.0),
                       child: Column(
                         children: [
+                          Container(
+                              // width: 400,
+                              // height: 400,
+                              child: PrintReciept(reciept: data)
+                          ),
                           Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
@@ -275,7 +278,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                                   //call to server
 
                                   final datac = {};
-                                  datac['reciept_id'] = reciept_id;
+                                  datac['reciept_id'] = widget.reciept_id;
                                   datac['company'] = _formKey.currentState!.value['company'];
                                   datac['source'] = _formKey.currentState!.value['source'];
                                   datac['driver'] = _formKey.currentState!.value['driver'];
